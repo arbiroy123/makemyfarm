@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "FarmSync",
+    "slug": "farmsync",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.farmsync.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4CAF50"
+      },
+      "package": "com.farmsync.app",
+      "versionCode": 1
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow FarmSync to access your location"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow FarmSync to access your photos",
+          "cameraPermission": "Allow FarmSync to access your camera"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+# .gitignore for FarmSync Project
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Production
+dist/
+build/
+.expo/
+.expo-shared/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# AWS
+aws-exports.js
+amplifyapp.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build output
+dist/
+out/
+build/
+
+# Mobile
+ios/Pods/
+android/.gradle/
+android/build/
+android/app/build/
+*.jks
+*.keystore
+
+# Expo
+.expo-shared/
+
+# Dependencies lockfiles (optional)
+package-lock.json
+yarn.lock

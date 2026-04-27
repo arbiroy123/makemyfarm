@@ -1,42 +1,48 @@
+import 'react-native-gesture-handler';
+import { registerRootComponent } from 'expo';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StoreProvider, useAuthStore } from './src/store';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 // Screens
-import SplashScreen from './screens/SplashScreen';
-import LoginScreen from './screens/auth/LoginScreen';
-import RegisterScreen from './screens/auth/RegisterScreen';
-import HomeScreen from './screens/home/HomeScreen';
-import FarmDetailScreen from './screens/farms/FarmDetailScreen';
-import CreateFarmScreen from './screens/farms/CreateFarmScreen';
-import MapScreen from './screens/map/MapScreen';
-import CommunityScreen from './screens/community/CommunityScreen';
-import ProfileScreen from './screens/profile/ProfileScreen';
-import CropDetailScreen from './screens/crops/CropDetailScreen';
-import RecommendationsScreen from './screens/recommendations/RecommendationsScreen';
+import SplashScreen from './src/screens/SplashScreen';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import HomeScreen from './src/screens/home/HomeScreen';
+import FarmDetailScreen from './src/screens/farms/FarmDetailScreen';
+import CreateFarmScreen from './src/screens/farms/CreateFarmScreen';
+import CommunityScreen from './src/screens/community/CommunityScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
+import CropDetailScreen from './src/screens/crops/CropDetailScreen';
+import RecommendationsScreen from './src/screens/recommendations/RecommendationsScreen';
 
-const Stack = createNativeStackNavigator();
+function MapScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }}>
+      <Text style={{ fontSize: 18, color: '#333' }}>Community Map</Text>
+      <Text style={{ fontSize: 14, color: '#666', marginTop: 10 }}>Map view coming soon for web</Text>
+    </View>
+  );
+}
+
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Auth Stack
 function AuthStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        animationEnabled: true
-      }}
-    >
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
 }
 
-// Main App Tabs
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -51,7 +57,7 @@ function MainTabs() {
           backgroundColor: '#fff',
           borderTopColor: '#e0e0e0',
           paddingBottom: 5,
-          paddingTop: 5
+          paddingTop: 5,
         },
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -60,41 +66,19 @@ function MainTabs() {
           else if (route.name === 'Community') iconName = 'people';
           else if (route.name === 'Recommendations') iconName = 'leaf';
           else if (route.name === 'Profile') iconName = 'person';
-
           return <Ionicons name={iconName} size={size} color={color} />;
-        }
+        },
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ title: 'My Farms' }}
-      />
-      <Tab.Screen
-        name="Map"
-        component={MapScreen}
-        options={{ title: 'Community Map' }}
-      />
-      <Tab.Screen
-        name="Community"
-        component={CommunityScreen}
-        options={{ title: 'Community' }}
-      />
-      <Tab.Screen
-        name="Recommendations"
-        component={RecommendationsScreen}
-        options={{ title: 'Learn' }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ title: 'Profile' }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'My Farms' }} />
+      <Tab.Screen name="Map" component={MapScreen} options={{ title: 'Community Map' }} />
+      <Tab.Screen name="Community" component={CommunityScreen} options={{ title: 'Community' }} />
+      <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: 'Learn' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 }
 
-// Root Navigator
 function RootStack({ isLoggedIn, isLoading }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -103,19 +87,9 @@ function RootStack({ isLoggedIn, isLoading }) {
       ) : isLoggedIn ? (
         <>
           <Stack.Screen name="MainApp" component={MainTabs} />
-          <Stack.Screen
-            name="CreateFarm"
-            component={CreateFarmScreen}
-            options={{ presentation: 'modal' }}
-          />
-          <Stack.Screen
-            name="FarmDetail"
-            component={FarmDetailScreen}
-          />
-          <Stack.Screen
-            name="CropDetail"
-            component={CropDetailScreen}
-          />
+          <Stack.Screen name="CreateFarm" component={CreateFarmScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="FarmDetail" component={FarmDetailScreen} />
+          <Stack.Screen name="CropDetail" component={CropDetailScreen} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />
@@ -124,23 +98,26 @@ function RootStack({ isLoggedIn, isLoading }) {
   );
 }
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+// Reads token from AsyncStorage on startup and restores auth state
+function AppNavigator() {
+  const { isLoggedIn, login } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Check if user is logged in (check AsyncStorage)
-    const checkLoginStatus = async () => {
+    async function restoreSession() {
       try {
-        // TODO: Check stored token
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
+        const token = await AsyncStorage.getItem('authToken');
+        const userJson = await AsyncStorage.getItem('user');
+        if (token && userJson) {
+          login(JSON.parse(userJson), token);
+        }
+      } catch (_) {
+        // ignore — treat as logged out
+      } finally {
         setIsLoading(false);
       }
-    };
-
-    checkLoginStatus();
+    }
+    restoreSession();
   }, []);
 
   return (
@@ -149,3 +126,15 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StoreProvider>
+        <AppNavigator />
+      </StoreProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+registerRootComponent(App);

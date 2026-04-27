@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>FarmSync</title>
+    <script>
+      // Metro reads globalThis.process at bundle init time.
+      // EXPO_OS must be 'web' so the HMR module takes the web code path.
+      globalThis.process = globalThis.process || {};
+      globalThis.process.env = globalThis.process.env || {};
+      globalThis.process.env.EXPO_OS = 'web';
+    </script>
+    <style id="expo-reset">
+      html, body { height: 100%; margin: 0; padding: 0; }
+      body { overflow: hidden; }
+      #root { display: flex; height: 100%; flex: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/App.bundle?platform=web&dev=true&hot=false&lazy=true&unstable_transformProfile=hermes-stable"></script>
+  </body>
+</html>

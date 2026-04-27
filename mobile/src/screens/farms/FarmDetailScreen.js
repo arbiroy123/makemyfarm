@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { farmAPI, cropAPI } from '../../api/client';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function FarmDetailScreen({ route, navigation }) {
   const { farmId } = route.params;

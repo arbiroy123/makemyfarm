@@ -18,6 +18,10 @@
       "package": "com.farmsync.app",
       "versionCode": 1
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "plugins": [
       [
         "expo-location",

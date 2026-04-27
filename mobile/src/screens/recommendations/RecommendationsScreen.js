@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { recommendationAPI } from '../../api/client';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RecommendationsScreen() {
   const [recommendations, setRecommendations] = useState([]);

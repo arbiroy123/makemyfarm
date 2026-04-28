@@ -40,8 +40,10 @@ router.post('/register', async (req, res) => {
       [userId, email, hashedPassword, firstName, lastName, experienceLevel || 'novice']
     );
 
-    // Send verification email
-    await sendVerificationEmail(email, userId);
+    // Send verification email (non-blocking — don't fail registration if email is unavailable)
+    sendVerificationEmail(email, userId).catch(err =>
+      console.warn('Verification email could not be sent:', err.message)
+    );
 
     const token = jwt.sign(
       { userId: newUser.rows[0].id, email: newUser.rows[0].email },

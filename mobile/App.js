@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Screens
 import SplashScreen from './src/screens/SplashScreen';
+import TermsScreen from './src/screens/TermsScreen';
+import PlantCropScreen from './src/screens/crops/PlantCropScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
@@ -79,17 +81,16 @@ function MainTabs() {
   );
 }
 
-function RootStack({ isLoggedIn, isLoading }) {
+function RootStack({ isLoggedIn }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isLoading ? (
-        <Stack.Screen name="Splash" component={SplashScreen} />
-      ) : isLoggedIn ? (
+      {isLoggedIn ? (
         <>
           <Stack.Screen name="MainApp" component={MainTabs} />
           <Stack.Screen name="CreateFarm" component={CreateFarmScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="FarmDetail" component={FarmDetailScreen} />
-          <Stack.Screen name="CropDetail" component={CropDetailScreen} />
+          <Stack.Screen name="PlantCrop" component={PlantCropScreen} options={{ title: 'Plant a Crop', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
+          <Stack.Screen name="CropDetail" component={CropDetailScreen} options={{ title: 'Crop Detail', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />
@@ -98,21 +99,28 @@ function RootStack({ isLoggedIn, isLoading }) {
   );
 }
 
+const TERMS_ACCEPTED_KEY = 'termsAccepted';
+
 // Reads token from AsyncStorage on startup and restores auth state
 function AppNavigator() {
   const { isLoggedIn, login } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(true);
+  const [termsAccepted, setTermsAccepted] = React.useState(false);
 
   React.useEffect(() => {
     async function restoreSession() {
       try {
-        const token = await AsyncStorage.getItem('authToken');
-        const userJson = await AsyncStorage.getItem('user');
+        const [token, userJson, accepted] = await Promise.all([
+          AsyncStorage.getItem('authToken'),
+          AsyncStorage.getItem('user'),
+          AsyncStorage.getItem(TERMS_ACCEPTED_KEY),
+        ]);
+        if (accepted === 'true') setTermsAccepted(true);
         if (token && userJson) {
           login(JSON.parse(userJson), token);
         }
       } catch (_) {
-        // ignore — treat as logged out
+        // ignore — treat as logged out / terms not accepted
       } finally {
         setIsLoading(false);
       }
@@ -120,9 +128,28 @@ function AppNavigator() {
     restoreSession();
   }, []);
 
+  async function handleAcceptTerms() {
+    await AsyncStorage.setItem(TERMS_ACCEPTED_KEY, 'true');
+    setTermsAccepted(true);
+  }
+
+  if (isLoading) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  if (!termsAccepted) {
+    return <TermsScreen onAccept={handleAcceptTerms} />;
+  }
+
   return (
     <NavigationContainer>
-      <RootStack isLoggedIn={isLoggedIn} isLoading={isLoading} />
+      <RootStack isLoggedIn={isLoggedIn} />
     </NavigationContainer>
   );
 }

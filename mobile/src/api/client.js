@@ -86,7 +86,10 @@ export const cropAPI = {
   
   getFarmCrops: (farmId) =>
     client.get(`/crops/farm/${farmId}`),
-  
+
+  getCropDetail: (cropId) =>
+    client.get(`/crops/${cropId}`),
+
   updateCrop: (cropId, updates) =>
     client.put(`/crops/${cropId}`, updates)
 };

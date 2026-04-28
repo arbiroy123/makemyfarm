@@ -1,17 +1,16 @@
 -- Enable PostGIS extension for geospatial queries
 CREATE EXTENSION IF NOT EXISTS postgis;
-CREATE EXTENSION IF NOT EXISTS uuid_ossp;
 
 -- Users table
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   first_name VARCHAR(100),
   last_name VARCHAR(100),
   profile_image_url TEXT,
   bio TEXT,
-  experience_level VARCHAR(20) CHECK (experience_level IN ('novice', 'intermediate', 'expert')),
+  experience_level VARCHAR(20) CHECK (experience_level IN ('novice', 'beginner', 'intermediate', 'advanced', 'expert')),
   location GEOGRAPHY(POINT, 4326),
   timezone VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -20,15 +19,15 @@ CREATE TABLE users (
 
 -- Farms table
 CREATE TABLE farms (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  farm_type VARCHAR(20) CHECK (farm_type IN ('backyard', 'medium', 'large', 'greenhouse', 'hybrid')),
+  farm_type VARCHAR(20) CHECK (farm_type IN ('backyard', 'container', 'rooftop', 'community', 'medium', 'large', 'greenhouse', 'hybrid')),
   size_sqft DECIMAL(12, 2),
   location GEOGRAPHY(POINT, 4326) NOT NULL,
   address TEXT,
-  climate_zone VARCHAR(10),
+  climate_zone VARCHAR(50),
   is_public BOOLEAN DEFAULT FALSE,
   cover_image_url TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,7 +36,7 @@ CREATE TABLE farms (
 
 -- Farm collaborators (multiple users can manage a farm)
 CREATE TABLE farm_collaborators (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   role VARCHAR(20) CHECK (role IN ('owner', 'admin', 'contributor', 'viewer')),
@@ -47,7 +46,7 @@ CREATE TABLE farm_collaborators (
 
 -- Growing seasons for a farm
 CREATE TABLE growing_seasons (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
   name VARCHAR(100),
   start_date DATE NOT NULL,
@@ -55,30 +54,9 @@ CREATE TABLE growing_seasons (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Crops/vegetables in a farm
-CREATE TABLE crops (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
-  season_id UUID REFERENCES growing_seasons(id) ON DELETE SET NULL,
-  vegetable_id UUID NOT NULL REFERENCES vegetables(id),
-  plot_number VARCHAR(50),
-  quantity_planted INTEGER,
-  planting_date DATE NOT NULL,
-  expected_harvest_date DATE,
-  actual_harvest_date DATE,
-  status VARCHAR(20) CHECK (status IN ('planned', 'planted', 'growing', 'harvested', 'failed')),
-  yield_quantity DECIMAL(10, 2),
-  yield_unit VARCHAR(20) DEFAULT 'kg',
-  growing_method VARCHAR(20) CHECK (growing_method IN ('outdoor', 'greenhouse', 'hydroponic')),
-  notes TEXT,
-  photos TEXT[] DEFAULT ARRAY[]::TEXT[],
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Vegetable database with growing information
 CREATE TABLE vegetables (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL UNIQUE,
   scientific_name VARCHAR(150),
   description TEXT,
@@ -105,9 +83,30 @@ CREATE TABLE vegetables (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Crops/vegetables in a farm
+CREATE TABLE crops (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
+  season_id UUID REFERENCES growing_seasons(id) ON DELETE SET NULL,
+  vegetable_id UUID NOT NULL REFERENCES vegetables(id),
+  plot_number VARCHAR(50),
+  quantity_planted INTEGER,
+  planting_date DATE NOT NULL,
+  expected_harvest_date DATE,
+  actual_harvest_date DATE,
+  status VARCHAR(20) CHECK (status IN ('planned', 'planted', 'growing', 'harvested', 'failed')),
+  yield_quantity DECIMAL(10, 2),
+  yield_unit VARCHAR(20) DEFAULT 'kg',
+  growing_method VARCHAR(20) CHECK (growing_method IN ('outdoor', 'greenhouse', 'hydroponic')),
+  notes TEXT,
+  photos TEXT[] DEFAULT ARRAY[]::TEXT[],
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Community gardens
 CREATE TABLE community_groups (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
   description TEXT,
   location GEOGRAPHY(POINT, 4326) NOT NULL,
@@ -122,7 +121,7 @@ CREATE TABLE community_groups (
 
 -- Community group members
 CREATE TABLE community_members (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id UUID NOT NULL REFERENCES community_groups(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   role VARCHAR(20) CHECK (role IN ('admin', 'member', 'moderator')),
@@ -132,7 +131,7 @@ CREATE TABLE community_members (
 
 -- Community forum posts
 CREATE TABLE community_posts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id UUID NOT NULL REFERENCES community_groups(id) ON DELETE CASCADE,
   author_id UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
   title VARCHAR(255) NOT NULL,
@@ -147,7 +146,7 @@ CREATE TABLE community_posts (
 
 -- Post comments
 CREATE TABLE post_comments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id UUID NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
   author_id UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
   content TEXT NOT NULL,
@@ -158,7 +157,7 @@ CREATE TABLE post_comments (
 
 -- User achievements/badges
 CREATE TABLE achievements (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   badge_name VARCHAR(100),
   badge_icon TEXT,
@@ -168,7 +167,7 @@ CREATE TABLE achievements (
 
 -- Offline sync queue (for tracking changes when offline)
 CREATE TABLE sync_queue (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   entity_type VARCHAR(50),
   entity_id UUID,
@@ -181,7 +180,7 @@ CREATE TABLE sync_queue (
 
 -- Real-time activity log
 CREATE TABLE activity_log (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   farm_id UUID REFERENCES farms(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id),
   action VARCHAR(100),

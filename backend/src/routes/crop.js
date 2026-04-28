@@ -42,6 +42,33 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
+// Get single crop with full vegetable guide
+router.get('/:cropId', async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT c.*,
+              v.name as vegetable_name, v.scientific_name, v.description,
+              v.difficulty_level, v.days_to_harvest, v.spacing_cm,
+              v.min_temp_celsius, v.optimal_temp_celsius, v.max_temp_celsius,
+              v.water_frequency_days, v.sunlight_hours, v.soil_type,
+              v.ph_min, v.ph_max, v.season, v.climate_zones,
+              v.yields_per_plant, v.planting_tips, v.care_tips,
+              v.pest_diseases, v.companion_plants
+       FROM crops c
+       JOIN vegetables v ON c.vegetable_id = v.id
+       WHERE c.id = $1`,
+      [req.params.cropId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Crop not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch crop' });
+  }
+});
+
 // Get farm crops
 router.get('/farm/:farmId', async (req, res) => {
   try {

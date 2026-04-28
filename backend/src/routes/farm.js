@@ -13,7 +13,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const result = await query(
       `INSERT INTO farms (id, owner_id, name, description, farm_type, size_sqft, location, address, climate_zone)
-       VALUES ($1, $2, $3, $4, $5, $6, ST_GeomFromText('POINT($7 $8)', 4326), $9, $10)
+       VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326), $9, $10)
        RETURNING *`,
       [farmId, req.user.userId, name, description, farmType, sizeSqft, longitude, latitude, address, climateZone]
     );

@@ -257,57 +257,60 @@ Farming/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 16+
-- PostgreSQL 13+ with PostGIS
-- Expo CLI: `npm install -g expo-cli`
-- Docker (optional)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for Postgres + Redis)
+- Node.js 18+
 
-### Local Development (Docker)
+---
+
+### Step 1 — Start the databases
+
+Open Docker Desktop first, then from the project root:
 
 ```bash
-# Clone and enter directory
-cd Farming
-
-# Start all services
-docker-compose up
-
-# Access:
-# - Backend API: http://localhost:3000
-# - PostgreSQL: localhost:5432
+docker-compose up postgres redis -d
 ```
 
-### Backend Setup
+This starts Postgres on `localhost:5432` and Redis on `localhost:6379`.
+
+**First run only** — apply the database schema:
+
+```bash
+docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
+  < backend/src/database/schema.sql
+```
+
+---
+
+### Step 2 — Start the backend
 
 ```bash
 cd backend
-npm install
-
-# Create .env
-cp .env.example .env
-
-# Initialize database
-psql -U postgres -d farmsync -f src/database/schema.sql
-
-# Start development server
-npm run dev
-# Server runs on http://localhost:3000
+npm install       # first run only
+npm start
+# API running at http://localhost:3000
 ```
 
-### Mobile App Setup
+The `backend/.env` file is already configured for local development. Leave this terminal open.
+
+---
+
+### Step 3 — Start the mobile app
+
+In a new terminal:
 
 ```bash
 cd mobile
-npm install
-
-# Create .env
-cp .env.example .env
-# Set EXPO_PUBLIC_API_URL=http://localhost:3000/api
-
-# Start Expo dev server
+npm install       # first run only
 npm start
-
-# Scan QR code with Expo Go app on your phone
 ```
+
+Then:
+- Press **`w`** to open in a browser
+- Press **`i`** for iOS Simulator
+- Press **`a`** for Android Emulator
+- Scan the QR code with the **Expo Go** app on your phone
+
+> On first launch you'll see the Terms & Conditions screen — accept it to proceed to login/register.
 
 ---
 
@@ -605,34 +608,48 @@ Pre-loaded vegetables with:
 
 ## 🆘 Troubleshooting
 
-### Backend won't start
+### "Registration failed" on sign up
+The backend is not running or the database schema hasn't been applied. Make sure you completed all three steps in Quick Start. Check the backend terminal for error output.
+
+### Backend won't connect to the database
 ```bash
-# Check PostgreSQL is running
-psql -U postgres -c "SELECT 1"
+# Check containers are running and healthy
+docker-compose ps
 
-# Check port 3000 is free
-lsof -i :3000
+# If not running, start them
+docker-compose up postgres redis -d
 
-# Clear node_modules and reinstall
-rm -rf node_modules && npm install
+# If schema is missing, reapply it
+docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
+  < backend/src/database/schema.sql
 ```
 
-### Mobile app connection issues
+### Port 3000 already in use
 ```bash
-# Check backend API URL in .env
-cat mobile/.env | grep EXPO_PUBLIC_API_URL
-
-# Clear Expo cache
-expo start --clear
+lsof -ti:3000 | xargs kill -9
 ```
 
-### Database connection error
-```bash
-# Check environment variables
-echo $DATABASE_URL
+### Mobile app can't reach the backend
+The API URL defaults to `http://localhost:3000/api`. On a physical device this won't work — use your machine's local IP instead:
 
-# Test connection
-psql $DATABASE_URL -c "SELECT 1"
+```bash
+# Find your local IP
+ipconfig getifaddr en0   # Mac
+
+# Set it in mobile/.env
+EXPO_PUBLIC_API_URL=http://192.168.x.x:3000/api
+```
+
+### Expo cache issues
+```bash
+cd mobile && npx expo start --clear
+```
+
+### Docker Desktop not found
+```bash
+# On Mac — check Docker context is set to desktop-linux
+docker context use desktop-linux
+docker ps
 ```
 
 ---
@@ -659,5 +676,5 @@ To democratize farming knowledge and help communities grow their own food, from 
 
 ---
 
-**Last Updated:** April 2024  
+**Last Updated:** April 2026  
 **Version:** 1.0.0 (MVP)

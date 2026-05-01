@@ -137,6 +137,24 @@ export default function CropDetailScreen({ route, navigation }) {
         </View>
       </View>
 
+      {/* Diary CTA */}
+      <TouchableOpacity
+        style={styles.diaryCta}
+        activeOpacity={0.85}
+        onPress={() => navigation.navigate('CropDiary', {
+          cropId: crop.id,
+          cropName: crop.vegetable_name,
+          plantingDate: crop.planting_date,
+        })}
+      >
+        <Ionicons name="book-outline" size={20} color="#fff" />
+        <View style={{ flex: 1, marginLeft: 10 }}>
+          <Text style={styles.diaryCtaTitle}>Crop Diary</Text>
+          <Text style={styles.diaryCtaSub}>Photos & notes from planting to harvest</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#fff" />
+      </TouchableOpacity>
+
       {/* Timeline */}
       <View style={styles.timelineCard}>
         <View style={styles.timelineItem}>
@@ -227,6 +245,50 @@ export default function CropDetailScreen({ route, navigation }) {
           </View>
         </Section>
       )}
+
+      {/* Fun fact */}
+      {crop.fun_fact ? (
+        <View style={styles.funFactCard}>
+          <View style={styles.funFactHeader}>
+            <Ionicons name="bulb-outline" size={18} color="#e65100" />
+            <Text style={styles.funFactTitle}>Did you know?</Text>
+          </View>
+          <Text style={styles.funFactText}>{crop.fun_fact}</Text>
+        </View>
+      ) : null}
+
+      {/* Nutrition */}
+      {crop.nutrition ? (
+        <View style={styles.nutritionCard}>
+          <View style={styles.nutritionHeader}>
+            <Ionicons name="fitness-outline" size={18} color="#00695c" />
+            <Text style={styles.nutritionTitle}>Nutrition</Text>
+          </View>
+          <Text style={styles.nutritionText}>{crop.nutrition}</Text>
+        </View>
+      ) : null}
+
+      {/* Simple recipe */}
+      {crop.simple_recipe ? (
+        <View style={styles.recipeCard}>
+          <View style={styles.recipeHeader}>
+            <Ionicons name="restaurant-outline" size={18} color="#2e7d32" />
+            <Text style={styles.recipeTitle}>Try it in the kitchen</Text>
+          </View>
+          <Text style={styles.recipeText}>{crop.simple_recipe}</Text>
+        </View>
+      ) : null}
+
+      {/* Growing story */}
+      {crop.growing_story ? (
+        <View style={styles.storyCard}>
+          <View style={styles.storyHeader}>
+            <Ionicons name="people-outline" size={18} color="#1565c0" />
+            <Text style={styles.storyTitle}>From a real grower</Text>
+          </View>
+          <Text style={styles.storyText}>{crop.growing_story}</Text>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -245,6 +307,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12,
   },
   statusText: { color: '#fff', fontWeight: '700', fontSize: 12 },
+
+  diaryCta: {
+    flexDirection: 'row', alignItems: 'center',
+    margin: 12, marginBottom: 0,
+    backgroundColor: '#1976d2', borderRadius: 12,
+    padding: 14,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3,
+    elevation: 2,
+  },
+  diaryCtaTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  diaryCtaSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
 
   timelineCard: {
     backgroundColor: '#fff', margin: 12, borderRadius: 12, padding: 16,
@@ -322,4 +395,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 5,
   },
   companionText: { fontSize: 13, color: '#2e7d32', fontWeight: '500' },
+
+  funFactCard: {
+    marginHorizontal: 12, marginTop: 10,
+    backgroundColor: '#fff8e1', borderRadius: 12,
+    borderLeftWidth: 4, borderLeftColor: '#FF9800',
+    padding: 14,
+  },
+  funFactHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  funFactTitle: { fontSize: 14, fontWeight: '700', color: '#e65100' },
+  funFactText: { fontSize: 13, color: '#4e342e', lineHeight: 20 },
+
+  nutritionCard: {
+    marginHorizontal: 12, marginTop: 10,
+    backgroundColor: '#e0f2f1', borderRadius: 12,
+    borderLeftWidth: 4, borderLeftColor: '#00695c',
+    padding: 14,
+  },
+  nutritionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  nutritionTitle: { fontSize: 14, fontWeight: '700', color: '#00695c' },
+  nutritionText: { fontSize: 13, color: '#004d40', lineHeight: 20 },
+
+  recipeCard: {
+    marginHorizontal: 12, marginTop: 10,
+    backgroundColor: '#f1f8e9', borderRadius: 12,
+    borderLeftWidth: 4, borderLeftColor: '#558b2f',
+    padding: 14,
+  },
+  recipeHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  recipeTitle: { fontSize: 14, fontWeight: '700', color: '#2e7d32' },
+  recipeText: { fontSize: 13, color: '#1b5e20', lineHeight: 20 },
+
+  storyCard: {
+    marginHorizontal: 12, marginTop: 10, marginBottom: 10,
+    backgroundColor: '#e3f2fd', borderRadius: 12,
+    borderLeftWidth: 4, borderLeftColor: '#1976d2',
+    padding: 14,
+  },
+  storyHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  storyTitle: { fontSize: 14, fontWeight: '700', color: '#1565c0' },
+  storyText: { fontSize: 13, color: '#1a237e', lineHeight: 20, fontStyle: 'italic' },
 });

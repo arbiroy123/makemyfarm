@@ -80,6 +80,10 @@ CREATE TABLE vegetables (
   care_tips TEXT,
   pest_diseases TEXT,
   companion_plants TEXT[],
+  fun_fact TEXT,
+  growing_story TEXT,
+  simple_recipe TEXT,
+  nutrition TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -102,6 +106,21 @@ CREATE TABLE crops (
   photos TEXT[] DEFAULT ARRAY[]::TEXT[],
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crop diary entries (chronological log with photos from planting to harvest)
+CREATE TABLE crop_diary_entries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  crop_id UUID NOT NULL REFERENCES crops(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  entry_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  growth_stage VARCHAR(30) CHECK (growth_stage IN (
+    'seeded','sprouted','seedling','growing','flowering','fruiting','harvested','issue'
+  )),
+  note TEXT,
+  photo_url TEXT,
+  height_cm DECIMAL(6, 1),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Community gardens
@@ -194,6 +213,8 @@ CREATE INDEX idx_farms_owner_id ON farms(owner_id);
 CREATE INDEX idx_farms_location ON farms USING GIST(location);
 CREATE INDEX idx_crops_farm_id ON crops(farm_id);
 CREATE INDEX idx_crops_status ON crops(status);
+CREATE INDEX idx_diary_crop_id ON crop_diary_entries(crop_id);
+CREATE INDEX idx_diary_entry_date ON crop_diary_entries(crop_id, entry_date DESC);
 CREATE INDEX idx_vegetables_season ON vegetables USING GIN(climate_zones);
 CREATE INDEX idx_community_groups_location ON community_groups USING GIST(location);
 CREATE INDEX idx_community_members_group_id ON community_members(group_id);

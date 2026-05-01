@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 import { authAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
+import LanguagePicker from '../../components/LanguagePicker';
 
 export default function LoginScreen({ navigation }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +21,7 @@ export default function LoginScreen({ navigation }) {
 
     try {
       if (!email || !password) {
-        setError('Please fill in all fields');
+        setError(t('fillAllFields'));
         setLoading(false);
         return;
       }
@@ -26,16 +29,12 @@ export default function LoginScreen({ navigation }) {
       const response = await authAPI.login(email, password);
       const { user, token } = response.data;
 
-      // Save token and user
       await AsyncStorage.setItem('authToken', token);
       await AsyncStorage.setItem('user', JSON.stringify(user));
 
-      // Update global state
       login(user, token);
-
-      // Navigation happens automatically when auth state updates
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -44,8 +43,10 @@ export default function LoginScreen({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>🌱 FarmSync</Text>
-        <Text style={styles.subtitle}>Grow Together</Text>
+        <LanguagePicker />
+
+        <Text style={styles.title}>🌱 {t('appName')}</Text>
+        <Text style={styles.subtitle}>{t('tagline')}</Text>
 
         {error ? (
           <View style={styles.errorBox}>
@@ -55,16 +56,17 @@ export default function LoginScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('email')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
           editable={!loading}
         />
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t('password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -79,12 +81,12 @@ export default function LoginScreen({ navigation }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>{t('login')}</Text>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.link}>Don't have an account? Register</Text>
+          <Text style={styles.link}>{t('noAccount')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -94,25 +96,26 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5'
+    backgroundColor: '#f5f5f5',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20
+    padding: 20,
+    paddingTop: 60,
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 5,
-    color: '#4CAF50'
+    color: '#4CAF50',
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
     color: '#666',
-    marginBottom: 30
+    marginBottom: 30,
   },
   input: {
     backgroundColor: '#fff',
@@ -120,28 +123,28 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 15,
     borderColor: '#ddd',
-    borderWidth: 1
+    borderWidth: 1,
   },
   button: {
     backgroundColor: '#4CAF50',
     borderRadius: 8,
     padding: 15,
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   buttonDisabled: {
-    opacity: 0.6
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   link: {
     textAlign: 'center',
     color: '#4CAF50',
     marginTop: 20,
-    fontSize: 14
+    fontSize: 14,
   },
   errorBox: {
     backgroundColor: '#ffebee',
@@ -149,10 +152,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15
+    marginBottom: 15,
   },
   errorText: {
     color: '#c62828',
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });

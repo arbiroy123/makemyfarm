@@ -53,7 +53,8 @@ router.get('/:cropId', async (req, res) => {
               v.water_frequency_days, v.sunlight_hours, v.soil_type,
               v.ph_min, v.ph_max, v.season, v.climate_zones,
               v.yields_per_plant, v.planting_tips, v.care_tips,
-              v.pest_diseases, v.companion_plants
+              v.pest_diseases, v.companion_plants,
+              v.fun_fact, v.growing_story, v.simple_recipe, v.nutrition
        FROM crops c
        JOIN vegetables v ON c.vegetable_id = v.id
        WHERE c.id = $1`,
@@ -122,6 +123,98 @@ router.put('/:cropId', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update crop' });
+  }
+});
+
+// ─── Crop Diary ──────────────────────────────────────────────────────────────
+
+// List diary entries for a crop (oldest → newest, planting → harvest)
+router.get('/:cropId/diary', async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT d.id, d.crop_id, d.user_id, d.entry_date, d.growth_stage,
+              d.note, d.photo_url, d.height_cm, d.created_at,
+              u.first_name, u.last_name
+       FROM crop_diary_entries d
+       LEFT JOIN users u ON d.user_id = u.id
+       WHERE d.crop_id = $1
+       ORDER BY d.entry_date ASC, d.created_at ASC`,
+      [req.params.cropId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch diary' });
+  }
+});
+
+// Add a diary entry (photo + note + growth stage)
+router.post('/:cropId/diary', authenticateToken, async (req, res) => {
+  try {
+    const { entryDate, growthStage, note, photoUrl, heightCm } = req.body;
+
+    const cropData = await query('SELECT farm_id FROM crops WHERE id = $1', [req.params.cropId]);
+    if (cropData.rows.length === 0) {
+      return res.status(404).json({ error: 'Crop not found' });
+    }
+
+    const farmId = cropData.rows[0].farm_id;
+    const farmAccess = await query(
+      `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+      [farmId, req.user.userId]
+    );
+    if (farmAccess.rows.length === 0) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const result = await query(
+      `INSERT INTO crop_diary_entries
+         (crop_id, user_id, entry_date, growth_stage, note, photo_url, height_cm)
+       VALUES ($1, $2, COALESCE($3::date, CURRENT_DATE), $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        req.params.cropId,
+        req.user.userId,
+        entryDate || null,
+        growthStage || null,
+        note || null,
+        photoUrl || null,
+        heightCm ?? null,
+      ]
+    );
+
+    if (growthStage && ['growing', 'flowering', 'fruiting', 'harvested'].includes(growthStage)) {
+      await query(
+        `UPDATE crops SET status = $1 WHERE id = $2 AND status NOT IN ('harvested','failed')`,
+        [growthStage === 'harvested' ? 'harvested' : 'growing', req.params.cropId]
+      );
+    }
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to add diary entry' });
+  }
+});
+
+// Delete a diary entry (author only)
+router.delete('/:cropId/diary/:entryId', authenticateToken, async (req, res) => {
+  try {
+    const entry = await query(
+      `SELECT user_id FROM crop_diary_entries WHERE id = $1 AND crop_id = $2`,
+      [req.params.entryId, req.params.cropId]
+    );
+    if (entry.rows.length === 0) {
+      return res.status(404).json({ error: 'Entry not found' });
+    }
+    if (entry.rows[0].user_id !== req.user.userId) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    await query(`DELETE FROM crop_diary_entries WHERE id = $1`, [req.params.entryId]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete entry' });
   }
 });
 

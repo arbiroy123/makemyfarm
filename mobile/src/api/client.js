@@ -91,7 +91,17 @@ export const cropAPI = {
     client.get(`/crops/${cropId}`),
 
   updateCrop: (cropId, updates) =>
-    client.put(`/crops/${cropId}`, updates)
+    client.put(`/crops/${cropId}`, updates),
+
+  // Diary
+  getDiary: (cropId) =>
+    client.get(`/crops/${cropId}/diary`),
+
+  addDiaryEntry: (cropId, entry) =>
+    client.post(`/crops/${cropId}/diary`, entry),
+
+  deleteDiaryEntry: (cropId, entryId) =>
+    client.delete(`/crops/${cropId}/diary/${entryId}`)
 };
 
 // Recommendations API

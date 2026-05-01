@@ -8,11 +8,42 @@ import { recommendationAPI, cropAPI } from '../../api/client';
 
 const EMOJI_MAP = {
   'Tomato': '🍅', 'Lettuce': '🥬', 'Carrot': '🥕', 'Bell Pepper': '🫑',
-  'Cucumber': '🥒', 'Zucchini': '🥒', 'Green Beans': '🫘', 'Spinach': '🥬',
-  'Bitter Gourd': '🌿', 'Okra': '🌱', 'Eggplant': '🍆', 'Fenugreek': '🌿',
-  'Bok Choy': '🥬', 'Daikon Radish': '🌿', 'Snow Peas': '🫛',
-  'Chinese Long Beans': '🫘', 'Artichoke': '🌿', 'Fennel': '🌿',
-  'Padron Pepper': '🌶️', 'Romanesco Broccoli': '🥦',
+  'Cucumber': '🥒', 'Zucchini': '🥒', 'Green Beans': '🫛', 'Spinach': '🥬',
+  'Bitter Gourd': '🫛', 'Okra': '🌿', 'Eggplant': '🍆', 'Fenugreek': '🍀',
+  'Bok Choy': '🥬', 'Daikon Radish': '🥛', 'Snow Peas': '🫛',
+  'Chinese Long Beans': '🫘', 'Artichoke': '🌸', 'Fennel': '🌾',
+  'Padron Pepper': '🌶️', 'Romanesco Broccoli': '🥦', 'Tomatillo': '🫒',
+  'Jalapeño Pepper': '🌶️', 'Poblano Pepper': '🫑', 'Chayote': '🍈',
+  'Cilantro': '🌿', 'Collard Greens': '🥬', 'Sweet Potato': '🍠',
+  'Black-eyed Peas': '🫘', 'Mustard Greens': '🥬', 'Callaloo (Amaranth)': '🌺',
+  'Bottle Gourd': '🥥', 'Ridge Gourd': '🥒', 'Moringa': '🌳',
+  'Cluster Beans (Guar)': '🫘', 'Napa Cabbage': '🥬', 'Lemongrass': '🎋',
+  'Thai Basil': '🌿', 'Garlic Chives': '🌿', 'Sweet Basil': '🌿',
+  'Radicchio': '🫐', 'Broccoli Rabe (Cime di Rapa)': '🥦', 'Italian Parsley': '🌿',
+  'Mint': '🍃', 'Garlic': '🧄', 'Onion': '🧅', 'Potato': '🥔',
+  'Sweet Corn': '🌽', 'Pumpkin': '🎃', 'Beetroot': '🫐', 'Malabar Spinach': '🌿',
+};
+
+const THUMB_COLOR = {
+  'Tomato': '#ffcdd2', 'Lettuce': '#c8e6c9', 'Carrot': '#ffe0b2',
+  'Bell Pepper': '#ffccbc', 'Cucumber': '#dcedc8', 'Zucchini': '#f0f4c3',
+  'Green Beans': '#c8e6c9', 'Spinach': '#a5d6a7', 'Bitter Gourd': '#b2dfdb',
+  'Okra': '#c8e6c9', 'Eggplant': '#e1bee7', 'Fenugreek': '#dcedc8',
+  'Bok Choy': '#b2dfdb', 'Daikon Radish': '#f8bbd0', 'Snow Peas': '#dcedc8',
+  'Chinese Long Beans': '#c5e1a5', 'Artichoke': '#a5d6a7', 'Fennel': '#dcedc8',
+  'Padron Pepper': '#c8e6c9', 'Romanesco Broccoli': '#ccff90',
+  'Tomatillo': '#c8e6c9', 'Jalapeño Pepper': '#80cbc4', 'Poblano Pepper': '#a5d6a7',
+  'Chayote': '#b2dfdb', 'Cilantro': '#c8e6c9', 'Collard Greens': '#81c784',
+  'Sweet Potato': '#ffcc80', 'Black-eyed Peas': '#fff9c4',
+  'Mustard Greens': '#e6ee9c', 'Callaloo (Amaranth)': '#ef9a9a',
+  'Bottle Gourd': '#b2dfdb', 'Ridge Gourd': '#c5e1a5', 'Moringa': '#a5d6a7',
+  'Cluster Beans (Guar)': '#c8e6c9', 'Napa Cabbage': '#dcedc8',
+  'Lemongrass': '#fff9c4', 'Thai Basil': '#c8e6c9', 'Garlic Chives': '#c5e1a5',
+  'Sweet Basil': '#a5d6a7', 'Radicchio': '#e1bee7',
+  'Broccoli Rabe (Cime di Rapa)': '#c8e6c9', 'Italian Parsley': '#c8e6c9',
+  'Mint': '#b2dfdb', 'Garlic': '#fff9c4', 'Onion': '#ffccbc',
+  'Potato': '#ffe0b2', 'Sweet Corn': '#fff9c4', 'Pumpkin': '#ffcc80',
+  'Beetroot': '#f48fb1', 'Malabar Spinach': '#80cbc4',
 };
 
 const DIFFICULTY_COLOR = { novice: '#4CAF50', intermediate: '#FF9800', expert: '#f44336' };
@@ -81,35 +112,40 @@ export default function PlantCropScreen({ route, navigation }) {
   const renderVeg = ({ item }) => {
     const isSelected = selected?.id === item.id;
     return (
-      <TouchableOpacity
-        style={[styles.card, isSelected && styles.cardSelected]}
-        onPress={() => setSelected(isSelected ? null : item)}
-        activeOpacity={0.75}
-      >
-        <View style={styles.cardTop}>
-          <Text style={styles.cardEmoji}>{EMOJI_MAP[item.name] || '🌱'}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.cardName}>{item.name}</Text>
-            {item.scientific_name ? (
-              <Text style={styles.cardScientific}>{item.scientific_name}</Text>
-            ) : null}
+      <View style={[styles.card, isSelected && styles.cardSelected]}>
+        {/* Tappable header — only this toggles selection */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={() => setSelected(isSelected ? null : item)}
+        >
+          <View style={styles.cardTop}>
+            <View style={[styles.emojiCircle, { backgroundColor: THUMB_COLOR[item.name] || '#e8f5e9' }]}>
+              <Text style={styles.cardEmoji}>{EMOJI_MAP[item.name] || '🌱'}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardName}>{item.name}</Text>
+              {item.scientific_name ? (
+                <Text style={styles.cardScientific}>{item.scientific_name}</Text>
+              ) : null}
+            </View>
+            <View style={[styles.diffBadge, { backgroundColor: DIFFICULTY_COLOR[item.difficulty_level] }]}>
+              <Text style={styles.diffText}>{DIFFICULTY_LABEL[item.difficulty_level] || item.difficulty_level}</Text>
+            </View>
           </View>
-          <View style={[styles.diffBadge, { backgroundColor: DIFFICULTY_COLOR[item.difficulty_level] }]}>
-            <Text style={styles.diffText}>{DIFFICULTY_LABEL[item.difficulty_level] || item.difficulty_level}</Text>
-          </View>
-        </View>
 
-        <View style={styles.cardMeta}>
-          <View style={styles.metaChip}>
-            <Ionicons name="time-outline" size={12} color="#666" />
-            <Text style={styles.metaText}>{item.days_to_harvest}d to harvest</Text>
+          <View style={styles.cardMeta}>
+            <View style={styles.metaChip}>
+              <Ionicons name="time-outline" size={12} color="#666" />
+              <Text style={styles.metaText}>{item.days_to_harvest}d to harvest</Text>
+            </View>
+            <View style={styles.metaChip}>
+              <Ionicons name="calendar-outline" size={12} color="#666" />
+              <Text style={styles.metaText}>{item.season}</Text>
+            </View>
           </View>
-          <View style={styles.metaChip}>
-            <Ionicons name="calendar-outline" size={12} color="#666" />
-            <Text style={styles.metaText}>{item.season}</Text>
-          </View>
-        </View>
+        </TouchableOpacity>
 
+        {/* Form lives outside the TouchableOpacity — taps on inputs no longer collapse the card */}
         {isSelected && (
           <View style={styles.plantForm}>
             <View style={styles.formDivider} />
@@ -168,7 +204,7 @@ export default function PlantCropScreen({ route, navigation }) {
             </TouchableOpacity>
           </View>
         )}
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -204,6 +240,8 @@ export default function PlantCropScreen({ route, navigation }) {
         keyExtractor={item => item.id}
         renderItem={renderVeg}
         contentContainerStyle={styles.list}
+        keyboardShouldPersistTaps="handled"
+        removeClippedSubviews={false}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No vegetables found</Text>
         }
@@ -234,7 +272,11 @@ const styles = StyleSheet.create({
   },
   cardSelected: { borderColor: '#4CAF50', backgroundColor: '#f9fff9' },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  cardEmoji: { fontSize: 28, marginRight: 12 },
+  emojiCircle: {
+    width: 52, height: 52, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center', marginRight: 12,
+  },
+  cardEmoji: { fontSize: 26 },
   cardName: { fontSize: 16, fontWeight: '700', color: '#222' },
   cardScientific: { fontSize: 11, color: '#888', fontStyle: 'italic', marginTop: 1 },
   diffBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },

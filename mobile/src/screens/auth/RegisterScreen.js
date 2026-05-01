@@ -1,52 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { authAPI } from '../../api/client';
+import LanguagePicker from '../../components/LanguagePicker';
 
-const EXPERIENCE_LEVELS = [
-  {
-    value: 'novice',
-    label: 'Novice',
-    icon: 'seedling',
-    hint: 'Just getting started — never grown before or tried a few times',
-  },
-  {
-    value: 'beginner',
-    label: 'Beginner',
-    icon: 'leaf-outline',
-    hint: 'Grown a few things, still learning the basics',
-  },
-  {
-    value: 'intermediate',
-    label: 'Intermediate',
-    icon: 'leaf',
-    hint: 'Comfortable with most vegetables, managed a garden for 2+ seasons',
-  },
-  {
-    value: 'advanced',
-    label: 'Advanced',
-    icon: 'earth',
-    hint: 'Grow year-round, comfortable with pest management & soil science',
-  },
-  {
-    value: 'expert',
-    label: 'Expert',
-    icon: 'ribbon',
-    hint: 'Professional grower or decades of experience',
-  },
-];
-
-const LEVEL_ICONS = {
-  novice:       'cellular-outline',
-  beginner:     'cellular-outline',
-  intermediate: 'cellular',
-  advanced:     'cellular',
-  expert:       'cellular',
-};
-
-function ExperienceDropdown({ value, onChange, disabled }) {
+function ExperienceDropdown({ value, onChange, disabled, levels, modalTitle, placeholder }) {
   const [open, setOpen] = useState(false);
-  const selected = EXPERIENCE_LEVELS.find(l => l.value === value);
+  const selected = levels.find(l => l.value === value);
 
   return (
     <View style={{ marginBottom: 15 }}>
@@ -56,7 +17,7 @@ function ExperienceDropdown({ value, onChange, disabled }) {
         disabled={disabled}
       >
         <View style={{ flex: 1 }}>
-          <Text style={styles.dropdownValue}>{selected?.label ?? 'Select level'}</Text>
+          <Text style={styles.dropdownValue}>{selected?.label ?? placeholder}</Text>
           <Text style={styles.dropdownHint}>{selected?.hint}</Text>
         </View>
         <Ionicons name="chevron-down" size={18} color="#999" />
@@ -65,9 +26,9 @@ function ExperienceDropdown({ value, onChange, disabled }) {
       <Modal transparent animationType="fade" visible={open} onRequestClose={() => setOpen(false)}>
         <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={() => setOpen(false)}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Farming Experience</Text>
+            <Text style={styles.modalTitle}>{modalTitle}</Text>
             <FlatList
-              data={EXPERIENCE_LEVELS}
+              data={levels}
               keyExtractor={i => i.value}
               renderItem={({ item }) => {
                 const active = item.value === value;
@@ -99,13 +60,7 @@ function ExperienceDropdown({ value, onChange, disabled }) {
   );
 }
 
-function PasswordRules({ password }) {
-  const rules = [
-    { label: 'At least 8 characters', pass: password.length >= 8 },
-    { label: 'One uppercase letter (A–Z)', pass: /[A-Z]/.test(password) },
-    { label: 'One lowercase letter (a–z)', pass: /[a-z]/.test(password) },
-    { label: 'One number (0–9)',           pass: /[0-9]/.test(password) },
-  ];
+function PasswordRules({ password, rules }) {
   if (!password) return null;
   return (
     <View style={styles.rulesBox}>
@@ -124,6 +79,8 @@ function PasswordRules({ password }) {
 }
 
 export default function RegisterScreen({ navigation }) {
+  const { t } = useTranslation();
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -133,20 +90,39 @@ export default function RegisterScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const passwordValid = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password);
+  const passwordValid =
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password);
+
+  const experienceLevels = [
+    { value: 'novice',       label: t('novice'),       hint: t('noviceHint') },
+    { value: 'beginner',     label: t('beginner'),     hint: t('beginnerHint') },
+    { value: 'intermediate', label: t('intermediate'), hint: t('intermediateHint') },
+    { value: 'advanced',     label: t('advanced'),     hint: t('advancedHint') },
+    { value: 'expert',       label: t('expert'),       hint: t('expertHint') },
+  ];
+
+  const passwordRules = [
+    { label: t('pwdLength'), pass: password.length >= 8 },
+    { label: t('pwdUpper'),  pass: /[A-Z]/.test(password) },
+    { label: t('pwdLower'),  pass: /[a-z]/.test(password) },
+    { label: t('pwdNumber'), pass: /[0-9]/.test(password) },
+  ];
 
   const handleRegister = async () => {
     setError('');
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError(t('fillAllFields'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('passwordMismatch'));
       return;
     }
     if (!passwordValid) {
-      setError('Password does not meet the requirements below');
+      setError(t('passwordRequirements'));
       return;
     }
     setLoading(true);
@@ -154,7 +130,7 @@ export default function RegisterScreen({ navigation }) {
       await authAPI.register(email, password, firstName, lastName, experienceLevel);
       navigation.navigate('Login');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
+      setError(err.response?.data?.error || t('registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -163,7 +139,9 @@ export default function RegisterScreen({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Create Account</Text>
+        <LanguagePicker />
+
+        <Text style={styles.title}>{t('register')}</Text>
 
         {error ? (
           <View style={styles.errorBox}>
@@ -173,7 +151,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="First Name"
+          placeholder={t('firstName')}
           value={firstName}
           onChangeText={setFirstName}
           editable={!loading}
@@ -181,7 +159,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="Last Name"
+          placeholder={t('lastName')}
           value={lastName}
           onChangeText={setLastName}
           editable={!loading}
@@ -189,37 +167,41 @@ export default function RegisterScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('email')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
           editable={!loading}
         />
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t('password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
           editable={!loading}
         />
-        <PasswordRules password={password} />
+        <PasswordRules password={password} rules={passwordRules} />
 
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
+          placeholder={t('confirmPassword')}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
           editable={!loading}
         />
 
-        <Text style={styles.label}>Farming Experience Level</Text>
+        <Text style={styles.label}>{t('farmingExperienceLabel')}</Text>
         <ExperienceDropdown
           value={experienceLevel}
           onChange={setExperienceLevel}
           disabled={loading}
+          levels={experienceLevels}
+          modalTitle={t('farmingExperienceModal')}
+          placeholder={t('selectLevel')}
         />
 
         <TouchableOpacity
@@ -230,12 +212,12 @@ export default function RegisterScreen({ navigation }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Register</Text>
+            <Text style={styles.buttonText}>{t('register')}</Text>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.link}>Already have an account? Login</Text>
+          <Text style={styles.link}>{t('hasAccount')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -245,16 +227,17 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5'
+    backgroundColor: '#f5f5f5',
   },
   content: {
-    padding: 20
+    padding: 20,
+    paddingTop: 60,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333'
+    color: '#333',
   },
   input: {
     backgroundColor: '#fff',
@@ -262,13 +245,13 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 15,
     borderColor: '#ddd',
-    borderWidth: 1
+    borderWidth: 1,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#333'
+    color: '#333',
   },
   rulesBox: { marginTop: -8, marginBottom: 12, paddingHorizontal: 4 },
   ruleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 6 },
@@ -310,21 +293,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 15,
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   buttonDisabled: {
-    opacity: 0.6
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   link: {
     textAlign: 'center',
     color: '#4CAF50',
     marginTop: 20,
-    fontSize: 14
+    fontSize: 14,
   },
   errorBox: {
     backgroundColor: '#ffebee',
@@ -332,10 +315,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15
+    marginBottom: 15,
   },
   errorText: {
     color: '#c62828',
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });

@@ -4,6 +4,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadSavedLanguage } from './src/i18n';
 import { StoreProvider, useAuthStore } from './src/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -22,6 +23,7 @@ import CreateFarmScreen from './src/screens/farms/CreateFarmScreen';
 import CommunityScreen from './src/screens/community/CommunityScreen';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
 import CropDetailScreen from './src/screens/crops/CropDetailScreen';
+import CropDiaryScreen from './src/screens/crops/CropDiaryScreen';
 import RecommendationsScreen from './src/screens/recommendations/RecommendationsScreen';
 
 function MapScreen() {
@@ -91,6 +93,7 @@ function RootStack({ isLoggedIn }) {
           <Stack.Screen name="FarmDetail" component={FarmDetailScreen} />
           <Stack.Screen name="PlantCrop" component={PlantCropScreen} options={{ title: 'Plant a Crop', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
           <Stack.Screen name="CropDetail" component={CropDetailScreen} options={{ title: 'Crop Detail', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
+          <Stack.Screen name="CropDiary" component={CropDiaryScreen} options={{ title: 'Crop Diary', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />
@@ -114,6 +117,7 @@ function AppNavigator() {
           AsyncStorage.getItem('authToken'),
           AsyncStorage.getItem('user'),
           AsyncStorage.getItem(TERMS_ACCEPTED_KEY),
+          loadSavedLanguage(),
         ]);
         if (accepted === 'true') setTermsAccepted(true);
         if (token && userJson) {

@@ -40,10 +40,11 @@ router.get('/vegetable/:vegetableId', async (req, res) => {
   try {
     const result = await query(
       `SELECT id, name, scientific_name, difficulty_level, days_to_harvest, spacing_cm,
-              min_temp_celsius, optimal_temp_celsius, max_temp_celsius, 
+              min_temp_celsius, optimal_temp_celsius, max_temp_celsius,
               water_frequency_days, sunlight_hours, soil_type, ph_min, ph_max,
               season, climate_zones, can_greenhouse, yields_per_plant,
-              planting_tips, care_tips, pest_diseases, companion_plants
+              planting_tips, care_tips, pest_diseases, companion_plants,
+              fun_fact, growing_story, simple_recipe, nutrition
        FROM vegetables WHERE id = $1`,
       [req.params.vegetableId]
     );

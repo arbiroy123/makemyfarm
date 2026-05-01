@@ -3,6 +3,46 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, Touch
 import { recommendationAPI } from '../../api/client';
 import { Ionicons } from '@expo/vector-icons';
 
+const EMOJI_MAP = {
+  'Tomato': '🍅', 'Lettuce': '🥬', 'Carrot': '🥕', 'Bell Pepper': '🫑',
+  'Cucumber': '🥒', 'Zucchini': '🥒', 'Green Beans': '🫛', 'Spinach': '🥬',
+  'Bitter Gourd': '🫛', 'Okra': '🌿', 'Eggplant': '🍆', 'Fenugreek': '🍀',
+  'Bok Choy': '🥬', 'Daikon Radish': '🥛', 'Snow Peas': '🫛',
+  'Chinese Long Beans': '🫘', 'Artichoke': '🌸', 'Fennel': '🌾',
+  'Padron Pepper': '🌶️', 'Romanesco Broccoli': '🥦', 'Tomatillo': '🫒',
+  'Jalapeño Pepper': '🌶️', 'Poblano Pepper': '🫑', 'Chayote': '🍈',
+  'Cilantro': '🌿', 'Collard Greens': '🥬', 'Sweet Potato': '🍠',
+  'Black-eyed Peas': '🫘', 'Mustard Greens': '🥬', 'Callaloo (Amaranth)': '🌺',
+  'Bottle Gourd': '🥥', 'Ridge Gourd': '🥒', 'Moringa': '🌳',
+  'Cluster Beans (Guar)': '🫘', 'Napa Cabbage': '🥬', 'Lemongrass': '🎋',
+  'Thai Basil': '🌿', 'Garlic Chives': '🌿', 'Sweet Basil': '🌿',
+  'Radicchio': '🫐', 'Broccoli Rabe (Cime di Rapa)': '🥦', 'Italian Parsley': '🌿',
+  'Mint': '🍃', 'Garlic': '🧄', 'Onion': '🧅', 'Potato': '🥔',
+  'Sweet Corn': '🌽', 'Pumpkin': '🎃', 'Beetroot': '🫐', 'Malabar Spinach': '🌿',
+};
+
+const THUMB_COLOR = {
+  'Tomato': '#ffcdd2', 'Lettuce': '#c8e6c9', 'Carrot': '#ffe0b2',
+  'Bell Pepper': '#ffccbc', 'Cucumber': '#dcedc8', 'Zucchini': '#f0f4c3',
+  'Green Beans': '#c8e6c9', 'Spinach': '#a5d6a7', 'Bitter Gourd': '#b2dfdb',
+  'Okra': '#c8e6c9', 'Eggplant': '#e1bee7', 'Fenugreek': '#dcedc8',
+  'Bok Choy': '#b2dfdb', 'Daikon Radish': '#f8bbd0', 'Snow Peas': '#dcedc8',
+  'Chinese Long Beans': '#c5e1a5', 'Artichoke': '#a5d6a7', 'Fennel': '#dcedc8',
+  'Padron Pepper': '#c8e6c9', 'Romanesco Broccoli': '#ccff90',
+  'Tomatillo': '#c8e6c9', 'Jalapeño Pepper': '#80cbc4', 'Poblano Pepper': '#a5d6a7',
+  'Chayote': '#b2dfdb', 'Cilantro': '#c8e6c9', 'Collard Greens': '#81c784',
+  'Sweet Potato': '#ffcc80', 'Black-eyed Peas': '#fff9c4',
+  'Mustard Greens': '#e6ee9c', 'Callaloo (Amaranth)': '#ef9a9a',
+  'Bottle Gourd': '#b2dfdb', 'Ridge Gourd': '#c5e1a5', 'Moringa': '#a5d6a7',
+  'Cluster Beans (Guar)': '#c8e6c9', 'Napa Cabbage': '#dcedc8',
+  'Lemongrass': '#fff9c4', 'Thai Basil': '#c8e6c9', 'Garlic Chives': '#c5e1a5',
+  'Sweet Basil': '#a5d6a7', 'Radicchio': '#e1bee7',
+  'Broccoli Rabe (Cime di Rapa)': '#c8e6c9', 'Italian Parsley': '#c8e6c9',
+  'Mint': '#b2dfdb', 'Garlic': '#fff9c4', 'Onion': '#ffccbc',
+  'Potato': '#ffe0b2', 'Sweet Corn': '#fff9c4', 'Pumpkin': '#ffcc80',
+  'Beetroot': '#f48fb1', 'Malabar Spinach': '#80cbc4',
+};
+
 export default function RecommendationsScreen() {
   const [recommendations, setRecommendations] = useState([]);
   const [filteredRecs, setFilteredRecs] = useState([]);
@@ -40,6 +80,9 @@ export default function RecommendationsScreen() {
   const renderVegetableCard = ({ item }) => (
     <View style={styles.vegCard}>
       <View style={styles.vegHeader}>
+        <View style={[styles.emojiCircle, { backgroundColor: THUMB_COLOR[item.name] || '#e8f5e9' }]}>
+          <Text style={styles.emojiText}>{EMOJI_MAP[item.name] || '🌱'}</Text>
+        </View>
         <Text style={styles.vegName}>{item.name}</Text>
         <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(item.difficulty_level) }]}>
           <Text style={styles.difficultyText}>{item.difficulty_level}</Text>
@@ -172,8 +215,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+    gap: 10,
   },
+  emojiCircle: {
+    width: 44, height: 44, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  emojiText: { fontSize: 22 },
   vegName: {
     fontSize: 16,
     fontWeight: 'bold',

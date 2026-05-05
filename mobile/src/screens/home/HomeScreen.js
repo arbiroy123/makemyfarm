@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { farmAPI } from '../../api/client';
 import { useFarmStore } from '../../store';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }) {
+  const { t } = useTranslation();
   const { farms, setFarms } = useFarmStore();
   const [loading, setLoading] = useState(true);
 
@@ -41,10 +43,10 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.farmType}>{item.farm_type}</Text>
       </View>
       <Text style={styles.farmDescription} numberOfLines={2}>
-        {item.description || 'No description'}
+        {item.description || t('noDescription')}
       </Text>
       <View style={styles.cardFooter}>
-        <Text style={styles.farmSize}>{item.size_sqft} sq ft</Text>
+        <Text style={styles.farmSize}>{t('sqFt', { value: item.size_sqft })}</Text>
         <Ionicons name="chevron-forward" size={20} color="#4CAF50" />
       </View>
     </TouchableOpacity>
@@ -61,7 +63,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Farms</Text>
+        <Text style={styles.title}>{t('yourFarms')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={handleCreateFarm}
@@ -72,12 +74,12 @@ export default function HomeScreen({ navigation }) {
 
       {farms.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No farms yet</Text>
+          <Text style={styles.emptyText}>{t('noFarmsYet')}</Text>
           <TouchableOpacity
             style={styles.createButton}
             onPress={handleCreateFarm}
           >
-            <Text style={styles.createButtonText}>Create Your First Farm</Text>
+            <Text style={styles.createButtonText}>{t('createFirstFarm')}</Text>
           </TouchableOpacity>
         </View>
       ) : (

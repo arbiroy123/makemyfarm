@@ -197,6 +197,7 @@
   "requestVegetableError": "Failed to submit your request. Please try again.",
   "requestVegetableMyRequests": "Your Requests",
   "requestVegetableBannerText": "Don't see your vegetable? Request it",
+  "requestVegetableBannerSearchText": "Request \"{{name}}\" be added",
   "statusPending": "Pending",
   "statusApproved": "Approved",
   "statusRejected": "Rejected",

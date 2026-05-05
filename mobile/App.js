@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 // Screens
 import SplashScreen from './src/screens/SplashScreen';
@@ -50,6 +51,7 @@ function AuthStack() {
 }
 
 function MainTabs() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -77,11 +79,11 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'My Farms' }} />
-      <Tab.Screen name="Map" component={MapScreen} options={{ title: 'Community Map' }} />
-      <Tab.Screen name="Community" component={CommunityScreen} options={{ title: 'Community' }} />
-      <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: 'Learn' }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: t('tabHome') }} />
+      <Tab.Screen name="Map" component={MapScreen} options={{ title: t('tabMap') }} />
+      <Tab.Screen name="Community" component={CommunityScreen} options={{ title: t('tabCommunity') }} />
+      <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: t('tabLearn') }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('tabProfile') }} />
     </Tab.Navigator>
   );
 }

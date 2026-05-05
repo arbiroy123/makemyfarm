@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { recommendationAPI } from '../../api/client';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -46,6 +47,7 @@ const THUMB_COLOR = {
 
 export default function RecommendationsScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [recommendations, setRecommendations] = useState([]);
   const [filteredRecs, setFilteredRecs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +95,7 @@ export default function RecommendationsScreen() {
       <View style={styles.vegDetails}>
         <View style={styles.detailItem}>
           <Ionicons name="calendar" size={14} color="#666" />
-          <Text style={styles.detailText}>{item.days_to_harvest} days</Text>
+          <Text style={styles.detailText}>{t('daysLabel', { count: item.days_to_harvest })}</Text>
         </View>
         <View style={styles.detailItem}>
           <Ionicons name="thermometer" size={14} color="#666" />
@@ -101,7 +103,7 @@ export default function RecommendationsScreen() {
         </View>
         <View style={styles.detailItem}>
           <Ionicons name="sunny" size={14} color="#666" />
-          <Text style={styles.detailText}>{item.sunlight_hours}h sun</Text>
+          <Text style={styles.detailText}>{t('sunHours', { hours: item.sunlight_hours })}</Text>
         </View>
       </View>
     </View>
@@ -127,15 +129,15 @@ export default function RecommendationsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>What to Grow</Text>
-        <Text style={styles.subtitle}>Seasonal recommendations for your climate</Text>
+        <Text style={styles.title}>{t('whatToGrow')}</Text>
+        <Text style={styles.subtitle}>{t('seasonalRecommendations')}</Text>
       </View>
 
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={18} color="#999" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search vegetables..."
+          placeholder={t('searchVegetables')}
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholderTextColor="#999"
@@ -162,8 +164,8 @@ export default function RecommendationsScreen() {
         <Ionicons name="add-circle-outline" size={20} color="#4CAF50" />
         <Text style={styles.requestBannerText}>
           {filteredRecs.length === 0 && searchQuery
-            ? `Request "${searchQuery}" be added`
-            : "Don't see your vegetable? Request it"}
+            ? t('requestVegetableBannerSearchText', { name: searchQuery })
+            : t('requestVegetableBannerText')}
         </Text>
         <Ionicons name="chevron-forward" size={16} color="#4CAF50" />
       </TouchableOpacity>

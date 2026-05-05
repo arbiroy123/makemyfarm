@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { farmAPI, cropAPI } from '../../api/client';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function FarmDetailScreen({ route, navigation }) {
+  const { t } = useTranslation();
   const { farmId } = route.params;
   const [farm, setFarm] = useState(null);
   const [crops, setCrops] = useState([]);
@@ -43,8 +45,8 @@ export default function FarmDetailScreen({ route, navigation }) {
           <Text style={styles.statusText}>{item.status}</Text>
         </View>
       </View>
-      <Text style={styles.cropDetail}>🌱 Planted: {formatDate(item.planting_date)}</Text>
-      <Text style={styles.cropDetail}>🌾 Harvest by: {formatDate(item.expected_harvest_date)}</Text>
+      <Text style={styles.cropDetail}>🌱 {t('planted')}: {formatDate(item.planting_date)}</Text>
+      <Text style={styles.cropDetail}>🌾 {t('expectedHarvest')}: {formatDate(item.expected_harvest_date)}</Text>
     </TouchableOpacity>
   );
 
@@ -68,7 +70,7 @@ export default function FarmDetailScreen({ route, navigation }) {
   if (!farm) {
     return (
       <View style={styles.centerContainer}>
-        <Text>Farm not found</Text>
+        <Text>{t('farmNotFound')}</Text>
       </View>
     );
   }
@@ -91,13 +93,13 @@ export default function FarmDetailScreen({ route, navigation }) {
         </View>
         <View style={styles.infoRow}>
           <Ionicons name="cloud" size={20} color="#4CAF50" />
-          <Text style={styles.infoText}>Zone {farm.climate_zone}</Text>
+          <Text style={styles.infoText}>{t('zoneLabel', { zone: farm.climate_zone })}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Crops ({crops.length})</Text>
+          <Text style={styles.sectionTitle}>{t('cropsCount', { count: crops.length })}</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('PlantCrop', { farmId })}
           >
@@ -106,7 +108,7 @@ export default function FarmDetailScreen({ route, navigation }) {
         </View>
 
         {crops.length === 0 ? (
-          <Text style={styles.emptyText}>No crops planted yet</Text>
+          <Text style={styles.emptyText}>{t('noCropsYet')}</Text>
         ) : (
           <FlatList
             data={crops}
@@ -118,9 +120,9 @@ export default function FarmDetailScreen({ route, navigation }) {
       </View>
 
       <View style={styles.collaboratorsSection}>
-        <Text style={styles.sectionTitle}>Collaborators</Text>
+        <Text style={styles.sectionTitle}>{t('collaborators')}</Text>
         <Text style={styles.collaboratorText}>
-          {farm.collaborators?.length || 1} person managing this farm
+          {t('managingFarm', { count: farm.collaborators?.length || 1 })}
         </Text>
       </View>
     </ScrollView>

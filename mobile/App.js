@@ -27,16 +27,9 @@ import CropDetailScreen from './src/screens/crops/CropDetailScreen';
 import CropDiaryScreen from './src/screens/crops/CropDiaryScreen';
 import RecommendationsScreen from './src/screens/recommendations/RecommendationsScreen';
 import RequestVegetableScreen from './src/screens/recommendations/RequestVegetableScreen';
+import MapScreen from './src/screens/map/MapScreen';
 import LanguagePicker from './src/components/LanguagePicker';
 
-function MapScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }}>
-      <Text style={{ fontSize: 18, color: '#333' }}>Community Map</Text>
-      <Text style={{ fontSize: 14, color: '#666', marginTop: 10 }}>Map view coming soon for web</Text>
-    </View>
-  );
-}
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

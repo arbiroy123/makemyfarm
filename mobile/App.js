@@ -79,11 +79,11 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: t('tabHome') }} />
-      <Tab.Screen name="Map" component={MapScreen} options={{ title: t('tabMap') }} />
-      <Tab.Screen name="Community" component={CommunityScreen} options={{ title: t('tabCommunity') }} />
-      <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: t('tabLearn') }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('tabProfile') }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: t('tabHome'), tabBarLabel: t('tabHome') }} />
+      <Tab.Screen name="Map" component={MapScreen} options={{ title: t('tabMap'), tabBarLabel: t('tabMapShort') }} />
+      <Tab.Screen name="Community" component={CommunityScreen} options={{ title: t('tabCommunity'), tabBarLabel: t('tabCommunity') }} />
+      <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: t('tabLearn'), tabBarLabel: t('tabLearn') }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('tabProfile'), tabBarLabel: t('tabProfile') }} />
     </Tab.Navigator>
   );
 }

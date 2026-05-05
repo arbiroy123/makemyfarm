@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { recommendationAPI } from '../../api/client';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -44,6 +45,7 @@ const THUMB_COLOR = {
 };
 
 export default function RecommendationsScreen() {
+  const navigation = useNavigation();
   const [recommendations, setRecommendations] = useState([]);
   const [filteredRecs, setFilteredRecs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -146,7 +148,25 @@ export default function RecommendationsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         scrollEnabled
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>No results for "{searchQuery}"</Text>
+            <Text style={styles.emptySubtitle}>Want it added to FarmSync?</Text>
+          </View>
+        }
       />
+      <TouchableOpacity
+        style={styles.requestBanner}
+        onPress={() => navigation.navigate('RequestVegetable', { prefill: searchQuery })}
+      >
+        <Ionicons name="add-circle-outline" size={20} color="#4CAF50" />
+        <Text style={styles.requestBannerText}>
+          {filteredRecs.length === 0 && searchQuery
+            ? `Request "${searchQuery}" be added`
+            : "Don't see your vegetable? Request it"}
+        </Text>
+        <Ionicons name="chevron-forward" size={16} color="#4CAF50" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -251,5 +271,37 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 12,
     color: '#666'
-  }
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 32,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#999',
+  },
+  requestBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 14,
+    marginTop: 4,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#c8e6c9',
+    gap: 10,
+  },
+  requestBannerText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#2e7d32',
+  },
 });

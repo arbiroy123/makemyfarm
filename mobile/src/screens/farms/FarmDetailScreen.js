@@ -28,6 +28,10 @@ export default function FarmDetailScreen({ route, navigation }) {
     }
   };
 
+  const formatDate = (d) => d
+    ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '—';
+
   const renderCropCard = ({ item }) => (
     <TouchableOpacity
       style={styles.cropCard}
@@ -39,8 +43,8 @@ export default function FarmDetailScreen({ route, navigation }) {
           <Text style={styles.statusText}>{item.status}</Text>
         </View>
       </View>
-      <Text style={styles.cropDetail}>Planted: {item.planting_date}</Text>
-      <Text style={styles.cropDetail}>Expected Harvest: {item.expected_harvest_date}</Text>
+      <Text style={styles.cropDetail}>🌱 Planted: {formatDate(item.planting_date)}</Text>
+      <Text style={styles.cropDetail}>🌾 Harvest by: {formatDate(item.expected_harvest_date)}</Text>
     </TouchableOpacity>
   );
 

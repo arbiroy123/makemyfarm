@@ -131,4 +131,45 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Submit a request to add a new vegetable
+router.post('/vegetable-requests', authenticateToken, async (req, res) => {
+  try {
+    const { vegetableName, description, reason } = req.body;
+
+    if (!vegetableName || !vegetableName.trim()) {
+      return res.status(400).json({ error: 'Vegetable name is required' });
+    }
+
+    const result = await query(
+      `INSERT INTO vegetable_requests (user_id, vegetable_name, description, reason)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, vegetable_name, description, reason, status, created_at`,
+      [req.user.userId, vegetableName.trim(), description?.trim() || null, reason?.trim() || null]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to submit vegetable request' });
+  }
+});
+
+// Get current user's vegetable requests
+router.get('/vegetable-requests', authenticateToken, async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT id, vegetable_name, description, reason, status, created_at
+       FROM vegetable_requests
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
+      [req.user.userId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch vegetable requests' });
+  }
+});
+
 export default router;

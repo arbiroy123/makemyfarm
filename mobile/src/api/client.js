@@ -110,12 +110,18 @@ export const recommendationAPI = {
     client.get('/recommendations/vegetables', {
       params: { climateZone, season, difficulty }
     }),
-  
+
   getVegetableGuide: (vegetableId) =>
     client.get(`/recommendations/vegetable/${vegetableId}`),
-  
+
   getSeasonalRecommendations: () =>
-    client.get('/recommendations/seasonal')
+    client.get('/recommendations/seasonal'),
+
+  requestVegetable: (vegetableName, description, reason) =>
+    client.post('/recommendations/vegetable-requests', { vegetableName, description, reason }),
+
+  getMyVegetableRequests: () =>
+    client.get('/recommendations/vegetable-requests')
 };
 
 // Map & Community API

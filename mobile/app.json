@@ -16,7 +16,12 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.farmsync.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +41,12 @@
           "cameraPermission": "Allow FarmSync to access your camera"
         }
       ]
-    ]
+    ],
+    "newArchEnabled": false,
+    "extra": {
+      "eas": {
+        "projectId": "83a19ea8-0cdf-42db-a857-9a947e60b71a"
+      }
+    }
   }
 }

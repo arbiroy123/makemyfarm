@@ -252,3 +252,21 @@ CREATE TRIGGER update_community_groups_updated_at BEFORE UPDATE ON community_gro
 -- Trigger for community_posts table
 CREATE TRIGGER update_community_posts_updated_at BEFORE UPDATE ON community_posts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Vegetable requests (users requesting new vegetables to be added)
+CREATE TABLE vegetable_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  vegetable_name VARCHAR(200) NOT NULL,
+  description TEXT,
+  reason TEXT,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_vegetable_requests_user_id ON vegetable_requests(user_id);
+CREATE INDEX idx_vegetable_requests_status ON vegetable_requests(status);
+
+CREATE TRIGGER update_vegetable_requests_updated_at BEFORE UPDATE ON vegetable_requests
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

@@ -8,7 +8,7 @@ const router = express.Router();
 // Plant a new crop
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { farmId, vegetableId, plantingDate, expectedHarvestDate, quantity, growingMethod, notes } = req.body;
+    const { farmId, vegetableId, plantingDate, quantity, growingMethod, notes } = req.body;
     const cropId = uuidv4();
 
     // Verify farm ownership/collaboration
@@ -23,9 +23,11 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const result = await query(
       `INSERT INTO crops (id, farm_id, vegetable_id, quantity_planted, planting_date, expected_harvest_date, status, growing_method, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, 'planted', $7, $8)
+       VALUES ($1, $2, $3, $4, $5,
+         (SELECT ($5::date + (days_to_harvest || ' days')::interval)::date FROM vegetables WHERE id = $2),
+         'planted', $6, $7)
        RETURNING *`,
-      [cropId, farmId, vegetableId, quantity, plantingDate, expectedHarvestDate, growingMethod || 'outdoor', notes]
+      [cropId, farmId, vegetableId, quantity, plantingDate, growingMethod || 'outdoor', notes]
     );
 
     // Log activity
@@ -74,7 +76,11 @@ router.get('/:cropId', async (req, res) => {
 router.get('/farm/:farmId', async (req, res) => {
   try {
     const result = await query(
-      `SELECT c.*, v.name as vegetable_name, v.difficulty_level, v.days_to_harvest
+      `SELECT c.*,
+              v.name as vegetable_name, v.difficulty_level, v.days_to_harvest,
+              COALESCE(c.expected_harvest_date,
+                c.planting_date + (v.days_to_harvest || ' days')::interval
+              )::date as expected_harvest_date
        FROM crops c
        JOIN vegetables v ON c.vegetable_id = v.id
        WHERE c.farm_id = $1

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n, { SUPPORTED_LANGUAGES, setLanguage } from '../i18n';
 
-export default function LanguagePicker() {
+export default function LanguagePicker({ trigger = 'pill' }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -17,11 +17,17 @@ export default function LanguagePicker() {
 
   return (
     <>
-      <TouchableOpacity style={styles.pill} onPress={() => setOpen(true)}>
-        <Ionicons name="globe-outline" size={15} color="#4CAF50" />
-        <Text style={styles.pillText}>{current.nativeName}</Text>
-        <Ionicons name="chevron-down" size={13} color="#888" />
-      </TouchableOpacity>
+      {trigger === 'icon' ? (
+        <TouchableOpacity style={styles.headerIcon} onPress={() => setOpen(true)}>
+          <Ionicons name="globe-outline" size={22} color="#fff" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.pill} onPress={() => setOpen(true)}>
+          <Ionicons name="globe-outline" size={15} color="#4CAF50" />
+          <Text style={styles.pillText}>{current.nativeName}</Text>
+          <Ionicons name="chevron-down" size={13} color="#888" />
+        </TouchableOpacity>
+      )}
 
       <Modal
         transparent
@@ -70,6 +76,10 @@ export default function LanguagePicker() {
 }
 
 const styles = StyleSheet.create({
+  headerIcon: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -25,6 +25,8 @@ import ProfileScreen from './src/screens/profile/ProfileScreen';
 import CropDetailScreen from './src/screens/crops/CropDetailScreen';
 import CropDiaryScreen from './src/screens/crops/CropDiaryScreen';
 import RecommendationsScreen from './src/screens/recommendations/RecommendationsScreen';
+import RequestVegetableScreen from './src/screens/recommendations/RequestVegetableScreen';
+import LanguagePicker from './src/components/LanguagePicker';
 
 function MapScreen() {
   return (
@@ -55,6 +57,7 @@ function MainTabs() {
         headerStyle: { backgroundColor: '#4CAF50' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
+        headerRight: () => <LanguagePicker trigger="icon" />,
         tabBarActiveTintColor: '#4CAF50',
         tabBarInactiveTintColor: '#999',
         tabBarStyle: {
@@ -94,6 +97,7 @@ function RootStack({ isLoggedIn }) {
           <Stack.Screen name="PlantCrop" component={PlantCropScreen} options={{ title: 'Plant a Crop', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
           <Stack.Screen name="CropDetail" component={CropDetailScreen} options={{ title: 'Crop Detail', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
           <Stack.Screen name="CropDiary" component={CropDiaryScreen} options={{ title: 'Crop Diary', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
+          <Stack.Screen name="RequestVegetable" component={RequestVegetableScreen} options={{ title: 'Request a Vegetable', headerShown: true, headerStyle: { backgroundColor: '#4CAF50' }, headerTintColor: '#fff' }} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />
@@ -117,7 +121,6 @@ function AppNavigator() {
           AsyncStorage.getItem('authToken'),
           AsyncStorage.getItem('user'),
           AsyncStorage.getItem(TERMS_ACCEPTED_KEY),
-          loadSavedLanguage(),
         ]);
         if (accepted === 'true') setTermsAccepted(true);
         if (token && userJson) {
@@ -128,6 +131,8 @@ function AppNavigator() {
       } finally {
         setIsLoading(false);
       }
+      // load language separately so it never blocks app startup
+      loadSavedLanguage().catch(() => {});
     }
     restoreSession();
   }, []);

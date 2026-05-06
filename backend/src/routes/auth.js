@@ -97,7 +97,8 @@ router.post('/login', async (req, res) => {
         email: userData.email,
         firstName: userData.first_name,
         lastName: userData.last_name,
-        experienceLevel: userData.experience_level
+        experienceLevel: userData.experience_level,
+        isAdmin: userData.is_admin || false
       },
       token
     });
@@ -125,7 +126,7 @@ router.post('/verify-token', (req, res) => {
 // Get current user profile
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const user = await query('SELECT id, email, first_name, last_name, experience_level, location, timezone FROM users WHERE id = $1', [req.user.userId]);
+    const user = await query('SELECT id, email, first_name, last_name, experience_level, is_admin, location, timezone FROM users WHERE id = $1', [req.user.userId]);
     res.json(user.rows[0]);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch profile' });

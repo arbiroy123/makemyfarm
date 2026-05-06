@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
   ScrollView, ActivityIndicator, FlatList, Alert
@@ -27,6 +27,11 @@ export default function RequestVegetableScreen({ route }) {
   const [myRequests, setMyRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
 
+  // suggestion state
+  const [suggestion, setSuggestion] = useState(null); // { type, match } | null
+  const [checking, setChecking] = useState(false);
+  const ignoreSuggestionRef = useRef(false); // set true once user dismisses
+
   useEffect(() => {
     loadMyRequests();
   }, []);
@@ -40,6 +45,32 @@ export default function RequestVegetableScreen({ route }) {
     } finally {
       setLoadingRequests(false);
     }
+  };
+
+  const handleNameChange = (text) => {
+    setVegetableName(text);
+    // Reset suggestion state whenever the user edits the name
+    if (suggestion) setSuggestion(null);
+    ignoreSuggestionRef.current = false;
+  };
+
+  const handleNameBlur = async () => {
+    const name = vegetableName.trim();
+    if (!name || ignoreSuggestionRef.current) return;
+    setChecking(true);
+    try {
+      const res = await recommendationAPI.checkVegetableName(name);
+      if (res.data.type !== 'none') setSuggestion(res.data);
+    } catch {
+      // not critical — degrade silently
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const dismissSuggestion = () => {
+    setSuggestion(null);
+    ignoreSuggestionRef.current = true; // don't re-show for this session
   };
 
   const handleSubmit = async () => {
@@ -59,6 +90,8 @@ export default function RequestVegetableScreen({ route }) {
       setVegetableName('');
       setDescription('');
       setReason('');
+      setSuggestion(null);
+      ignoreSuggestionRef.current = false;
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3000);
     } catch (error) {
@@ -88,6 +121,9 @@ export default function RequestVegetableScreen({ route }) {
     </View>
   );
 
+  const isTypo = suggestion?.type === 'typo';
+  const isExact = suggestion?.type === 'exact';
+
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
@@ -100,13 +136,62 @@ export default function RequestVegetableScreen({ route }) {
       <View style={styles.formCard}>
         <Text style={styles.label}>Vegetable Name <Text style={styles.required}>*</Text></Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, suggestion && styles.inputHighlighted]}
           placeholder="e.g. Dragon Fruit, Kohlrabi..."
           value={vegetableName}
-          onChangeText={setVegetableName}
+          onChangeText={handleNameChange}
+          onBlur={handleNameBlur}
           placeholderTextColor="#aaa"
           maxLength={200}
         />
+
+        {/* Checking indicator */}
+        {checking && (
+          <View style={styles.checkingRow}>
+            <ActivityIndicator size="small" color="#4CAF50" />
+            <Text style={styles.checkingText}>Checking our list…</Text>
+          </View>
+        )}
+
+        {/* Suggestion card */}
+        {suggestion && (
+          <View style={[styles.suggestionCard, isTypo || isExact ? styles.suggestionWarn : styles.suggestionInfo]}>
+            <View style={styles.suggestionHeader}>
+              <Ionicons
+                name={isTypo || isExact ? 'alert-circle-outline' : 'information-circle-outline'}
+                size={17}
+                color={isTypo || isExact ? '#e65100' : '#1565c0'}
+              />
+              <Text style={[styles.suggestionTitle, { color: isTypo || isExact ? '#e65100' : '#1565c0' }]}>
+                {isExact
+                  ? 'Already in our list'
+                  : isTypo
+                  ? 'Did you mean this?'
+                  : 'We support a similar crop'}
+              </Text>
+            </View>
+
+            <Text style={styles.suggestionMessage}>
+              {isExact
+                ? `"${suggestion.match.name}" is already supported — you can plant it from the Crops screen.`
+                : isTypo
+                ? `We have "${suggestion.match.name}" in our list. Is that what you meant?`
+                : `We support "${suggestion.match.name}". You can still request a specific variety below.`}
+            </Text>
+
+            {!isExact && (
+              <TouchableOpacity style={styles.requestAnywayBtn} onPress={dismissSuggestion}>
+                <Text style={styles.requestAnywayText}>Request anyway</Text>
+              </TouchableOpacity>
+            )}
+
+            {isExact && (
+              <TouchableOpacity style={styles.requestAnywayBtn} onPress={dismissSuggestion}>
+                <Text style={styles.requestAnywayText}>Request a different variety anyway</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
 
         <Text style={styles.label}>Description <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput
@@ -139,9 +224,9 @@ export default function RequestVegetableScreen({ route }) {
           </View>
         ) : (
           <TouchableOpacity
-            style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+            style={[styles.submitButton, (submitting || isExact) && styles.submitButtonDisabled]}
             onPress={handleSubmit}
-            disabled={submitting}
+            disabled={submitting || isExact}
           >
             {submitting ? (
               <ActivityIndicator size="small" color="#fff" />
@@ -220,13 +305,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: 12,
   },
-  required: {
-    color: '#F44336',
-  },
-  optional: {
-    color: '#999',
-    fontWeight: '400',
-  },
+  required: { color: '#F44336' },
+  optional: { color: '#999', fontWeight: '400' },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
@@ -237,10 +317,64 @@ const styles = StyleSheet.create({
     color: '#333',
     backgroundColor: '#fafafa',
   },
+  inputHighlighted: {
+    borderColor: '#FF9800',
+  },
   multiline: {
     minHeight: 80,
     textAlignVertical: 'top',
   },
+  // Checking indicator
+  checkingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+  },
+  checkingText: {
+    fontSize: 12,
+    color: '#888',
+  },
+  // Suggestion card
+  suggestionCard: {
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 8,
+    borderWidth: 1,
+  },
+  suggestionWarn: {
+    backgroundColor: '#fff8f0',
+    borderColor: '#ffcc80',
+  },
+  suggestionInfo: {
+    backgroundColor: '#e8f4fd',
+    borderColor: '#90caf9',
+  },
+  suggestionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 5,
+  },
+  suggestionTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  suggestionMessage: {
+    fontSize: 13,
+    color: '#444',
+    lineHeight: 18,
+  },
+  requestAnywayBtn: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+  },
+  requestAnywayText: {
+    fontSize: 12,
+    color: '#888',
+    textDecorationLine: 'underline',
+  },
+  // Submit
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',

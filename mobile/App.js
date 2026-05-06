@@ -28,6 +28,7 @@ import CropDiaryScreen from './src/screens/crops/CropDiaryScreen';
 import RecommendationsScreen from './src/screens/recommendations/RecommendationsScreen';
 import RequestVegetableScreen from './src/screens/recommendations/RequestVegetableScreen';
 import MapScreen from './src/screens/map/MapScreen';
+import AdminScreen from './src/screens/admin/AdminScreen';
 import LanguagePicker from './src/components/LanguagePicker';
 
 
@@ -45,6 +46,7 @@ function AuthStack() {
 
 function MainTabs() {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -68,6 +70,7 @@ function MainTabs() {
           else if (route.name === 'Community') iconName = 'people';
           else if (route.name === 'Recommendations') iconName = 'leaf';
           else if (route.name === 'Profile') iconName = 'person';
+          else if (route.name === 'Admin') iconName = 'shield';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -77,6 +80,9 @@ function MainTabs() {
       <Tab.Screen name="Community" component={CommunityScreen} options={{ title: t('tabCommunity'), tabBarLabel: t('tabCommunity') }} />
       <Tab.Screen name="Recommendations" component={RecommendationsScreen} options={{ title: t('tabLearn'), tabBarLabel: t('tabLearn') }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('tabProfile'), tabBarLabel: t('tabProfile') }} />
+      {user?.isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen} options={{ title: 'Admin', tabBarLabel: 'Admin' }} />
+      )}
     </Tab.Navigator>
   );
 }

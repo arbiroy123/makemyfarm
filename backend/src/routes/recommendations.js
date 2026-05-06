@@ -4,6 +4,70 @@ import { authenticateToken } from './auth.js';
 
 const router = express.Router();
 
+// --- fuzzy match helpers ---
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function editThreshold(len) {
+  if (len <= 4) return 1;
+  if (len <= 7) return 2;
+  return 3;
+}
+
+const STOP = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'type', 'variety', 'kind', 'species']);
+
+function tokenize(name) {
+  return name.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(/\s+/)
+    .filter(t => t.length > 2 && !STOP.has(t));
+}
+
+function findMatch(input, vegetables) {
+  const norm = input.toLowerCase().trim();
+
+  // exact match — already supported
+  for (const v of vegetables) {
+    if (v.name.toLowerCase() === norm) return { type: 'exact', match: v };
+  }
+
+  // typo — levenshtein within threshold
+  for (const v of vegetables) {
+    const vNorm = v.name.toLowerCase();
+    const dist = levenshtein(norm, vNorm);
+    if (dist > 0 && dist <= editThreshold(Math.max(norm.length, vNorm.length))) {
+      return { type: 'typo', match: v };
+    }
+  }
+
+  // variant — shared content token or veg name is substring of input
+  const inputTokens = tokenize(input);
+  if (inputTokens.length > 0) {
+    for (const v of vegetables) {
+      const vegTokens = tokenize(v.name);
+      const hasSharedToken = inputTokens.some(t => vegTokens.includes(t));
+      const vegIsSubstring = norm.includes(v.name.toLowerCase());
+      if (hasSharedToken || vegIsSubstring) {
+        return { type: 'variant', match: v };
+      }
+    }
+  }
+
+  return { type: 'none' };
+}
+
 // Get vegetable recommendations based on climate, season, and difficulty
 router.get('/vegetables', authenticateToken, async (req, res) => {
   try {
@@ -128,6 +192,20 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch vegetables' });
+  }
+});
+
+// Check if a submitted name is a typo or variant of an existing vegetable
+router.get('/check-name', async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name || !name.trim()) return res.json({ type: 'none' });
+
+    const result = await query(`SELECT id, name FROM vegetables ORDER BY name`);
+    res.json(findMatch(name.trim(), result.rows));
+  } catch (error) {
+    console.error(error);
+    res.json({ type: 'none' }); // non-critical, degrade gracefully
   }
 });
 

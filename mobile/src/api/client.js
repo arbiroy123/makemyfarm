@@ -117,6 +117,9 @@ export const recommendationAPI = {
   getSeasonalRecommendations: () =>
     client.get('/recommendations/seasonal'),
 
+  checkVegetableName: (name) =>
+    client.get('/recommendations/check-name', { params: { name } }),
+
   requestVegetable: (vegetableName, description, reason) =>
     client.post('/recommendations/vegetable-requests', { vegetableName, description, reason }),
 
@@ -137,7 +140,12 @@ export const mapAPI = {
     }),
   
   updateLocation: (latitude, longitude) =>
-    client.put('/map/update-location', { latitude, longitude })
+    client.put('/map/update-location', { latitude, longitude }),
+
+  getNearbyCrops: (latitude, longitude, radiusKm = 40.2) =>
+    client.get('/map/nearby-crops', {
+      params: { latitude, longitude, radiusKm }
+    })
 };
 
 // Community API
@@ -170,6 +178,24 @@ export const communityAPI = {
   
   addComment: (postId, content) =>
     client.post(`/community/posts/${postId}/comments`, { content })
+};
+
+// Admin API
+export const adminAPI = {
+  getStats: () =>
+    client.get('/admin/stats'),
+
+  getActivity: () =>
+    client.get('/admin/activity'),
+
+  getVegetableRequests: () =>
+    client.get('/admin/vegetable-requests'),
+
+  updateRequestStatus: (id, status) =>
+    client.put(`/admin/vegetable-requests/${id}/status`, { status }),
+
+  getUsers: () =>
+    client.get('/admin/users'),
 };
 
 // Sync API (for offline-first)

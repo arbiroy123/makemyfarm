@@ -14,6 +14,7 @@ import communityRoutes from './routes/community.js';
 import recommendationRoutes from './routes/recommendations.js';
 import mapRoutes from './routes/map.js';
 import syncRoutes from './routes/sync.js';
+import adminRoutes from './routes/admin.js';
 
 // Real-time handlers
 import { setupSocketHandlers } from './realtime/socketHandlers.js';
@@ -53,6 +54,7 @@ app.use('/api/community', communityRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/api/sync', syncRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Socket.io Real-time Handlers
 setupSocketHandlers(io);

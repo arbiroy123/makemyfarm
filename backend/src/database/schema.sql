@@ -11,6 +11,7 @@ CREATE TABLE users (
   profile_image_url TEXT,
   bio TEXT,
   experience_level VARCHAR(20) CHECK (experience_level IN ('novice', 'beginner', 'intermediate', 'advanced', 'expert')),
+  is_admin BOOLEAN DEFAULT FALSE NOT NULL,
   location GEOGRAPHY(POINT, 4326),
   timezone VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

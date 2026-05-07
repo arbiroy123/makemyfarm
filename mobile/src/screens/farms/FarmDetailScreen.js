@@ -125,6 +125,34 @@ export default function FarmDetailScreen({ route, navigation }) {
           {t('managingFarm', { count: farm.collaborators?.length || 1 })}
         </Text>
       </View>
+
+      {/* Quick links */}
+      <View style={styles.quickLinks}>
+        <TouchableOpacity
+          style={styles.quickBtn}
+          onPress={() => navigation.navigate('SeasonReport', { farmId, farmName: farm.name })}
+        >
+          <Ionicons name="stats-chart-outline" size={22} color="#4CAF50" />
+          <Text style={styles.quickBtnText}>Season Report</Text>
+          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickBtn}
+          onPress={() => navigation.navigate('PlantingCalendar')}
+        >
+          <Ionicons name="calendar-outline" size={22} color="#4CAF50" />
+          <Text style={styles.quickBtnText}>Planting Calendar</Text>
+          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickBtn}
+          onPress={() => navigation.navigate('GardenPlanner')}
+        >
+          <Ionicons name="grid-outline" size={22} color="#4CAF50" />
+          <Text style={styles.quickBtnText}>Garden Planner</Text>
+          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -239,5 +267,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 8
-  }
+  },
+  quickLinks: {
+    backgroundColor: '#fff', margin: 15, borderRadius: 12, overflow: 'hidden',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08, shadowRadius: 2, elevation: 2,
+  },
+  quickBtn: {
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16,
+    paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f0f0f0', gap: 12,
+  },
+  quickBtnText: { flex: 1, fontSize: 14, fontWeight: '600', color: '#333' },
 });

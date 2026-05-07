@@ -69,7 +69,10 @@ export const farmAPI = {
     client.post(`/farms/${farmId}/collaborators`, { email, role }),
   
   getFarmActivity: (farmId) =>
-    client.get(`/farms/${farmId}/activity`)
+    client.get(`/farms/${farmId}/activity`),
+
+  getSeasonReport: (farmId) =>
+    client.get(`/farms/${farmId}/season-report`),
 };
 
 // Crop API
@@ -101,7 +104,10 @@ export const cropAPI = {
     client.post(`/crops/${cropId}/diary`, entry),
 
   deleteDiaryEntry: (cropId, entryId) =>
-    client.delete(`/crops/${cropId}/diary/${entryId}`)
+    client.delete(`/crops/${cropId}/diary/${entryId}`),
+
+  diagnoseCrop: (imageBase64, cropName) =>
+    client.post('/disease/diagnose', { imageBase64, cropName }),
 };
 
 // Recommendations API
@@ -124,7 +130,10 @@ export const recommendationAPI = {
     client.post('/recommendations/vegetable-requests', { vegetableName, description, reason }),
 
   getMyVegetableRequests: () =>
-    client.get('/recommendations/vegetable-requests')
+    client.get('/recommendations/vegetable-requests'),
+
+  getCalendar: (farmId) =>
+    client.get(`/calendar/${farmId}`),
 };
 
 // Map & Community API
@@ -202,12 +211,68 @@ export const adminAPI = {
 export const syncAPI = {
   pushChanges: (changes) =>
     client.post('/sync/push', { changes }),
-  
+
   getPending: () =>
     client.get('/sync/pending'),
-  
+
   confirmSync: (syncIds) =>
     client.post('/sync/confirm', { syncIds })
+};
+
+// Notifications API
+export const notificationAPI = {
+  registerToken: (token, platform) =>
+    client.post('/notifications/register-token', { token, platform }),
+};
+
+// Disease Detection API
+export const diseaseAPI = {
+  diagnose: (imageBase64, cropName) =>
+    client.post('/disease/diagnose', { imageBase64, cropName }),
+};
+
+// Achievements API
+export const achievementsAPI = {
+  getAchievements: () =>
+    client.get('/achievements'),
+  checkAchievements: (trigger) =>
+    client.post('/achievements/check', { trigger }),
+};
+
+// Planting Calendar API
+export const calendarAPI = {
+  getCalendar: (farmId) =>
+    client.get(`/calendar/${farmId}`),
+};
+
+// Marketplace API
+export const marketplaceAPI = {
+  getNearby: (latitude, longitude, radiusKm = 40) =>
+    client.get('/marketplace/nearby', { params: { latitude, longitude, radiusKm } }),
+  getMyListings: () =>
+    client.get('/marketplace/my'),
+  createListing: (data) =>
+    client.post('/marketplace', data),
+  getListing: (id) =>
+    client.get(`/marketplace/${id}`),
+  updateListing: (id, data) =>
+    client.put(`/marketplace/${id}`, data),
+  deleteListing: (id) =>
+    client.delete(`/marketplace/${id}`),
+};
+
+// Garden Planner API
+export const plannerAPI = {
+  getVegetables: () =>
+    client.get('/planner/vegetables'),
+  getCompanions: (vegetableId) =>
+    client.get(`/planner/companions/${vegetableId}`),
+  getPlans: () =>
+    client.get('/planner/plans'),
+  savePlan: (data) =>
+    client.post('/planner/plans', data),
+  deletePlan: (planId) =>
+    client.delete(`/planner/plans/${planId}`),
 };
 
 export default client;

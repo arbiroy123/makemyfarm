@@ -158,6 +158,13 @@ export default function RecommendationsScreen() {
         }
       />
       <TouchableOpacity
+        style={styles.calendarBanner}
+        onPress={() => navigation.navigate('PlantingCalendar')}
+      >
+        <Ionicons name="calendar-outline" size={20} color="#1976d2" />
+        <Text style={styles.calendarBannerText}>View Planting Calendar →</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
         style={styles.requestBanner}
         onPress={() => navigation.navigate('RequestVegetable', { prefill: searchQuery })}
       >
@@ -287,6 +294,24 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: 13,
     color: '#999',
+  },
+  calendarBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e3f2fd',
+    borderRadius: 12,
+    padding: 14,
+    marginTop: 4,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#90caf9',
+    gap: 10,
+  },
+  calendarBannerText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1565c0',
   },
   requestBanner: {
     flexDirection: 'row',

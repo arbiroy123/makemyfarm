@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
+  Modal, TextInput, Alert, Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { cropAPI } from '../../api/client';
+import { cropAPI, achievementsAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
 
 const STATUS_COLOR = {
@@ -103,6 +104,14 @@ export default function CropDetailScreen({ route, navigation }) {
   const [crop, setCrop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showHarvestModal, setShowHarvestModal] = useState(false);
+  const [yieldKg, setYieldKg] = useState('');
+  const [updating, setUpdating] = useState(false);
+
+  function daysGrown(plantingDate) {
+    if (!plantingDate) return null;
+    return Math.max(0, Math.floor((new Date() - new Date(plantingDate)) / 86400000));
+  }
 
   useEffect(() => {
     cropAPI.getCropDetail(cropId)
@@ -110,6 +119,52 @@ export default function CropDetailScreen({ route, navigation }) {
       .catch(() => setError('Could not load crop details'))
       .finally(() => setLoading(false));
   }, [cropId]);
+
+  // Set header share button
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleShare} style={{ marginRight: 14 }}>
+          <Ionicons name="share-social-outline" size={22} color="#fff" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [crop]);
+
+  async function handleShare() {
+    if (!crop) return;
+    const days = daysGrown(crop.planting_date);
+    const planted = crop.planting_date ? new Date(crop.planting_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+    const harvest = crop.expected_harvest_date ? new Date(crop.expected_harvest_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
+    await Share.share({
+      message: `🌱 Growing ${crop.vegetable_name} with FarmSync!\n\n📅 Planted: ${planted}\n⏱ Day ${days ?? '?'} of growing\n🌾 Expected harvest: ${harvest}\n\nGrown with FarmSync — Smart farming made accessible.`,
+      title: `My ${crop.vegetable_name} on FarmSync`,
+    });
+  }
+
+  async function markHarvested() {
+    if (!yieldKg && yieldKg !== '0') {
+      Alert.alert('Yield required', 'Please enter a yield amount (enter 0 if none).');
+      return;
+    }
+    setUpdating(true);
+    try {
+      await cropAPI.updateCrop(cropId, {
+        status: 'harvested',
+        yieldQuantity: parseFloat(yieldKg) || 0,
+        harvestDate: new Date().toISOString().split('T')[0],
+      });
+      achievementsAPI.checkAchievements().catch(() => {});
+      setCrop(prev => ({ ...prev, status: 'harvested', yield_quantity: parseFloat(yieldKg) || 0 }));
+      setShowHarvestModal(false);
+      setYieldKg('');
+      Alert.alert('Harvested!', 'Your crop has been marked as harvested. 🎉');
+    } catch {
+      Alert.alert('Error', 'Could not update crop status.');
+    } finally {
+      setUpdating(false);
+    }
+  }
 
   if (loading) {
     return <View style={styles.center}><ActivityIndicator size="large" color="#4CAF50" /></View>;
@@ -136,6 +191,50 @@ export default function CropDetailScreen({ route, navigation }) {
           <Text style={styles.statusText}>{crop.status?.toUpperCase()}</Text>
         </View>
       </View>
+
+      {/* Action buttons */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={[styles.actionBtn, { backgroundColor: '#FF9800' }]}
+          onPress={() => navigation.navigate('DiseaseDetection', { cropId: crop.id, cropName: crop.vegetable_name })}
+        >
+          <Text style={styles.actionBtnText}>🔬 Diagnose</Text>
+        </TouchableOpacity>
+        {crop.status !== 'harvested' && (
+          <TouchableOpacity
+            style={[styles.actionBtn, { backgroundColor: '#4CAF50' }]}
+            onPress={() => setShowHarvestModal(true)}
+          >
+            <Text style={styles.actionBtnText}>🌾 Harvest</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Harvest yield modal */}
+      <Modal visible={showHarvestModal} transparent animationType="slide" onRequestClose={() => setShowHarvestModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Record Harvest 🌾</Text>
+            <Text style={styles.modalLabel}>How much did you harvest? (kg)</Text>
+            <TextInput
+              style={styles.modalInput}
+              keyboardType="decimal-pad"
+              placeholder="e.g. 2.5"
+              placeholderTextColor="#aaa"
+              value={yieldKg}
+              onChangeText={setYieldKg}
+            />
+            <View style={styles.modalBtns}>
+              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowHarvestModal(false)}>
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.modalConfirm, updating && { opacity: 0.6 }]} onPress={markHarvested} disabled={updating}>
+                <Text style={styles.modalConfirmText}>{updating ? 'Saving…' : 'Confirm Harvest'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Diary CTA */}
       <TouchableOpacity
@@ -296,6 +395,21 @@ export default function CropDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+
+  actionRow: { flexDirection: 'row', marginHorizontal: 12, marginTop: 10, gap: 10 },
+  actionBtn: { flex: 1, paddingVertical: 11, borderRadius: 10, alignItems: 'center' },
+  actionBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 30 },
+  modalCard: { backgroundColor: '#fff', borderRadius: 16, padding: 20 },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 14, textAlign: 'center' },
+  modalLabel: { fontSize: 13, color: '#555', marginBottom: 8 },
+  modalInput: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, fontSize: 16, color: '#333', marginBottom: 16 },
+  modalBtns: { flexDirection: 'row', gap: 10 },
+  modalCancel: { flex: 1, padding: 12, borderRadius: 8, alignItems: 'center', backgroundColor: '#f0f0f0' },
+  modalCancelText: { color: '#555', fontWeight: '600' },
+  modalConfirm: { flex: 2, padding: 12, borderRadius: 8, alignItems: 'center', backgroundColor: '#4CAF50' },
+  modalConfirmText: { color: '#fff', fontWeight: '700' },
 
   header: {
     backgroundColor: '#4CAF50', padding: 20, paddingTop: 24,

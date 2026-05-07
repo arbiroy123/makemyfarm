@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+// node-cron loaded dynamically so the server starts even if the package is not yet in the container volume
 
 // Routes
 import authRoutes from './routes/auth.js';
@@ -15,6 +16,12 @@ import recommendationRoutes from './routes/recommendations.js';
 import mapRoutes from './routes/map.js';
 import syncRoutes from './routes/sync.js';
 import adminRoutes from './routes/admin.js';
+import notificationRoutes, { runWeatherAlerts } from './routes/notifications.js';
+import diseaseRoutes from './routes/disease.js';
+import achievementsRoutes from './routes/achievements.js';
+import calendarRoutes from './routes/calendar.js';
+import marketplaceRoutes from './routes/marketplace.js';
+import plannerRoutes from './routes/planner.js';
 
 // Real-time handlers
 import { setupSocketHandlers } from './realtime/socketHandlers.js';
@@ -55,6 +62,12 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/disease', diseaseRoutes);
+app.use('/api/achievements', achievementsRoutes);
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/planner', plannerRoutes);
 
 // Socket.io Real-time Handlers
 setupSocketHandlers(io);
@@ -78,15 +91,25 @@ const PORT = process.env.PORT || 3000;
 
 (async () => {
   try {
-    // Connect to database
     await connectDatabase();
     console.log('✓ Database connected');
 
-    // Start server
     server.listen(PORT, () => {
       console.log(`🌱 FarmSync Server running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
+
+    // Nightly weather alert cron — runs every night at 8 PM
+    try {
+      const { default: cron } = await import('node-cron');
+      cron.schedule('0 20 * * *', async () => {
+        console.log('Running nightly weather alerts...');
+        await runWeatherAlerts();
+      });
+      console.log('✓ Weather alert cron scheduled (nightly 8 PM)');
+    } catch {
+      console.warn('⚠ node-cron not available — weather alerts disabled (run: npm install node-cron)');
+    }
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

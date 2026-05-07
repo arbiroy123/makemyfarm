@@ -151,6 +151,53 @@ router.post('/:farmId/collaborators', authenticateToken, async (req, res) => {
   }
 });
 
+// Season report — crop counts, total yield, best performers
+router.get('/:farmId/season-report', authenticateToken, async (req, res) => {
+  try {
+    const farmAccess = await query(
+      `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+      [req.params.farmId, req.user.userId]
+    );
+    if (farmAccess.rows.length === 0) return res.status(403).json({ error: 'Not authorized' });
+
+    const counts = await query(
+      `SELECT status, COUNT(*) as count FROM crops WHERE farm_id = $1 GROUP BY status`,
+      [req.params.farmId]
+    );
+    const totalYield = await query(
+      `SELECT COALESCE(SUM(yield_quantity), 0) as total FROM crops WHERE farm_id = $1 AND status = 'harvested'`,
+      [req.params.farmId]
+    );
+    const topCrops = await query(
+      `SELECT v.name as vegetable_name, SUM(c.yield_quantity) as total_yield, COUNT(*) as times_planted
+       FROM crops c JOIN vegetables v ON c.vegetable_id = v.id
+       WHERE c.farm_id = $1 AND c.status = 'harvested'
+       GROUP BY v.name ORDER BY total_yield DESC NULLS LAST LIMIT 5`,
+      [req.params.farmId]
+    );
+
+    const statusMap = {};
+    counts.rows.forEach(r => { statusMap[r.status] = parseInt(r.count); });
+    const total = Object.values(statusMap).reduce((a, b) => a + b, 0);
+    const harvested = statusMap['harvested'] || 0;
+    const failed = statusMap['failed'] || 0;
+    const successRate = total > 0 ? Math.round((harvested / total) * 100) : 0;
+
+    res.json({
+      counts: statusMap,
+      total,
+      harvested,
+      failed,
+      totalYieldKg: parseFloat(totalYield.rows[0].total) || 0,
+      successRate,
+      topCrops: topCrops.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to generate season report' });
+  }
+});
+
 // Get farm activity log (for real-time updates)
 router.get('/:farmId/activity', async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { registerRootComponent } from 'expo';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, Text, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -79,6 +79,75 @@ function AuthStack() {
   );
 }
 
+function GuestSignInScreen() {
+  const { exitGuestMode } = useAuthStore();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, backgroundColor: '#f9fbe7' }}>
+      <Ionicons name="leaf" size={64} color="#4CAF50" style={{ marginBottom: 20 }} />
+      <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#333', marginBottom: 10, textAlign: 'center' }}>
+        Unlock the full experience
+      </Text>
+      <Text style={{ fontSize: 15, color: '#666', textAlign: 'center', marginBottom: 32, lineHeight: 22 }}>
+        Sign in to track your crops, manage your farm, and connect with your community.
+      </Text>
+      <TouchableOpacity
+        style={{ backgroundColor: '#4CAF50', paddingVertical: 14, paddingHorizontal: 40, borderRadius: 12, width: '100%', alignItems: 'center' }}
+        onPress={exitGuestMode}
+      >
+        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Sign In / Register</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function GuestTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: true,
+        headerStyle: HEADER_OPTS,
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: 'bold' },
+        headerRight: () => <LanguagePicker trigger="icon" />,
+        tabBarActiveTintColor: '#4CAF50',
+        tabBarInactiveTintColor: '#999',
+        tabBarStyle: { backgroundColor: '#fff', borderTopColor: '#e0e0e0', paddingBottom: 5, paddingTop: 5 },
+        tabBarIcon: ({ color, size }) => {
+          const icons = { Explore: 'leaf', Market: 'storefront', 'Sign In': 'person-circle' };
+          return <Ionicons name={icons[route.name] || 'ellipse'} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Explore"
+        component={PlantCropScreen}
+        initialParams={{ farmId: null }}
+        options={{ title: 'Explore Crops', tabBarLabel: 'Explore' }}
+      />
+      <Tab.Screen
+        name="Market"
+        component={MarketplaceScreen}
+        options={{ title: 'Marketplace', tabBarLabel: 'Market' }}
+      />
+      <Tab.Screen
+        name="Sign In"
+        component={GuestSignInScreen}
+        options={{ title: 'Get Started', tabBarLabel: 'Sign In' }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function GuestStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="GuestApp" component={GuestTabs} />
+      <Stack.Screen name="CropDetail" component={CropDetailScreen} options={{ title: 'Crop Detail', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+      <Stack.Screen name="ListingDetail" component={ListingDetailScreen} options={{ title: 'Listing', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+    </Stack.Navigator>
+  );
+}
+
 function MainTabs() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
@@ -115,7 +184,8 @@ function MainTabs() {
   );
 }
 
-function RootStack({ isLoggedIn }) {
+function RootStack() {
+  const { isLoggedIn, isGuest } = useAuthStore();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isLoggedIn ? (
@@ -141,6 +211,8 @@ function RootStack({ isLoggedIn }) {
           {/* Garden Planner */}
           <Stack.Screen name="GardenPlanner" component={GardenPlannerScreen} options={{ title: 'Garden Planner', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
         </>
+      ) : isGuest ? (
+        <Stack.Screen name="Guest" component={GuestStack} />
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />
       )}
@@ -167,7 +239,7 @@ async function registerForPushNotifications() {
 }
 
 function AppNavigator() {
-  const { isLoggedIn, login } = useAuthStore();
+  const { login } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(true);
   const [termsAccepted, setTermsAccepted] = React.useState(false);
 
@@ -219,7 +291,7 @@ function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <RootStack isLoggedIn={isLoggedIn} />
+      <RootStack />
     </NavigationContainer>
   );
 }

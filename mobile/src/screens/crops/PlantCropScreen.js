@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { recommendationAPI, cropAPI } from '../../api/client';
+import { useAuthStore } from '../../store';
 
 const EMOJI_MAP = {
   'Tomato': '🍅', 'Lettuce': '🥬', 'Carrot': '🥕', 'Bell Pepper': '🫑',
@@ -72,7 +73,8 @@ function today() {
 }
 
 export default function PlantCropScreen({ route, navigation }) {
-  const { farmId } = route.params;
+  const farmId = route.params?.farmId ?? null;
+  const { exitGuestMode } = useAuthStore();
   const [vegetables, setVegetables] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
@@ -158,7 +160,7 @@ export default function PlantCropScreen({ route, navigation }) {
         </TouchableOpacity>
 
         {/* Form lives outside the TouchableOpacity — taps on inputs no longer collapse the card */}
-        {isSelected && (
+        {isSelected && farmId != null && (
           <View style={styles.plantForm}>
             <View style={styles.formDivider} />
 
@@ -213,6 +215,14 @@ export default function PlantCropScreen({ route, navigation }) {
               {planting
                 ? <ActivityIndicator color="#fff" />
                 : <Text style={styles.plantBtnText}>Plant {item.name}</Text>}
+            </TouchableOpacity>
+          </View>
+        )}
+        {isSelected && farmId == null && (
+          <View style={styles.guestPrompt}>
+            <Text style={styles.guestPromptText}>Sign in to track {item.name} on your farm</Text>
+            <TouchableOpacity style={styles.guestPromptBtn} onPress={exitGuestMode}>
+              <Text style={styles.guestPromptBtnText}>Sign In / Register</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -325,4 +335,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   plantBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+
+  guestPrompt: {
+    marginTop: 12, padding: 14, backgroundColor: '#f1f8e9',
+    borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: '#c5e1a5',
+  },
+  guestPromptText: { fontSize: 13, color: '#558b2f', marginBottom: 10, textAlign: 'center' },
+  guestPromptBtn: {
+    backgroundColor: '#4CAF50', borderRadius: 8, paddingVertical: 10,
+    paddingHorizontal: 24, alignItems: 'center',
+  },
+  guestPromptBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });

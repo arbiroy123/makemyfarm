@@ -6,6 +6,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { marketplaceAPI } from '../../api/client';
+import { useAuthStore } from '../../store';
 
 const TYPE_COLORS = { free: '#4CAF50', sale: '#2196F3', trade: '#FF9800' };
 const TYPE_LABELS = { free: 'FREE', sale: 'FOR SALE', trade: 'TRADE' };
@@ -63,6 +64,7 @@ const FILTERS = [
 ];
 
 export default function MarketplaceScreen({ navigation }) {
+  const { isGuest } = useAuthStore();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -137,14 +139,16 @@ export default function MarketplaceScreen({ navigation }) {
         />
       )}
 
-      {/* FAB */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('CreateListing', { location })}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
+      {/* FAB — hidden for guests */}
+      {!isGuest && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => navigation.navigate('CreateListing', { location })}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="add" size={28} color="#fff" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

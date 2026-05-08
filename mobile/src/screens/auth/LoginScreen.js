@@ -13,7 +13,7 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuthStore();
+  const { login, enterGuestMode } = useAuthStore();
 
   const handleLogin = async () => {
     setError('');
@@ -88,6 +88,10 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
           <Text style={styles.link}>{t('noAccount')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity onPress={enterGuestMode} style={styles.guestBtn}>
+          <Text style={styles.guestText}>Browse without signing in</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -158,4 +162,6 @@ const styles = StyleSheet.create({
     color: '#c62828',
     fontSize: 14,
   },
+  guestBtn: { marginTop: 20, padding: 12, alignItems: 'center' },
+  guestText: { color: '#999', fontSize: 14, textDecorationLine: 'underline' },
 });

@@ -11,7 +11,7 @@ const TYPE_COLORS = { free: '#4CAF50', sale: '#2196F3', trade: '#FF9800' };
 
 export default function ListingDetailScreen({ route, navigation }) {
   const { listingId } = route.params;
-  const { user } = useAuthStore();
+  const { user, isGuest, exitGuestMode } = useAuthStore();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -108,7 +108,12 @@ export default function ListingDetailScreen({ route, navigation }) {
       </View>
 
       {/* Contact / Actions */}
-      {!isOwner ? (
+      {!isOwner && isGuest ? (
+        <TouchableOpacity style={styles.contactBtn} onPress={exitGuestMode}>
+          <Ionicons name="log-in-outline" size={20} color="#fff" />
+          <Text style={styles.contactBtnText}>Sign In to Contact Seller</Text>
+        </TouchableOpacity>
+      ) : !isOwner ? (
         <TouchableOpacity
           style={styles.contactBtn}
           onPress={() => Linking.openURL(`mailto:${listing.email}?subject=Interested in your ${listing.vegetable_name} listing`)}

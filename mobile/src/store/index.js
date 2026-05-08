@@ -8,8 +8,10 @@ function authReducer(state, action) {
     case 'SET_USER': return { ...state, user: action.payload };
     case 'SET_TOKEN': return { ...state, token: action.payload };
     case 'SET_LOGGED_IN': return { ...state, isLoggedIn: action.payload };
-    case 'LOGIN': return { ...state, user: action.user, token: action.token, isLoggedIn: true };
-    case 'LOGOUT': return { user: null, token: null, isLoggedIn: false };
+    case 'LOGIN': return { ...state, user: action.user, token: action.token, isLoggedIn: true, isGuest: false };
+    case 'LOGOUT': return { user: null, token: null, isLoggedIn: false, isGuest: false };
+    case 'GUEST': return { ...state, isGuest: true };
+    case 'EXIT_GUEST': return { ...state, isGuest: false };
     default: return state;
   }
 }
@@ -60,7 +62,7 @@ function communityReducer(state, action) {
 
 // --- Provider ---
 export function StoreProvider({ children }) {
-  const [authState, authDispatch] = useReducer(authReducer, { user: null, token: null, isLoggedIn: false });
+  const [authState, authDispatch] = useReducer(authReducer, { user: null, token: null, isLoggedIn: false, isGuest: false });
   const [farmState, farmDispatch] = useReducer(farmReducer, { farms: [], currentFarm: null });
   const [cropState, cropDispatch] = useReducer(cropReducer, { crops: [] });
   const [communityState, communityDispatch] = useReducer(communityReducer, { groups: [], nearbyFarms: [], posts: [] });
@@ -88,6 +90,8 @@ export function useAuthStore() {
     setLoggedIn: (val) => dispatch({ type: 'SET_LOGGED_IN', payload: val }),
     login: (user, token) => dispatch({ type: 'LOGIN', user, token }),
     logout: () => dispatch({ type: 'LOGOUT' }),
+    enterGuestMode: () => dispatch({ type: 'GUEST' }),
+    exitGuestMode: () => dispatch({ type: 'EXIT_GUEST' }),
   };
 }
 

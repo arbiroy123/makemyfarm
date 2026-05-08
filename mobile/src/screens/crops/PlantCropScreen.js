@@ -22,6 +22,8 @@ const EMOJI_MAP = {
   'Radicchio': '🫐', 'Broccoli Rabe (Cime di Rapa)': '🥦', 'Italian Parsley': '🌿',
   'Mint': '🍃', 'Garlic': '🧄', 'Onion': '🧅', 'Potato': '🥔',
   'Sweet Corn': '🌽', 'Pumpkin': '🎃', 'Beetroot': '🫐', 'Malabar Spinach': '🌿',
+  'Pigeon Pea': '🫘', 'Chickpea': '🫘', 'Rosemary': '🌿',
+  'Purslane': '🌿', 'Lentil': '🫘', 'Sorghum': '🌾',
 };
 
 const THUMB_COLOR = {
@@ -44,7 +46,11 @@ const THUMB_COLOR = {
   'Mint': '#b2dfdb', 'Garlic': '#fff9c4', 'Onion': '#ffccbc',
   'Potato': '#ffe0b2', 'Sweet Corn': '#fff9c4', 'Pumpkin': '#ffcc80',
   'Beetroot': '#f48fb1', 'Malabar Spinach': '#80cbc4',
+  'Pigeon Pea': '#ffe0b2', 'Chickpea': '#fff9c4', 'Rosemary': '#e8f5e9',
+  'Purslane': '#c8e6c9', 'Lentil': '#f8bbd0', 'Sorghum': '#fff9c4',
 };
+
+const LOW_WATER_THRESHOLD = 10;
 
 const DIFFICULTY_COLOR = { novice: '#4CAF50', intermediate: '#FF9800', expert: '#f44336' };
 const DIFFICULTY_LABEL = { novice: 'Easy', intermediate: 'Moderate', expert: 'Advanced' };
@@ -142,6 +148,12 @@ export default function PlantCropScreen({ route, navigation }) {
               <Ionicons name="calendar-outline" size={12} color="#666" />
               <Text style={styles.metaText}>{item.season}</Text>
             </View>
+            {item.water_frequency_days >= LOW_WATER_THRESHOLD && (
+              <View style={styles.lowWaterBadge}>
+                <Ionicons name="water-outline" size={11} color="#0077b6" />
+                <Text style={styles.lowWaterText}>Low Water</Text>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
 
@@ -284,6 +296,12 @@ const styles = StyleSheet.create({
   cardMeta: { flexDirection: 'row', gap: 10 },
   metaChip: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   metaText: { fontSize: 12, color: '#666' },
+  lowWaterBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: '#e0f4ff', borderRadius: 8,
+    paddingHorizontal: 7, paddingVertical: 2,
+  },
+  lowWaterText: { fontSize: 11, color: '#0077b6', fontWeight: '600' },
 
   formDivider: { height: 1, backgroundColor: '#e8f5e9', marginVertical: 14 },
   formLabel: { fontSize: 13, fontWeight: '600', color: '#333', marginBottom: 6 },

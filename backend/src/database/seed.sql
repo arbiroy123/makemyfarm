@@ -578,7 +578,75 @@ INSERT INTO vegetables (
  $$Soak seeds 24 hours before sowing: Hard seed coat slows germination|Sow direct after soil hits 22°C: Loves heat, hates cold|Build a 2m trellis at planting: Vines climb aggressively|Sow 1cm deep, 30cm apart at base of support|Choose full sun with rich, moisture-retaining soil$$,
  $$Water every 2-3 days in hot weather: Loves moisture as much as it loves heat|Harvest by pinching leaves and tender stem tips: Plant branches more after each picking|Pinch flower spikes to extend leaf harvest|Save seeds from purple berries at season''s end for next year|Feed monthly with balanced fertiliser for steady leafy growth$$,
  $$Powdery mildew: Rare in well-aired plantings|Aphids: Spray with water|Self-seeding: Berries drop and germinate next year — pull volunteer seedlings if not wanted|Cold damage: Leaves blacken below 10°C; treat as annual outside the tropics$$,
- ARRAY['Okra','Tomato','Pepper','Marigold'])
+ ARRAY['Okra','Tomato','Pepper','Marigold']),
+
+-- ─── DROUGHT-TOLERANT CROPS ────────────────────────────────────────────────────
+
+('Pigeon Pea', 'Cajanus cajan',
+ 'India''s most important drought-tolerant pulse — the source of toor/arhar dal. A perennial shrub that produces protein-rich pods for years from a single planting. Thrives in heat and poor soil where most crops fail.',
+ 'novice', 150, 60, 18, 40, 28, 14, 8, 'Sandy loam, well-draining', 5.5, 7.5,
+ 'summer',
+ ARRAY['Tropical','Subtropical','Semi-Arid'],
+ false, 0.8,
+ $$Sow direct 3cm deep in warm soil (18°C+): Deep taproots mean transplanting rarely succeeds|Space 60cm apart: Plants grow into 1-2m shrubs — give them room|No nitrogen fertiliser: Pigeon pea is a legume that fixes its own nitrogen|Plant on raised ground or a slope: Excellent drainage is essential — roots rot in waterlogged soil|Sow at the start of the rainy season in tropical areas for best germination$$,
+ $$Water once a fortnight during dry spells: Established plants are remarkably drought-tolerant|Pinch growing tips at 50cm to encourage branching and more pods|Harvest pods green (fresh toor) or leave to dry on the plant (dry dal) — both are excellent|Do not pull up after first harvest: Cut back to 30cm and the plant resprouts for a second season|A windbreak extends the harvest season in exposed windy areas$$,
+ $$Pod borer: Caterpillar eats seeds inside pods; use Bt spray at flower stage|Wilt disease: Yellowing from base; remove affected plants; do not replant legumes there for 2 years|Aphids: Cluster on new growth; tolerable in small numbers; spray with water|Root rot: Only from waterlogging; ensure excellent drainage from the start$$,
+ ARRAY['Sorghum','Maize','Moringa','Okra']),
+
+('Chickpea', 'Cicer arietinum',
+ 'One of the world''s oldest cultivated crops. This drought-hardy winter legume produces protein-rich chana used across Indian, Middle Eastern and Mediterranean cuisines. Thrives on virtually no irrigation once established.',
+ 'novice', 100, 10, 5, 30, 18, 14, 8, 'Sandy, well-draining', 6.0, 8.0,
+ 'winter',
+ ARRAY['Mediterranean / Oceanic','Semi-Arid','Subtropical','Temperate'],
+ false, 0.2,
+ $$Sow direct 5cm deep, 10cm apart: Chickpea does not transplant well|Sow in cool weather (5-20°C): A winter crop in tropical areas; summer in cool climates|No nitrogen fertiliser: Chickpea fixes its own nitrogen — excess grows leaves, not pods|Choose the driest, best-drained spot: Chickpea rots in wet soil|Inoculate seeds with Rhizobium before planting for stronger nitrogen fixation$$,
+ $$Water every two weeks once established: One of the most drought-tolerant crops you can grow|No watering needed after flowering in dry climates: Rain and residual moisture are enough for pod fill|Harvest when pods rattle and have turned brown: Pull the whole plant and hang to dry|Eat green chickpeas straight from the pod as a rare fresh snack — unavailable in shops|Store dried seeds in airtight containers — they remain viable for years$$,
+ $$Helicoverpa pod borer: Most damaging pest; use Bt spray when flowers first appear|Fusarium wilt: Sudden wilting; no cure; rotate crops for 3 years|Aphids: Wash off with water|Root rot: Only from overwatering; avoid completely$$,
+ ARRAY['Wheat','Fennel','Coriander','Mustard Greens','Lentil']),
+
+('Rosemary', 'Salvia rosmarinus',
+ 'Aromatic Mediterranean shrub prized as a culinary herb and drought-tolerant garden plant. Once established, thrives on neglect — minimal water, full sun, poor soil. A perennial that lasts decades.',
+ 'novice', 90, 45, -5, 38, 20, 14, 8, 'Sandy, very well-draining', 6.0, 8.0,
+ 'spring',
+ ARRAY['Mediterranean / Oceanic','Temperate','Subtropical','Semi-Arid'],
+ true, 0.1,
+ $$Start from cuttings — not seed: Seed is slow and unreliable; a 10cm cutting roots in 3-4 weeks|Plant in the sunniest, most sheltered spot: Full sun and reflected heat suits rosemary perfectly|Never plant in heavy clay: Sharp drainage is non-negotiable; add grit to the planting hole|Space 45-60cm apart: Plants grow into large spreading shrubs over years|Do not add fertiliser at planting: Rich soil produces leafy but flavourless growth$$,
+ $$Water only once every two weeks when established: More rosemary is killed by overwatering than by drought|Harvest by snipping stems with scissors: Take up to one-third of the plant at a time|Prune hard after flowering to prevent the centre going woody: Cut back by half after blooms fade|No feeding needed: Rosemary prefers poor soil — fertiliser reduces aromatic oil concentration|Use fresh or dried; also a bee-attracting border plant and natural moth repellent$$,
+ $$Root rot: Only real killer; caused entirely by waterlogged soil; plant in raised beds or very gritty soil|Powdery mildew: In humid shade; move to full sun and improve airflow|Rosemary beetle: Metallic green/purple beetle eating leaves; hand-pick|Spittlebug: White frothy blobs on stems; rarely harmful; blast off with water$$,
+ ARRAY['Tomato','Carrot','Sage','Thyme','Lavender']),
+
+('Purslane', 'Portulaca oleracea',
+ 'A succulent vegetable with more omega-3s than any other leafy plant. Incredibly drought-tolerant — survives weeks without water. Popular in Indian raita, Greek salad and Mexican cooking. Often dismissed as a weed; actually a superfood.',
+ 'novice', 50, 15, 15, 40, 27, 14, 7, 'Sandy, poor soil tolerated', 5.5, 7.5,
+ 'summer',
+ ARRAY['Tropical','Subtropical','Mediterranean / Oceanic','Semi-Arid','Temperate'],
+ false, 0.2,
+ $$Scatter seeds directly on the soil surface: Seeds are tiny and need light to germinate; do not cover|Water once after sowing: After germination, watering becomes almost optional|Grows in poor, sandy soil with no amendments needed: Rich soil causes rank, flavourless growth|Can self-seed freely if a few plants are left to flower: Hundreds of seeds ensure next year''s crop|Also spreads as cuttings — push a stem into moist soil and it roots within days$$,
+ $$Water once a fortnight at most: This is a succulent — the leaves store water; overwatering causes rot|Harvest the succulent stem tips: Cut 10cm lengths; plant produces new shoots continuously|Eat raw in salads or wilt briefly in a pan with garlic: Excellent in soups and curries|Never fertilise: Purslane is most nutritious and tasty when slightly stressed|Leave one plant to flower and set seed for next year''s self-sown crop$$,
+ $$Aphids: Occasional on new growth; wash off with water; plants recover quickly|Slugs: In very wet conditions; use iron phosphate pellets|Fungal rot: Only from overwatering; soil must drain freely|Generally pest-free: Succulent leaves are unappealing to most insects$$,
+ ARRAY['Corn','Beans','Tomato','Okra','Moringa']),
+
+('Lentil', 'Lens culinaris',
+ 'Ancient drought-tolerant pulse cultivated for over 9,000 years. The source of masoor dal — a cool-season crop that fixes nitrogen in the soil and requires virtually no irrigation once established.',
+ 'novice', 110, 5, 2, 28, 18, 10, 8, 'Sandy loam, well-draining', 6.0, 8.0,
+ 'winter',
+ ARRAY['Temperate','Mediterranean / Oceanic','Semi-Arid','Subtropical'],
+ false, 0.1,
+ $$Sow direct 3cm deep, 5cm apart in rows 30cm apart: Does not transplant well|Sow in cool weather only (2-18°C): Lentils are a cool-season crop; warm weather causes poor pod set|No nitrogen fertiliser: Lentil is a legume; excess nitrogen grows leaves, not pods|Soak seeds overnight to speed germination by 3-5 days|Choose a sunny, well-drained spot: Waterlogging kills lentils$$,
+ $$Water every 10 days during active growth: Remarkably drought-tolerant once established|Stop all watering when pods begin to yellow: Dry conditions at pod-fill stage improves flavour|Harvest the entire plant when most pods are yellow-brown: Hang upside down in a dry place to finish|Thresh by beating the dry plant against the inside of a bucket: Seeds fall out easily|Save a portion as seed for next planting: Lentils store well and germinate reliably$$,
+ $$Aphids: Common on new growth; spray with water or insecticidal soap|Lentil rust: Orange pustules on leaves in humid weather; sow early to avoid humid season|Damping off: In cold, wet soil; ensure good drainage|Bruchid weevil: Attacks stored dried lentils; keep in airtight containers$$,
+ ARRAY['Chickpea','Coriander','Fennel','Mustard Greens','Wheat']),
+
+('Sorghum', 'Sorghum bicolor',
+ 'One of the world''s most drought-tolerant staple grains — known as jowar across India. Produces food from marginal land with minimal water. Gluten-free grain used for rotis, porridge and popping. A vital crop across Africa and South Asia.',
+ 'novice', 120, 15, 15, 40, 30, 14, 8, 'Sandy loam, well-draining', 5.5, 7.5,
+ 'summer',
+ ARRAY['Tropical','Subtropical','Semi-Arid'],
+ false, 0.3,
+ $$Sow direct 2cm deep when soil is 18°C+: Germinates in 5-10 days in warm soil|Space 15cm apart in rows 60cm apart: Thin to the strongest seedling per spot|No special soil preparation needed: Thrives in marginal, poor soil where other crops fail|Plant in full sun only: One of the most sun-demanding grain crops|Choose an open spot with good airflow: Reduces fungal disease pressure$$,
+ $$Water deeply once a fortnight after establishment: Survives entirely on rainfall in most climates|No watering needed after flowering in semi-arid regions: Stored soil moisture is enough|Harvest when seeds are hard and the head has turned brown: Cut the head and hang to dry|Thresh by rubbing heads between hands or beating against a bucket|Use as jowar flour for rotis, or pop the grain like popcorn$$,
+ $$Sorghum midge: Tiny orange fly attacking flowers; net heads during flowering|Bird damage: Birds target ripening heads; bag or net heads as they ripen|Stalk borer: Larvae inside the stem; crush egg masses on leaves before they hatch|Grain mould: In very humid climates; harvest early and dry thoroughly$$,
+ ARRAY['Pigeon Pea','Sweet Potato','Sesame','Maize','Cowpea'])
 
 ON CONFLICT (name) DO NOTHING;
 
@@ -1000,3 +1068,49 @@ UPDATE vegetables SET simple_recipe = 'Pumpkin Soup — Roast cubed pumpkin with
 UPDATE vegetables SET simple_recipe = 'Roasted Beetroot and Feta Salad — Wrap whole beetroots in foil and roast at 190°C for 1 hour until tender. Peel and slice. Arrange on a plate with crumbled feta, toasted walnuts and rocket. Dress with olive oil, balsamic vinegar and a pinch of salt. The combination of sweet earthy beet, salty feta and bitter leaves is one of those salads that disappears before you are ready for it to end.' WHERE name = 'Beetroot';
 
 UPDATE vegetables SET simple_recipe = 'Adobong Alugbati — Pick tender Malabar spinach tips and young leaves. Sauté garlic and onion in oil until soft. Add a splash of soy sauce and white vinegar — the Filipino adobo ratio — and let it bubble for a minute. Add the spinach and toss for 2 minutes until wilted and glossy. The slight slipperiness of Malabar spinach becomes silky in the sauce. Serve over rice.' WHERE name = 'Malabar Spinach';
+
+-- ─── DROUGHT-TOLERANT CROP DATA ───────────────────────────────────────────────
+
+UPDATE vegetables SET water_frequency_days = 14 WHERE name = 'Moringa';
+
+UPDATE vegetables SET
+  fun_fact = 'Pigeon pea has fed people across Africa and India for over 3,500 years. Unlike most crops, it keeps producing pods for up to 5 years from the same plant — making it one of the most economical crops in the world.',
+  growing_story = 'Suresh in Madhya Pradesh planted pigeon peas on the dry rocky edge of his field where nothing else would grow. By the third year the same plants were still producing pods — and the leaves he pruned back were feeding his soil.',
+  nutrition = '343 kcal per 100g (dry). 21g protein. Rich in iron, folate and potassium. One of the most complete plant proteins available — all essential amino acids present.',
+  simple_recipe = 'Dal Fry — Pressure-cook toor dal with turmeric and water until completely soft. Fry a chopped onion in ghee until golden, add garlic, ginger, tomato and spices (cumin, coriander, red chilli). Add the cooked dal, simmer 10 minutes and finish with a tempering of mustard seeds and curry leaves. Serve with rice or roti.'
+WHERE name = 'Pigeon Pea';
+
+UPDATE vegetables SET
+  fun_fact = 'Chickpeas have been cultivated for over 7,500 years — found in Middle Eastern sites dating to 7500 BC. Today they are the world''s second most widely grown legume after soybeans, feeding billions across every continent.',
+  growing_story = 'Asha in Rajasthan grows chickpeas on a terrace exposed to dry winter winds. She never waters after the first month. The pods fill on rain alone, and she harvests kilos of chana from a patch smaller than her kitchen.',
+  nutrition = '364 kcal per 100g (dry). 19g protein. Exceptional source of folate, iron, manganese and fibre. Low glycaemic index — helps stabilise blood sugar after meals.',
+  simple_recipe = 'Chana Masala — Soak chickpeas overnight and pressure-cook until tender. Fry onion, ginger-garlic paste and tomatoes in oil with cumin, coriander, turmeric and garam masala. Add chickpeas and a cup of water, simmer until thick. Finish with amchur (dried mango powder) and fresh coriander. Serve with bhatura or rice.'
+WHERE name = 'Chickpea';
+
+UPDATE vegetables SET
+  fun_fact = 'Rosemary was traditionally associated with memory — students in ancient Greece wore garlands of it during exams. Modern research has confirmed its aroma genuinely improves cognitive performance and recall.',
+  growing_story = 'Nani planted a single rosemary cutting in a cracked pot on her sun-drenched balcony in Pune. Ten years later it is a sprawling shrub she harvests for cooking daily, and she has gifted cuttings to every family on her floor.',
+  nutrition = '131 kcal per 100g (fresh). Rich in manganese, iron, and vitamins B6 and C. Contains powerful antioxidant compounds including rosmarinic acid and carnosic acid — among the highest antioxidant density of any herb.',
+  simple_recipe = 'Rosemary Roast Potatoes — Toss par-boiled potato wedges with olive oil, crushed garlic, fresh rosemary sprigs, salt and pepper. Roast at 200°C for 35 minutes until crisp and golden. Squeeze lemon over at the end. The rosemary crisps up in the oil and becomes irresistible.'
+WHERE name = 'Rosemary';
+
+UPDATE vegetables SET
+  fun_fact = 'Purslane has more omega-3 fatty acids than any other leafy vegetable on earth — seven times more than spinach. Despite being sold as a weed in garden shops, it is prized in Greek salads, Indian cooking and Mexican cuisine.',
+  growing_story = 'Kavitha noticed the fat-leafed weed growing between her paving stones and looked it up. She now grows it deliberately in the gaps in her path, harvesting handfuls for raita and salad. No watering, no care — it returns every summer on its own.',
+  nutrition = '16 kcal per 100g (fresh). The highest plant source of omega-3 (ALA) on earth. Rich in magnesium, calcium, potassium and vitamins A, C and E. More beta-carotene than carrots.',
+  simple_recipe = 'Purslane Raita — Rinse and roughly chop fresh purslane stems. Mix into thick yoghurt with a pinch of salt, cumin powder and finely diced green chilli. Top with a tempering of mustard seeds in oil. Serve chilled alongside any dal or curry. The succulent leaves stay crunchy in the raita.'
+WHERE name = 'Purslane';
+
+UPDATE vegetables SET
+  fun_fact = 'Lentils are one of the first crops ever domesticated — cultivated in the Middle East over 9,000 years ago and found in Egyptian tombs dating to 2400 BC. They are referenced in the Bible as the dish Esau sold his birthright for.',
+  growing_story = 'Mehul in Gujarat planted lentils in a raised bed on a cool December morning. By March, without a single watering since the first week, he had a full harvest of masoor dal — the cheapest, most nutritious food he had ever grown himself.',
+  nutrition = '353 kcal per 100g (dry). 26g protein. Exceptional source of folate, iron and dietary fibre. Second only to soybeans in plant protein content. Complete nutrition for a vegetarian diet.',
+  simple_recipe = 'Masoor Dal — Rinse red lentils and cook in water with turmeric until fully soft and creamy. In a separate pan, heat oil and fry mustard seeds, cumin, dried red chilli and curry leaves until sputtering. Add this tempering to the dal with salt and a squeeze of lemon. Ready in 20 minutes — one of the most nourishing meals imaginable. Serve over rice.'
+WHERE name = 'Lentil';
+
+UPDATE vegetables SET
+  fun_fact = 'Sorghum is the world''s fifth most important cereal and the staple grain of over 500 million people. It produces more food energy per litre of water than any other grain crop on earth — making it the grain of the future in a warming world.',
+  growing_story = 'Gopal in Vidarbha switched one field to jowar during a drought year when his cotton failed. The sorghum stood tall through a month without rain. He ate rotis from his own crop through the dry season and has grown it every year since.',
+  nutrition = '329 kcal per 100g (dry). 11g protein. High in iron and B vitamins. Completely gluten-free and higher in antioxidants than most other grains. Suitable for people with celiac disease.',
+  simple_recipe = 'Jowar Roti — Mix jowar (sorghum) flour with warm water and a pinch of salt into a soft dough. Pat into a thick flat round on a wet surface — sorghum has no gluten so it will not roll. Cook on a dry tawa on high heat, turning once, until both sides have brown spots. Serve hot with ghee and any vegetable curry. Deeply satisfying and completely nourishing.'
+WHERE name = 'Sorghum';

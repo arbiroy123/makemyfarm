@@ -25,7 +25,12 @@ const VEG_EMOJI_MAP = {
   potato: '🥔', onion: '🧅', garlic: '🧄', spinach: '🌿',
   kale: '🥦', broccoli: '🥦', squash: '🎃', pumpkin: '🎃',
   basil: '🌿', mint: '🌿', herb: '🌿',
+  rosemary: '🌿', purslane: '🌿', lentil: '🫘',
+  chickpea: '🫘', sorghum: '🌾', pigeon: '🫘',
 };
+
+const LOW_WATER_THRESHOLD = 10;
+
 function vegEmoji(name) {
   const lower = (name || '').toLowerCase();
   return Object.entries(VEG_EMOJI_MAP).find(([k]) => lower.includes(k))?.[1] || '🌱';
@@ -233,6 +238,11 @@ export default function GardenPlannerScreen({ navigation }) {
             >
               <Text style={styles.trayEmoji}>{vegEmoji(item.name)}</Text>
               <Text style={styles.trayName} numberOfLines={1}>{item.name}</Text>
+              {item.water_frequency_days >= LOW_WATER_THRESHOLD && (
+                <View style={styles.trayLowWater}>
+                  <Text style={styles.trayLowWaterText}>💧 low</Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         />
@@ -272,4 +282,9 @@ const styles = StyleSheet.create({
   trayItemActive: { borderColor: '#333' },
   trayEmoji: { fontSize: 24 },
   trayName: { fontSize: 10, color: '#333', marginTop: 4, textAlign: 'center', maxWidth: 60 },
+  trayLowWater: {
+    marginTop: 3, backgroundColor: '#e0f4ff', borderRadius: 6,
+    paddingHorizontal: 5, paddingVertical: 1,
+  },
+  trayLowWaterText: { fontSize: 9, color: '#0077b6', fontWeight: '700' },
 });

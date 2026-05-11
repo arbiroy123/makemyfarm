@@ -250,9 +250,11 @@ async function registerForPushNotifications() {
 }
 
 function AppNavigator() {
-  const { login } = useAuthStore();
+  const { login, isLoggedIn } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(true);
   const [termsAccepted, setTermsAccepted] = React.useState(false);
+  const [navReady, setNavReady] = React.useState(false);
+  const navigationRef = React.useRef(null);
 
   React.useEffect(() => {
     async function restoreSession() {
@@ -265,7 +267,6 @@ function AppNavigator() {
         if (accepted === 'true') setTermsAccepted(true);
         if (token && userJson) {
           login(JSON.parse(userJson), token);
-          // Register push token after login restored
           const pushToken = await registerForPushNotifications();
           if (pushToken) {
             notificationAPI.registerToken(pushToken, Platform.OS).catch(() => {});
@@ -280,6 +281,14 @@ function AppNavigator() {
     }
     restoreSession();
   }, []);
+
+  // Auto-show tour on first login (session restore or fresh login)
+  React.useEffect(() => {
+    if (!navReady || !isLoggedIn) return;
+    AsyncStorage.getItem('tourSeen').then(seen => {
+      if (!seen) navigationRef.current?.navigate('Tour');
+    }).catch(() => {});
+  }, [isLoggedIn, navReady]);
 
   async function handleAcceptTerms() {
     await AsyncStorage.setItem(TERMS_ACCEPTED_KEY, 'true');
@@ -301,7 +310,10 @@ function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => setNavReady(true)}
+    >
       <RootStack />
     </NavigationContainer>
   );

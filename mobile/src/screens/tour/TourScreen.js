@@ -4,6 +4,7 @@ import {
   Dimensions, SafeAreaView, StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -112,15 +113,18 @@ export default function TourScreen({ navigation }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
 
+  const markSeen = () => AsyncStorage.setItem('tourSeen', 'true').catch(() => {});
+
   const goNext = () => {
     if (activeIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
     } else {
+      markSeen();
       navigation.goBack();
     }
   };
 
-  const skip = () => navigation.goBack();
+  const skip = () => { markSeen(); navigation.goBack(); };
 
   const renderSlide = ({ item, index }) => (
     <View style={[styles.slide, { width }]}>

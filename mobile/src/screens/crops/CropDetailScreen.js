@@ -334,15 +334,25 @@ export default function CropDetailScreen({ route, navigation }) {
 
       {/* Companion plants */}
       {crop.companion_plants?.length > 0 && (
-        <Section title="Companion Plants" icon="heart-outline" collapsed={true}>
-          <View style={styles.companionRow}>
+        <View style={styles.companionCard}>
+          <View style={styles.companionCardHeader}>
+            <View style={styles.companionCardIconWrap}>
+              <Ionicons name="leaf" size={16} color="#2e7d32" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.companionCardTitle}>Grows Well With</Text>
+              <Text style={styles.companionCardSubtitle}>Plant nearby for better growth</Text>
+            </View>
+          </View>
+          <View style={styles.companionPillRow}>
             {crop.companion_plants.map(p => (
-              <View key={p} style={styles.companionChip}>
-                <Text style={styles.companionText}>{p}</Text>
+              <View key={p} style={styles.companionPill}>
+                <Text style={styles.companionPillEmoji}>🌱</Text>
+                <Text style={styles.companionPillText}>{p}</Text>
               </View>
             ))}
           </View>
-        </Section>
+        </View>
       )}
 
       {/* Fun fact */}
@@ -503,12 +513,29 @@ const styles = StyleSheet.create({
   pestName: { fontSize: 13, fontWeight: '700', color: '#e65100' },
   pestDetail: { fontSize: 12, color: '#555', marginTop: 3, lineHeight: 17 },
 
-  companionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  companionChip: {
-    backgroundColor: '#e8f5e9', borderRadius: 20,
-    paddingHorizontal: 12, paddingVertical: 5,
+  companionCard: {
+    marginHorizontal: 12, marginTop: 10,
+    backgroundColor: '#f1f8e9',
+    borderRadius: 16,
+    borderWidth: 1, borderColor: '#c8e6c9',
+    padding: 14,
   },
-  companionText: { fontSize: 13, color: '#2e7d32', fontWeight: '500' },
+  companionCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  companionCardIconWrap: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: '#c8e6c9', justifyContent: 'center', alignItems: 'center',
+  },
+  companionCardTitle: { fontSize: 14, fontWeight: '700', color: '#1b5e20' },
+  companionCardSubtitle: { fontSize: 11, color: '#558b2f', marginTop: 1 },
+  companionPillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  companionPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: '#fff', borderRadius: 20,
+    borderWidth: 1, borderColor: '#a5d6a7',
+    paddingHorizontal: 11, paddingVertical: 6,
+  },
+  companionPillEmoji: { fontSize: 12 },
+  companionPillText: { fontSize: 13, color: '#2e7d32', fontWeight: '600' },
 
   funFactCard: {
     marginHorizontal: 12, marginTop: 10,

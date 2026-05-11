@@ -1,128 +1,91 @@
 ```
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
-║              🌱 FARMSYNC - COMMUNITY FARMING PLATFORM 🌾         ║
+║              🌱 FARMSYNC - SMART FARMING PLATFORM 🌾            ║
 ║                                                                  ║
-║     Smart farming made accessible. Grow together, grow smarter.  ║
+║     Grow smarter. Farm together. Built for India & the USA.      ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-> **From backyard gardens to community farms.** FarmSync empowers novices to experts with intelligent crop management, real-time collaboration, and community-driven knowledge sharing.
+> **From backyard gardens to community farms.** FarmSync empowers novices to experts with intelligent crop management, AI-powered advice, government scheme discovery, and community-driven knowledge sharing.
 
 ---
 
-## ✨ Core Features at a Glance
+## ✨ Features at a Glance
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    WHAT YOU GET                              │
-├─────────────────────────────────────────────────────────────┤
-│ 🌾 Farm Management    │  Create & manage multiple farms      │
-│ 🌱 Crop Tracking      │  Smart monitoring with AI insights   │
-│ 🗺️  Community Map       │  Discover nearby farms & groups     │
-│ 👥 Real-time Sync     │  Collaborate instantly              │
-│ 📵 Offline-First      │  Works without internet              │
-│ 🤖 AI Disease Detect  │  Plant disease identification        │
-│ 📊 Market Insights    │  Real-time commodity prices          │
-│ 🌤️  Weather Reports    │  Automated farming decisions         │
-│ 🎓 Smart Recs         │  Seasonal by climate & difficulty   │
-│ 💬 Community Forums   │  Share tips & knowledge              │
-└─────────────────────────────────────────────────────────────┘
-```
----
+┌─────────────────────────────────────────────────────────────────┐
+│                        FREE TIER                                 │
+├─────────────────────────────────────────────────────────────────┤
+│ 🌾 Farm Management    │  1 farm, 5 crops                        │
+│ 🌱 Crop Tracking      │  Diary, growth stages, harvest log      │
+│ 🏛️  Govt Schemes       │  India + USA (8 + 7 schemes)           │
+│ 🗺️  Community Map      │  Nearby farms & groups                 │
+│ 🛒 Marketplace        │  Buy, sell & trade produce              │
+│ 🗓️  Planting Calendar  │  Seasonal grow windows                 │
+│ 🌿 Garden Planner     │  Drag-and-drop companion planting       │
+│ 🏅 Achievements       │  Milestones & badges                    │
+│ 👤 Guest Mode         │  Browse crops & market without signing up│
+│ 📵 Offline-First      │  Works without internet                 │
+└─────────────────────────────────────────────────────────────────┘
 
-## 🤖 AI & Intelligence Features
-
-### 1. **Plant Disease Detection** (Inspired by FarmWiser's ChromaticScan)
+┌─────────────────────────────────────────────────────────────────┐
+│                    PRO — $4.99 / month                           │
+├─────────────────────────────────────────────────────────────────┤
+│ 🤖 KisanBot           │  Claude AI agronomist (Hindi + English) │
+│ 🔬 Disease Detection  │  AI photo diagnosis + treatment plan    │
+│ 📊 Farm Finances      │  Income, expense, profit & ROI charts   │
+│ ♾️  Unlimited          │  Unlimited farms & crops                │
+└─────────────────────────────────────────────────────────────────┘
 ```
-📸 Take photo → 🧠 AI analysis → 🎯 Disease identification
-  (99%+ accuracy with TensorFlow Lite)
-```
-- Real-time disease identification using device camera
-- Plant leaf image analysis with CNN model
-- Treatment recommendations by severity
-- Integrated pest management suggestions
-- Works offline with on-device ML
-
-### 2. **Smart Crop Recommendations**
-- **By Season**: Vegetables suited to current month
-- **By Climate**: Zone-based suitability analysis
-- **By Difficulty**: Novice → intermediate → expert
-- **By History**: Based on your previous crops
-- **Companion Planting**: What grows well together
-
-### 3. **Soil Health Monitoring** (Inspired by FarmWiser's Soilitix)
-```
-🌍 Soil Data → 📊 Analytics → 💡 Insights
-```
-- Track soil metrics: pH, nitrogen, phosphorus, potassium (NPK)
-- Moisture & temperature monitoring
-- IoT sensor integration ready
-- Predictive fertilizer recommendations
-- Long-term soil health trends
-
-### 4. **Weather-Driven Automation**
-- 🌤️ Automated irrigation suggestions
-- 🌡️ Temperature-based crop alerts
-- 💧 Rainfall predictions for harvest planning
-- 🌪️ Severe weather warnings
-- 📅 Optimal planting windows
 
 ---
 
-## 💰 Market Intelligence Features
+## 🤖 Pro Features
 
-### 1. **Real-time Commodity Prices** (Inspired by Agriculture Empowerment)
-```
-📊 Live Market Data → 💹 Price Trends → 💵 Smart Selling
-```
-- **City-Specific Pricing**: Vegetable prices vary by location
-- **Min/Max Rates**: Understand price ranges
-- **Trend Analysis**: Rising vs falling vegetables
-- **Harvest Planning**: When to sell for best price
-- **Market Alerts**: Price notifications
+### KisanBot — AI Agronomist
+- Powered by **Claude claude-sonnet-4-6** (Anthropic)
+- Ask about pest control, soil health, crop selection, or government schemes
+- Bilingual: Hindi and English
+- Remembers conversation context within a session
+- Suggestion chips on open (tailored to India or USA)
 
-### 2. **Market Insights**
-- Most profitable crops this season
-- Trending vegetables locally
-- Supply/demand analysis
-- Competitor farm insights
-- Bulk buyer information
+### Disease Detection
+- Take a photo of a sick plant → instant AI diagnosis
+- Treatment recommendations with severity guidance
+- Works best in good lighting; result stored in crop diary
 
-### 3. **Trading & Community**
-- Direct buyer connections
-- Peer-to-peer seed/produce trading
-- Community marketplace
-- Pricing negotiation tools
-- Quality ratings system
+### Farm Finances
+- Log income (sales) and expenses (seeds, labor, fertilizer, water, equipment)
+- Monthly bar chart trend (12-month view)
+- Profit/loss, ROI summary cards
+- Currency-aware: ₹ INR and $ USD with localized category labels
 
 ---
 
-## 📚 Knowledge & Training Hub
+## 🏛️ Government Schemes
 
-### 1. **Seasonal Growing Guides**
-- Complete care instructions per vegetable
-- Month-by-month checklists
-- Video tutorials (YouTube integration)
-- Expert tips & tricks
-- Common mistakes to avoid
+**India (8 schemes):** PM-KISAN, PMFBY (crop insurance), Kisan Credit Card, Soil Health Card, e-NAM, PM-KUSUM (solar), PKVY (organic), Agri Infrastructure Fund
 
-### 2. **Training Resources**
-- Government scheme information
-- Organic farming certifications
-- Hydroponics & greenhouse techniques
-- Pest management practices
-- Soil amendment strategies
+**USA (7 schemes):** USDA FSA Direct Loans, ARC/PLC, Federal Crop Insurance, EQIP, Beginning Farmer Loans, Organic Cost Share (NRCS), REAP (rural energy)
 
-### 3. **Expert Support**
-- Farmer-to-farmer knowledge sharing
-- Live Q&A forums
-- Expert consultations (paid/free)
-- Community feedback system
-- Anonymous suggestion submission
+**More regions coming soon.**
+
+Each scheme card shows: benefit summary, how to apply, documents required, and a direct link to the official application portal.
 
 ---
+
+## 📚 Crop Database
+
+56 vegetables pre-loaded with:
+- Growing requirements (temp, water, sunlight, soil pH)
+- Difficulty level (novice / intermediate / expert)
+- Days to harvest, spacing, season & climate zones
+- Companion planting ("Grows Well With" card)
+- Care guide, pest & disease reference
+- Fun fact, nutrition info, and a simple kitchen recipe
+
 ---
 
 ## 🏗️ Architecture
@@ -130,70 +93,58 @@
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        📱 MOBILE APP                              │
-│              React Native + Expo (iOS/Android/Web)                │
+│              React Native + Expo 54 (iOS & Android)              │
 ├──────────────────────────────────────────────────────────────────┤
-│  ✓ Offline-first with SQLite                                     │
+│  ✓ Offline-first (AsyncStorage + sync queue)                     │
 │  ✓ Real-time Socket.io collaboration                             │
-│  ✓ Camera (disease detection via AI)                             │
-│  ✓ Location services & maps                                      │
-│  ✓ Push notifications                                            │
+│  ✓ Camera (disease detection)                                    │
+│  ✓ Location services & react-native-maps                         │
+│  ✓ Push notifications (Expo Notifications)                       │
+│  ✓ i18n: English + Hindi (react-i18next)                         │
 └────────────────────────┬─────────────────────────────────────────┘
-                         │ REST API + WebSockets
-                         │ JWT Token Auth
+                         │ REST API + WebSockets  │  JWT Auth
                          ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                        🔧 BACKEND API                             │
-│         Node.js + Express (AWS App Runner - Auto-scaling)        │
+│              Node.js 20 + Express (Railway.app)                  │
 ├──────────────────────────────────────────────────────────────────┤
-│  ✓ JWT Authentication & Email Verification                       │
-│  ✓ Real-time Collaboration (Socket.io + Redis)                   │
-│  ✓ AI Integration (Disease detection, crop recognition)          │
-│  ✓ Weather API Integration (automated decisions)                 │
-│  ✓ Market Price API Integration (real-time commodity prices)     │
-│  ✓ Email Service (Nodemailer - alerts, recommendations)          │
-│  ✓ File Upload to AWS S3 (farm photos, crop images)              │
-│  ✓ Data validation & sanitization                                │
+│  ✓ JWT Authentication (bcryptjs, 12 rounds)                      │
+│  ✓ Rate limiting (100 req/15 min general, 5/15 min auth)         │
+│  ✓ Real-time collaboration (Socket.io + Redis)                   │
+│  ✓ Claude AI integration (KisanBot chatbot)                      │
+│  ✓ Stripe subscriptions (webhooks, Pro tier enforcement)         │
+│  ✓ Free-tier limits (1 farm / 5 crops) enforced server-side      │
+│  ✓ Push notifications (Expo server SDK)                          │
+│  ✓ Input validation & SQL injection protection                   │
 └────────────────────────┬─────────────────────────────────────────┘
-                         │ SQL Queries
-                         │ Geospatial (PostGIS)
+                         │ SQL + PostGIS
                          ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                      🗄️  DATABASE LAYER                           │
-│        PostgreSQL 15 (AWS RDS) + PostGIS Extension              │
+│          PostgreSQL 15 + PostGIS (Railway / Docker)              │
 ├──────────────────────────────────────────────────────────────────┤
-│  ✓ 13 optimized tables with geospatial indexes                   │
-│  ✓ Geospatial queries for "nearby farms" discovery               │
-│  ✓ Real-time activity logging                                    │
-│  ✓ Offline sync queue for conflict resolution                    │
-│  ✓ Automated backups & point-in-time recovery                    │
-│  ✓ Connection pooling & performance optimization                 │
-└────────────────────────┬─────────────────────────────────────────┘
-                         │
-          ┌──────────────┴──────────────┐
-          │                             │
-          ▼                             ▼
-    ☁️ AWS S3               🌐 External APIs
-  (Image Storage)      (Weather, Market Data)
-    + CloudFront       + AI Services
-      (CDN)
+│  ✓ Geospatial queries (nearby farms, groups, marketplace)        │
+│  ✓ Activity logging & season reports                             │
+│  ✓ Offline sync queue                                            │
+│  ✓ Financial records table                                       │
+│  ✓ Subscription tier fields on users                             │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ### Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Frontend** | React Native + Expo | iOS/Android/Web from single codebase |
-| **Backend** | Node.js + Express | JavaScript full-stack, production-ready |
-| **Database** | PostgreSQL + PostGIS | Relational + geospatial queries |
-| **Real-time** | Socket.io + Redis | Instant collaboration & presence |
-| **AI/ML** | TensorFlow Lite | On-device disease detection |
-| **Weather** | WeatherAPI | Automated farming decisions |
-| **Market Data** | Agriculture APIs | Real-time commodity prices |
-| **Storage** | AWS S3 + CloudFront | Images with CDN caching |
-| **Hosting** | AWS App Runner | Auto-scaling, managed deployments |
-| **State** | Zustand | Lightweight mobile state management |
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Mobile** | React Native + Expo 54 | iOS & Android from one codebase |
+| **Backend** | Node.js 20 + Express | ES Modules throughout |
+| **Database** | PostgreSQL 15 + PostGIS | Geospatial queries |
+| **Real-time** | Socket.io + Redis | Instant collaboration |
+| **AI** | Anthropic Claude claude-sonnet-4-6 | KisanBot + disease detection |
+| **Billing** | Stripe | Subscriptions, webhooks |
+| **Hosting** | Railway.app | Backend + DB + Redis |
+| **State** | Zustand | Lightweight mobile state |
 | **Auth** | JWT | Stateless, mobile-friendly |
-| **Email** | Nodemailer | Transactional emails & alerts |
+| **i18n** | react-i18next | English + Hindi |
 
 ---
 
@@ -201,443 +152,345 @@
 
 ```
 Farming/
-├── backend/                    # Node.js + Express API
+├── backend/
 │   ├── src/
-│   │   ├── server.js          # App entry point
-│   │   ├── database/          # Schema & migrations
-│   │   ├── routes/            # API endpoints
-│   │   │   ├── auth.js        # Login/Register
-│   │   │   ├── farm.js        # Farm CRUD
-│   │   │   ├── crop.js        # Crop tracking
-│   │   │   ├── recommendations.js
-│   │   │   ├── community.js   # Forums & groups
-│   │   │   ├── map.js         # Geospatial
-│   │   │   └── sync.js        # Offline sync
-│   │   ├── realtime/          # Socket.io handlers
-│   │   ├── email/             # Email templates
-│   │   └── utils/             # Validators, helpers
-│   ├── package.json
-│   ├── .env.example
+│   │   ├── server.js               # Entry point, rate limiting, routes
+│   │   ├── database/
+│   │   │   ├── schema.sql          # Full schema (run on fresh install)
+│   │   │   ├── seed.sql            # 56 vegetables
+│   │   │   └── migrations/
+│   │   │       ├── 001_financial_records.sql
+│   │   │       └── 002_billing.sql
+│   │   ├── middleware/
+│   │   │   └── checkSubscriptionLimit.js
+│   │   └── routes/
+│   │       ├── auth.js
+│   │       ├── farm.js             # Free-tier limit enforced
+│   │       ├── crop.js             # Free-tier limit enforced
+│   │       ├── chatbot.js          # KisanBot (Claude AI)
+│   │       ├── financials.js       # Farm P&L
+│   │       ├── schemes.js          # Govt schemes (static)
+│   │       ├── billing.js          # Stripe subscriptions
+│   │       ├── recommendations.js
+│   │       ├── community.js
+│   │       ├── map.js
+│   │       ├── marketplace.js
+│   │       ├── planner.js
+│   │       ├── achievements.js
+│   │       ├── calendar.js
+│   │       └── sync.js
 │   ├── Dockerfile
-│   └── README.md
+│   ├── railway.toml
+│   └── package.json
 │
-├── mobile/                     # React Native + Expo
+├── mobile/
 │   ├── src/
-│   │   ├── api/               # API client
-│   │   ├── screens/           # React Native screens
-│   │   │   ├── auth/          # Login/Register
-│   │   │   ├── home/          # Farm list
-│   │   │   ├── farms/         # Farm detail
-│   │   │   ├── crops/         # Crop tracking
-│   │   │   ├── map/           # Community map
-│   │   │   ├── community/     # Forums
-│   │   │   ├── profile/       # User profile
-│   │   │   └── recommendations/
-│   │   ├── store/             # Zustand state
-│   │   └── utils/             # SQLite, helpers
-│   ├── App.js                 # Root navigator
-│   ├── app.json               # Expo config
-│   ├── package.json
-│   └── README.md
+│   │   ├── api/client.js           # All API calls (axios)
+│   │   ├── store/                  # Zustand (auth, farms)
+│   │   ├── i18n/                   # English + Hindi translations
+│   │   └── screens/
+│   │       ├── auth/               # Login, Register
+│   │       ├── home/               # Farm list + feature strip + paywall
+│   │       ├── farms/              # Detail, Create, Season Report
+│   │       ├── crops/              # Plant, Detail, Diary, Disease Detection
+│   │       ├── chatbot/            # KisanBot chat UI
+│   │       ├── financials/         # P&L dashboard
+│   │       ├── schemes/            # Govt schemes browser
+│   │       ├── tour/               # 10-slide onboarding (auto on first login)
+│   │       ├── marketplace/        # Listings, create, detail
+│   │       ├── planner/            # Garden planner
+│   │       ├── map/                # Community map
+│   │       ├── community/          # Groups + forums
+│   │       ├── recommendations/    # Vegetable browser + planting calendar
+│   │       ├── profile/            # Profile + achievements
+│   │       └── admin/              # Admin panel (admin users only)
+│   ├── App.js                      # Navigation + auto-tour on first login
+│   ├── app.json
+│   └── package.json
 │
-├── infrastructure/            # AWS deployment
-│   └── AWS_DEPLOYMENT.md      # Setup guide
-│
-├── docs/                      # Documentation
-│   ├── API.md                 # API reference
-│   ├── ARCHITECTURE.md        # System design
-│   └── DEPLOYMENT.md          # How to deploy
-│
-├── docker-compose.yml         # Local dev environment
-└── README.md                  # This file
+├── docker-compose.yml              # Local dev (postgres + redis + backend)
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local Dev)
 
 ### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for Postgres + Redis)
-- Node.js 18+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Node.js 20+
+- Expo Go app on your phone (for mobile testing)
 
 ---
 
-### Step 1 — Start the databases
-
-Open Docker Desktop first, then from the project root:
+### Step 1 — Start everything with Docker
 
 ```bash
-docker-compose up postgres redis -d
+# From project root
+docker-compose up --build -d
 ```
 
-This starts Postgres on `localhost:5432` and Redis on `localhost:6379`.
+This starts Postgres (`:5432`), Redis (`:6379`), and the backend API (`:3000`).
 
-**First run only** — apply the database schema:
+**First run only** — apply the schema and seed vegetables:
 
 ```bash
 docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
   < backend/src/database/schema.sql
+
+docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
+  < backend/src/database/seed.sql
+```
+
+Verify the backend is healthy:
+```bash
+curl http://localhost:3000/health
 ```
 
 ---
 
-### Step 2 — Start the backend
+### Step 2 — Configure mobile
 
 ```bash
-cd backend
-npm install       # first run only
-npm start
-# API running at http://localhost:3000
-```
+# Find your Mac's local IP
+ipconfig getifaddr en0
 
-The `backend/.env` file is already configured for local development. Leave this terminal open.
+# Edit mobile/.env
+EXPO_PUBLIC_API_URL=http://192.168.x.x:3000/api
+EXPO_PUBLIC_SOCKET_URL=http://192.168.x.x:3000
+```
 
 ---
 
-### Step 3 — Start the mobile app
-
-In a new terminal:
+### Step 3 — Start Expo
 
 ```bash
 cd mobile
-npm install       # first run only
-npm start
+npm install     # first run only
+npx expo start
 ```
 
-Then:
-- Press **`w`** to open in a browser
-- Press **`i`** for iOS Simulator
-- Press **`a`** for Android Emulator
-- Scan the QR code with the **Expo Go** app on your phone
+- **Phone**: Scan QR code with Expo Go
+- **iOS Sim**: press `i`
+- **Android Emulator**: press `a`
+- **Browser**: press `w`
 
-> On first launch you'll see the Terms & Conditions screen — accept it to proceed to login/register.
-
----
-
-## 📱 Core Features
-
-### 1. Authentication
-- **Email/Password Registration** - Secure, verified
-- **JWT Token Auth** - Stateless, mobile-friendly
-- **Profile Setup** - Experience level, location, timezone
-- **Password Reset** - Email-based recovery
-
-### 2. Farm Management
-- **Create Farms**
-  - Backyard garden
-  - Medium garden (100-500 sqft)
-  - Large farm (1 acre+)
-  - Greenhouse
-  - Hybrid (outdoor + greenhouse)
-  
-- **Farm Details**
-  - Name, description, size, climate zone
-  - Public/private visibility
-  - Location & address
-  - Photos & documentation
-
-- **Collaborators**
-  - Invite other users
-  - Assign roles (owner, admin, contributor, viewer)
-  - Real-time activity sharing
-
-### 3. Crop Tracking
-- **Plant Crops**
-  - Select from vegetable database
-  - Set planting date & quantity
-  - Expected harvest date (auto-calculated)
-  - Growing method (outdoor/greenhouse/hydroponic)
-
-- **Monitor Growth**
-  - Track growth stages (planned → planted → growing → harvested)
-  - Photo timeline
-  - Water & care notes
-  - Pest/disease log
-
-- **Harvest**
-  - Record yield & weight
-  - Compare expectations vs actual
-  - Plan next season
-
-### 4. Smart Recommendations
-- **Seasonal Vegetables** - Based on current month & climate zone
-- **Difficulty Levels** - Novice/intermediate/expert options
-- **Care Guides** - Full growing instructions for each vegetable
-- **Companion Planting** - What grows well together
-- **Climate Matching** - Vegetables suited to your zone
-
-### 5. Community Map
-- **Find Nearby Farms** - 15km radius map view
-- **Community Groups** - Local gardening clubs
-- **Farm Details** - See what others are growing
-- **Connect** - Message other farmers
-
-### 6. Community Forums
-- **Discussion Boards** - By community group
-- **Post Types** - Tips, questions, success stories, events
-- **Collaboration** - Share resources, seeds, tools
-- **Reputation** - Badges for helpful farmers
-
-### 7. Offline-First Sync
-- **Works Offline** - Full app functionality without internet
-- **Local Database** - SQLite for caching
-- **Automatic Sync** - When connection restored
-- **Conflict Resolution** - Last-write-wins strategy
-
-### 8. Real-time Collaboration
-- **Live Updates** - See farm changes in real-time
-- **Active Users** - Know who's online
-- **Activity Feed** - Crops planted, harvested, updated
-- **Comments** - Discuss farm activities
+> On first launch you'll see the Terms screen → then register or browse as a guest.
 
 ---
 
-## 🔧 API Reference
+### Test Account
 
-### Authentication Endpoints
+```
+Email:    admin@farmsync.com
+Password: admin123
+```
 
-```javascript
+---
+
+## 🔑 Environment Variables
+
+### Backend (`backend/.env`)
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/farmsync
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your_secret_here
+ANTHROPIC_API_KEY=sk-ant-...          # KisanBot (Claude AI)
+STRIPE_SECRET_KEY=sk_test_...         # Billing (optional in dev)
+STRIPE_WEBHOOK_SECRET=whsec_...       # Stripe webhooks
+NODE_ENV=development
+PORT=3000
+```
+
+### Mobile (`mobile/.env`)
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.x.x:3000/api
+EXPO_PUBLIC_SOCKET_URL=http://192.168.x.x:3000
+```
+
+---
+
+## 💳 Subscription Model
+
+| Feature | Free | Pro ($4.99/mo) |
+|---------|------|----------------|
+| Farms | 1 | Unlimited |
+| Crops per farm | 5 | Unlimited |
+| KisanBot (AI chat) | ✗ | ✓ |
+| Disease Detection | ✗ | ✓ |
+| Farm Finances | ✗ | ✓ |
+| Govt Schemes | ✓ | ✓ |
+| Marketplace | ✓ | ✓ |
+| Community Map | ✓ | ✓ |
+| Garden Planner | ✓ | ✓ |
+| Offline access | ✓ | ✓ |
+
+> India pricing: ₹99–149/month planned (separate tier coming soon).
+
+---
+
+## 🔌 API Reference
+
+### Auth
+```
 POST   /api/auth/register
 POST   /api/auth/login
-POST   /api/auth/verify-token
 GET    /api/auth/profile
 PUT    /api/auth/profile
-POST   /api/auth/forgot-password
 ```
 
-### Farm Endpoints
+### Farms & Crops
+```
+POST   /api/farms
+GET    /api/farms/my-farms
+GET    /api/farms/:id
+PUT    /api/farms/:id
+POST   /api/farms/:id/collaborators
+GET    /api/farms/:id/activity
+GET    /api/farms/:id/season-report
 
-```javascript
-POST   /api/farms                              // Create farm
-GET    /api/farms/my-farms                     // Get user's farms
-GET    /api/farms/:farmId                      // Get farm details
-PUT    /api/farms/:farmId                      // Update farm
-POST   /api/farms/:farmId/collaborators        // Add collaborator
-GET    /api/farms/:farmId/activity             // Activity log
+POST   /api/crops
+GET    /api/crops/farm/:farmId
+GET    /api/crops/:id
+PUT    /api/crops/:id
+GET    /api/crops/:id/diary
+POST   /api/crops/:id/diary
+DELETE /api/crops/:id/diary/:entryId
 ```
 
-### Crop Endpoints
-
-```javascript
-POST   /api/crops                              // Plant crop
-GET    /api/crops/farm/:farmId                 // Get crops
-PUT    /api/crops/:cropId                      // Update crop
+### KisanBot (Pro)
+```
+POST   /api/chatbot/chat             { message, history, farmContext }
+GET    /api/chatbot/suggestions      ?country=IN|US
 ```
 
-### Recommendations Endpoints
-
-```javascript
-GET    /api/recommendations/vegetables         // Get vegetables
-GET    /api/recommendations/vegetable/:id      // Get care guide
-GET    /api/recommendations/seasonal           // Seasonal recs
+### Finances (Pro)
+```
+GET    /api/financials/farm/:id/summary   ?year=2025
+GET    /api/financials/farm/:id/trend     ?year=2025
+GET    /api/financials/farm/:id           ?type=income|expense
+POST   /api/financials/farm/:id
+DELETE /api/financials/:recordId
 ```
 
-### Community Endpoints
-
-```javascript
-POST   /api/community/groups                   // Create group
-GET    /api/community/my-groups                // My groups
-POST   /api/community/groups/:id/join          // Join group
-POST   /api/community/groups/:id/posts         // Create post
-GET    /api/community/groups/:id/posts         // Get posts
-POST   /api/community/posts/:id/comments       // Comment
+### Government Schemes
+```
+GET    /api/schemes                  ?country=IN|US&category=...
+GET    /api/schemes/:id
+POST   /api/schemes/check-eligibility
 ```
 
-### Map Endpoints
-
-```javascript
-GET    /api/map/nearby-farms                   // Nearby farms
-GET    /api/map/nearby-groups                  // Nearby groups
-PUT    /api/map/update-location                // Update location
+### Billing
+```
+GET    /api/billing/status
+POST   /api/billing/create-checkout-session
+POST   /api/billing/webhook          (Stripe webhook — raw body)
+POST   /api/billing/cancel
 ```
 
-### Sync Endpoints
-
-```javascript
-POST   /api/sync/push                          // Push offline changes
-GET    /api/sync/pending                       // Get pending changes
-POST   /api/sync/confirm                       // Confirm sync
+### Other
 ```
-
----
-
-## 🗄️ Database Schema
-
-### Users
-- id, email, password_hash, first_name, last_name
-- profile_image_url, bio, experience_level
-- location (geospatial), timezone
-
-### Farms
-- id, owner_id, name, description, farm_type
-- size_sqft, location, address, climate_zone
-- is_public, cover_image_url
-
-### Crops
-- id, farm_id, vegetable_id, quantity_planted
-- planting_date, expected_harvest_date, status
-- actual_harvest_date, yield_quantity, growing_method
-- photos (array), notes
-
-### Vegetables (Database)
-- id, name, scientific_name, difficulty_level
-- days_to_harvest, spacing, temperature requirements
-- water_frequency, sunlight_hours, soil_type, pH range
-- season, climate_zones, can_greenhouse, yields_per_plant
-- planting_tips, care_tips, pest_diseases, companion_plants
-
-### Community
-- community_groups, community_members
-- community_posts, post_comments
-- achievements
-
-### Sync & Activity
-- sync_queue (offline changes)
-- activity_log (farm timeline)
-
----
-
-## 🚀 Deployment
-
-### AWS Deployment (Recommended)
-
-Full step-by-step guide: [infrastructure/AWS_DEPLOYMENT.md](infrastructure/AWS_DEPLOYMENT.md)
-
-**Services:**
-- **RDS PostgreSQL** - $30/month (db.t3.micro)
-- **App Runner** - $50/month (auto-scaling)
-- **S3** - Pay per GB (~$0.023/GB)
-- **CloudFront** - ~$20/month (CDN)
-- **Total** - ~$100-150/month
-
-### Mobile App Distribution
-
-**iOS:**
-```bash
-eas build --platform ios
-eas submit --platform ios  # To App Store
-```
-
-**Android:**
-```bash
-eas build --platform android
-# Upload APK to Google Play Console
-```
-
-### Docker Deployment
-
-```bash
-# Build image
-docker build -t farmsync-api:latest ./backend
-
-# Run with docker-compose (includes postgres & redis)
-docker-compose up -d
-
-# Deploy to AWS ECR
-aws ecr push farmsync-api:latest
+GET    /api/recommendations/vegetables
+GET    /api/recommendations/vegetable/:id
+GET    /api/calendar/:farmId
+GET    /api/marketplace/nearby
+GET    /api/marketplace/my
+POST   /api/marketplace
+GET    /api/map/nearby-farms
+GET    /api/map/nearby-groups
+GET    /api/achievements
+POST   /api/achievements/check
+POST   /api/disease/diagnose
 ```
 
 ---
 
 ## 🔐 Security
 
-- **Authentication** - JWT tokens with expiration
-- **Email Verification** - Confirm user email on signup
-- **Password Hashing** - bcryptjs with 12 rounds
-- **CORS** - Restricted to known origins
-- **Rate Limiting** - (TODO: implement express-rate-limit)
-- **Input Validation** - Sanitize all inputs
-- **HTTPS** - Required for production (via CloudFront/App Runner)
-- **SQL Injection** - Protected via parameterized queries
-- **CSRF** - Same-origin requests only
+- JWT tokens (expiring, stored in AsyncStorage)
+- Passwords hashed with bcryptjs (12 rounds)
+- Rate limiting: 100 req/15 min general, 5/15 min on auth routes
+- Free-tier limits enforced server-side (not just client-side)
+- Stripe webhook signature verification
+- Parameterized SQL queries (no injection risk)
+- CORS restricted to known origins in production
 
 ---
 
-## 📊 Vegetables Database
+## 🗄️ Database Schema (key tables)
 
-Pre-loaded vegetables with:
-- Growing requirements (temp, water, sunlight)
-- Difficulty level (novice/intermediate/expert)
-- Seasonal availability
-- Climate zone compatibility
-- Days to harvest
-- Companion planting info
-- Care instructions
-
-**Sample vegetables included:**
-- Tomatoes, lettuce, peppers, carrots
-- Cucumbers, zucchini, beans, peas
-- Cabbage, broccoli, spinach, kale
-- Herbs: basil, mint, parsley, dill
-
----
-
-## 📈 Scalability
-
-- **Database** - RDS with auto-backups
-- **Backend** - App Runner auto-scales (0-4 vCPUs)
-- **Images** - CloudFront CDN caching
-- **Real-time** - Socket.io with Redis adapter
-- **Offline** - SQLite local sync queue
+| Table | Purpose |
+|-------|---------|
+| `users` | Auth, profile, `subscription_tier`, Stripe IDs |
+| `farms` | Farm metadata, geolocation, owner |
+| `crops` | Planted crops, growth stage, harvest data |
+| `crop_diary` | Photos + notes per crop |
+| `vegetables` | 56 pre-seeded crops with full care data |
+| `financial_records` | Income/expense per farm |
+| `community_groups` | Local farming groups (geospatial) |
+| `community_posts` | Forum posts + comments |
+| `marketplace_listings` | Buy/sell/trade produce |
+| `sync_queue` | Offline change buffer |
+| `activity_log` | Farm timeline events |
+| `achievements` | User milestone tracking |
 
 ---
 
-## 🤝 Contributing
+## 🚀 Deployment (Railway.app)
 
-1. Fork the repo
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push: `git push origin feature/amazing-feature`
-5. Open Pull Request
+1. Push to GitHub — Railway auto-deploys from `main`
+2. Add a PostgreSQL plugin + PostGIS (use `postgis/postgis:15-3.3` Docker service — Railway's built-in PG lacks PostGIS)
+3. Add a Redis plugin
+4. Set environment variables in Railway dashboard
+5. Run schema + seed SQL via Railway shell on first deploy
 
----
+Backend config is in [`backend/railway.toml`](backend/railway.toml).
 
-## 📝 Development Roadmap
+### App Store Distribution
 
-- [ ] Web dashboard (React)
-- [ ] Advanced weather integration
-- [ ] AI crop disease detection (TensorFlow Lite)
-- [ ] Marketplace (buy/sell seeds, produce)
-- [ ] Government farming grants database
-- [ ] Blog & educational content
-- [ ] Multi-language support
-- [ ] Dark mode
-- [ ] Advanced analytics dashboard
+```bash
+# Install EAS CLI
+npm install -g eas-cli
+
+# iOS
+eas build --platform ios
+eas submit --platform ios
+
+# Android
+eas build --platform android
+eas submit --platform android
+```
 
 ---
 
 ## 🆘 Troubleshooting
 
-### "Registration failed" on sign up
-The backend is not running or the database schema hasn't been applied. Make sure you completed all three steps in Quick Start. Check the backend terminal for error output.
-
-### Backend won't connect to the database
+### Mobile can't reach backend
 ```bash
-# Check containers are running and healthy
-docker-compose ps
-
-# If not running, start them
-docker-compose up postgres redis -d
-
-# If schema is missing, reapply it
-docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
-  < backend/src/database/schema.sql
+# Confirm your Mac IP
+ipconfig getifaddr en0
+# Update mobile/.env and restart Expo with --clear
+npx expo start --clear
 ```
 
-### Port 3000 already in use
+### No vegetables showing after docker-compose down -v
+```bash
+docker exec -i farming-postgres-1 psql -U postgres -d farmsync \
+  < backend/src/database/seed.sql
+```
+
+### New npm packages not found in Docker
+```bash
+# Stale anonymous node_modules volume — wipe and rebuild
+docker-compose down -v
+docker-compose up --build
+```
+
+### Port 3000 in use
 ```bash
 lsof -ti:3000 | xargs kill -9
-```
-
-### Mobile app can't reach the backend
-The API URL defaults to `http://localhost:3000/api`. On a physical device this won't work — use your machine's local IP instead:
-
-```bash
-# Find your local IP
-ipconfig getifaddr en0   # Mac
-
-# Set it in mobile/.env
-EXPO_PUBLIC_API_URL=http://192.168.x.x:3000/api
 ```
 
 ### Expo cache issues
@@ -645,36 +498,45 @@ EXPO_PUBLIC_API_URL=http://192.168.x.x:3000/api
 cd mobile && npx expo start --clear
 ```
 
-### Docker Desktop not found
-```bash
-# On Mac — check Docker context is set to desktop-linux
-docker context use desktop-linux
-docker ps
-```
-
 ---
 
-## 📞 Support
+## 📈 Roadmap
 
-- **Issues**: GitHub Issues
-- **Email**: support@farmsync.com
-- **Discord**: [Community Server](https://discord.gg/farmsync)
+### Done ✓
+- [x] Farm & crop management (CRUD, diary, harvest)
+- [x] 56-vegetable database with full care guides
+- [x] Community map (geospatial, nearby farms & groups)
+- [x] Marketplace (buy, sell, trade)
+- [x] Garden planner (companion planting drag-and-drop)
+- [x] Planting calendar
+- [x] Achievements & badges
+- [x] Disease detection (AI photo diagnosis)
+- [x] KisanBot — Claude AI agronomist (Hindi + English)
+- [x] Farm finances (P&L, ROI, trend charts)
+- [x] Government schemes (India + USA)
+- [x] Stripe subscriptions (Pro tier, $4.99/mo)
+- [x] Free-tier enforcement (1 farm / 5 crops)
+- [x] Rate limiting (auth + general)
+- [x] Multi-language support (English + Hindi)
+- [x] Guest mode (browse without signing up)
+- [x] 10-slide onboarding tour (auto-launches on first login)
+- [x] Push notifications
+- [x] Offline-first sync
+
+### Planned
+- [ ] India Pro tier (₹99–149/month)
+- [ ] Web dashboard (React)
+- [ ] More regions for government schemes (EU, AU, NG)
+- [ ] Weather-driven planting alerts
+- [ ] Dark mode
+- [ ] Advanced analytics (yield trends year-over-year)
 
 ---
 
 ## 📄 License
 
-MIT License - feel free to use this project for commercial and personal purposes.
+MIT — free to use for commercial and personal projects.
 
 ---
 
-## 🌍 Mission
-
-To democratize farming knowledge and help communities grow their own food, from urban backyard gardens to collaborative community farms.
-
-**Happy farming! 🌱**
-
----
-
-**Last Updated:** April 2026  
-**Version:** 1.0.0 (MVP)
+**Last Updated:** May 2026 | **Version:** 1.2.0

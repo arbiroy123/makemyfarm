@@ -1,7 +1,12 @@
-version: '3.8'
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCAL DEVELOPMENT only.
+# Production is deployed on Railway (see backend/railway.toml).
+# Set production env vars in the Railway dashboard → Variables tab.
+# Copy .env.example → backend/.env for local secrets (gitignored).
+# ─────────────────────────────────────────────────────────────────────────────
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL + PostGIS (mirrors Railway PostgreSQL plugin)
   postgres:
     image: postgis/postgis:15-3.3
     environment:
@@ -13,13 +18,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/src/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/src/database/migrations:/docker-entrypoint-initdb.d/migrations
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis (for real-time features, optional)
+  # Redis (mirrors Railway Redis plugin)
   redis:
     image: redis:7-alpine
     ports:
@@ -30,11 +36,13 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API Server
+  # Backend API (same Dockerfile used by Railway)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
     environment:
       NODE_ENV: development
       PORT: 3000
@@ -45,12 +53,14 @@ services:
       DB_NAME: farmsync
       DB_PORT: 5432
       JWT_SECRET: dev_secret_key_change_in_production
-      SMTP_HOST: smtp.gmail.com
-      SMTP_PORT: 587
-      SMTP_USER: your_email@gmail.com
-      SMTP_PASSWORD: your_app_password
       CORS_ORIGIN: http://localhost:3000,http://localhost:8081,http://localhost:19006
       REDIS_URL: redis://redis:6379
+      # Override these in backend/.env for local Stripe/Anthropic testing:
+      # ANTHROPIC_API_KEY: sk-ant-...
+      # STRIPE_SECRET_KEY: sk_test_...
+      # STRIPE_WEBHOOK_SECRET: whsec_...
+      # STRIPE_PRO_PRICE_ID: price_...
+      # APP_URL: http://localhost:3000
     ports:
       - "3000:3000"
     depends_on:

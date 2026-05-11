@@ -275,4 +275,43 @@ export const plannerAPI = {
     client.delete(`/planner/plans/${planId}`),
 };
 
+// Billing / Subscription API
+export const billingAPI = {
+  getStatus: () => client.get('/billing/status'),
+  createCheckoutSession: () => client.post('/billing/create-checkout-session'),
+  cancel: () => client.post('/billing/cancel'),
+};
+
+// KisanBot — AI Agronomist Chatbot API
+export const chatbotAPI = {
+  chat: (message, history = [], farmContext = null) =>
+    client.post('/chatbot/chat', { message, history, farmContext }),
+  getSuggestions: (country = 'IN') =>
+    client.get('/chatbot/suggestions', { params: { country } }),
+};
+
+// Farm Financial Dashboard API
+export const financialsAPI = {
+  getSummary: (farmId, year) =>
+    client.get(`/financials/farm/${farmId}/summary`, { params: { year } }),
+  getTrend: (farmId, year) =>
+    client.get(`/financials/farm/${farmId}/trend`, { params: { year } }),
+  getRecords: (farmId, type) =>
+    client.get(`/financials/farm/${farmId}`, { params: { type } }),
+  addRecord: (farmId, data) =>
+    client.post(`/financials/farm/${farmId}`, data),
+  deleteRecord: (recordId) =>
+    client.delete(`/financials/${recordId}`),
+};
+
+// Government Schemes API (India + US)
+export const schemesAPI = {
+  getSchemes: (country = 'IN', category, state) =>
+    client.get('/schemes', { params: { country, category, state } }),
+  getScheme: (schemeId) =>
+    client.get(`/schemes/${schemeId}`),
+  checkEligibility: (data) =>
+    client.post('/schemes/check-eligibility', data),
+};
+
 export default client;

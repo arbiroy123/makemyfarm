@@ -54,6 +54,12 @@ import ListingDetailScreen from './src/screens/marketplace/ListingDetailScreen';
 // Screens — Stack (Planner)
 import GardenPlannerScreen from './src/screens/planner/GardenPlannerScreen';
 
+// Screens — New Features
+import ChatbotScreen from './src/screens/chatbot/ChatbotScreen';
+import FinancialDashboardScreen from './src/screens/financials/FinancialDashboardScreen';
+import GovernmentSchemesScreen from './src/screens/schemes/GovernmentSchemesScreen';
+import TourScreen from './src/screens/tour/TourScreen';
+
 // Components
 import LanguagePicker from './src/components/LanguagePicker';
 
@@ -210,6 +216,11 @@ function RootStack() {
           <Stack.Screen name="ListingDetail" component={ListingDetailScreen} options={{ title: 'Listing', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
           {/* Garden Planner */}
           <Stack.Screen name="GardenPlanner" component={GardenPlannerScreen} options={{ title: 'Garden Planner', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          {/* New Features */}
+          <Stack.Screen name="Chatbot" component={ChatbotScreen} options={{ title: 'KisanBot — AI Advisor', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          <Stack.Screen name="FinancialDashboard" component={FinancialDashboardScreen} options={{ title: 'Farm Finances', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          <Stack.Screen name="GovernmentSchemes" component={GovernmentSchemesScreen} options={{ title: 'Government Schemes', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          <Stack.Screen name="Tour" component={TourScreen} options={{ headerShown: false, presentation: 'modal' }} />
         </>
       ) : isGuest ? (
         <Stack.Screen name="Guest" component={GuestStack} />

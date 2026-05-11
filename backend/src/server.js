@@ -22,6 +22,11 @@ import achievementsRoutes from './routes/achievements.js';
 import calendarRoutes from './routes/calendar.js';
 import marketplaceRoutes from './routes/marketplace.js';
 import plannerRoutes from './routes/planner.js';
+import chatbotRoutes from './routes/chatbot.js';
+import financialsRoutes from './routes/financials.js';
+import schemesRoutes from './routes/schemes.js';
+import billingRoutes from './routes/billing.js';
+import rateLimit from 'express-rate-limit';
 
 // Real-time handlers
 import { setupSocketHandlers } from './realtime/socketHandlers.js';
@@ -43,10 +48,34 @@ const io = new SocketServer(server, {
   }
 });
 
+// Stripe webhook needs raw body — must be registered BEFORE express.json()
+app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Rate limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts, please try again in 15 minutes.' },
+});
+
+app.use('/api', generalLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -68,6 +97,10 @@ app.use('/api/achievements', achievementsRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/planner', plannerRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/financials', financialsRoutes);
+app.use('/api/schemes', schemesRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Socket.io Real-time Handlers
 setupSocketHandlers(io);

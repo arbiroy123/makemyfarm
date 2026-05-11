@@ -2,12 +2,18 @@ import express from 'express';
 import { query } from '../database/connection.js';
 import { authenticateToken } from './auth.js';
 import { v4 as uuidv4 } from 'uuid';
+import { checkSubscriptionLimit } from '../middleware/checkSubscriptionLimit.js';
 
 const router = express.Router();
 
 // Create a new farm
 router.post('/', authenticateToken, async (req, res) => {
   try {
+    const limit = await checkSubscriptionLimit(req.user.userId, 'farm');
+    if (!limit.allowed) {
+      return res.status(403).json({ error: limit.message, upgradeRequired: true });
+    }
+
     const { name, description, farmType, sizeSqft, latitude, longitude, address, climateZone } = req.body;
     const farmId = uuidv4();
 

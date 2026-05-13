@@ -7,9 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { plannerAPI, achievementsAPI } from '../../api/client';
 import { useFarmStore } from '../../store';
 
-const COLS = 8;
-const ROWS = 6;
 const EMPTY = null;
+
+const PLOT_SIZES = [
+  { key: 'small',  label: 'Small',  sub: '≤ 50 sq ft',  cols: 5, rows: 4, tip: null },
+  { key: 'medium', label: 'Medium', sub: '50–200 sq ft', cols: 8, rows: 6, tip: null },
+  { key: 'large',  label: 'Large',  sub: '> 200 sq ft',  cols: 12, rows: 8, tip: '💡 Run rows North–South for even sunlight and better air flow.' },
+];
 
 const VEG_COLORS = [
   '#ef9a9a', '#f48fb1', '#ce93d8', '#9fa8da', '#90caf9',
@@ -22,8 +26,8 @@ function cellKey(r, c) { return `${r}-${c}`; }
 const VEG_EMOJI_MAP = {
   tomato: '🍅', pepper: '🫑', lettuce: '🥬', carrot: '🥕',
   cucumber: '🥒', bean: '🫘', pea: '🫛', corn: '🌽',
-  potato: '🥔', onion: '🧅', garlic: '🧄', spinach: '🌿',
-  kale: '🥦', broccoli: '🥦', squash: '🎃', pumpkin: '🎃',
+  potato: '🥔', onion: '🧅', garlic: '🧄', spinach: '🥬',
+  kale: '🥬', broccoli: '🥦', squash: '🎃', pumpkin: '🎃',
   basil: '🌿', mint: '🌿', herb: '🌿',
   rosemary: '🌿', purslane: '🌿', lentil: '🫘',
   chickpea: '🫘', sorghum: '🌾', pigeon: '🫘',
@@ -36,22 +40,41 @@ function vegEmoji(name) {
   return Object.entries(VEG_EMOJI_MAP).find(([k]) => lower.includes(k))?.[1] || '🌱';
 }
 
+function makeGrid(rows, cols) {
+  const g = {};
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++)
+      g[cellKey(r, c)] = EMPTY;
+  return g;
+}
+
 export default function GardenPlannerScreen({ navigation }) {
   const { farms } = useFarmStore();
   const [vegetables, setVegetables] = useState([]);
-  const [grid, setGrid] = useState(() => {
-    const g = {};
-    for (let r = 0; r < ROWS; r++)
-      for (let c = 0; c < COLS; c++)
-        g[cellKey(r, c)] = EMPTY;
-    return g;
-  });
+  const [plotSize, setPlotSize] = useState(PLOT_SIZES[1]); // default: medium
+  const [grid, setGrid] = useState(() => makeGrid(PLOT_SIZES[1].rows, PLOT_SIZES[1].cols));
   const [selectedVeg, setSelectedVeg] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
   const [planName, setPlanName] = useState('My Garden');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const colorMap = useRef({});
+
+  const handlePlotSizeChange = (size) => {
+    Alert.alert(
+      'Change Plot Size?',
+      'This will reset the grid. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Change', style: 'destructive', onPress: () => {
+          setPlotSize(size);
+          setGrid(makeGrid(size.rows, size.cols));
+          setSelectedCell(null);
+          setSelectedVeg(null);
+        }},
+      ]
+    );
+  };
 
   useEffect(() => {
     plannerAPI.getVegetables()
@@ -86,11 +109,7 @@ export default function GardenPlannerScreen({ navigation }) {
       {
         text: 'Clear', style: 'destructive',
         onPress: () => {
-          const g = {};
-          for (let r = 0; r < ROWS; r++)
-            for (let c = 0; c < COLS; c++)
-              g[cellKey(r, c)] = EMPTY;
-          setGrid(g);
+          setGrid(makeGrid(plotSize.rows, plotSize.cols));
           setSelectedCell(null);
         },
       },
@@ -120,7 +139,7 @@ export default function GardenPlannerScreen({ navigation }) {
     setSaving(true);
     try {
       const farmId = farms?.[0]?.id || null;
-      await plannerAPI.savePlan({ farmId, name: planName, gridData: grid });
+      await plannerAPI.savePlan({ farmId, name: planName, gridData: grid, plotSize: plotSize.key });
       achievementsAPI.checkAchievements().catch(() => {});
       Alert.alert('Saved!', 'Your garden plan has been saved.', [
         { text: 'OK', onPress: () => navigation.goBack() }
@@ -183,12 +202,33 @@ export default function GardenPlannerScreen({ navigation }) {
         )}
       </View>
 
+      {/* Plot size selector */}
+      <View style={styles.sizeRow}>
+        {PLOT_SIZES.map(s => (
+          <TouchableOpacity
+            key={s.key}
+            style={[styles.sizeChip, plotSize.key === s.key && styles.sizeChipActive]}
+            onPress={() => s.key !== plotSize.key && handlePlotSizeChange(s)}
+          >
+            <Text style={[styles.sizeChipLabel, plotSize.key === s.key && styles.sizeChipLabelActive]}>{s.label}</Text>
+            <Text style={[styles.sizeChipSub, plotSize.key === s.key && styles.sizeChipSubActive]}>{s.sub}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Directional tip for large plots */}
+      {plotSize.tip && (
+        <View style={styles.tipBanner}>
+          <Text style={styles.tipBannerText}>{plotSize.tip}</Text>
+        </View>
+      )}
+
       {/* Grid */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.grid}>
-          {Array.from({ length: ROWS }, (_, r) => (
+          {Array.from({ length: plotSize.rows }, (_, r) => (
             <View key={r} style={styles.gridRow}>
-              {Array.from({ length: COLS }, (_, c) => {
+              {Array.from({ length: plotSize.cols }, (_, c) => {
                 const key = cellKey(r, c);
                 const vegId = grid[key];
                 const veg = vegId ? vegetables.find(v => v.id === vegId) : null;
@@ -275,6 +315,27 @@ const styles = StyleSheet.create({
   cellSelected: { borderColor: '#1976d2', borderWidth: 2, shadowColor: '#1976d2', shadowRadius: 4, elevation: 4 },
   cellCompanion: { borderColor: '#4CAF50', borderWidth: 2, backgroundColor: '#e8f5e9' },
   cellEmoji: { fontSize: 22 },
+
+  sizeRow: {
+    flexDirection: 'row', backgroundColor: '#fff',
+    paddingHorizontal: 12, paddingVertical: 8, gap: 8,
+    borderBottomWidth: 1, borderBottomColor: '#eee',
+  },
+  sizeChip: {
+    flex: 1, borderRadius: 10, borderWidth: 1.5, borderColor: '#e0e0e0',
+    paddingVertical: 7, alignItems: 'center',
+  },
+  sizeChipActive: { borderColor: '#4CAF50', backgroundColor: '#e8f5e9' },
+  sizeChipLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
+  sizeChipLabelActive: { color: '#2e7d32' },
+  sizeChipSub: { fontSize: 10, color: '#bbb' },
+  sizeChipSubActive: { color: '#66bb6a' },
+
+  tipBanner: {
+    backgroundColor: '#fff8e1', paddingHorizontal: 14, paddingVertical: 8,
+    borderBottomWidth: 1, borderBottomColor: '#ffe082',
+  },
+  tipBannerText: { fontSize: 12, color: '#e65100', fontWeight: '500' },
 
   tray: { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#eee', paddingVertical: 10 },
   trayTitle: { fontSize: 12, color: '#888', paddingHorizontal: 14, marginBottom: 6 },

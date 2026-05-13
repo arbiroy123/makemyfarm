@@ -4,7 +4,8 @@ import {
   FlatList, ActivityIndicator, Modal, Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { farmAPI, billingAPI } from '../../api/client';
+import { farmAPI, billingAPI, adsAPI } from '../../api/client';
+import { detectCountry } from '../../utils/country';
 import { useFarmStore } from '../../store';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -27,6 +28,8 @@ export default function HomeScreen({ navigation }) {
   const { farms, setFarms } = useFarmStore();
   const [loading, setLoading] = useState(true);
   const [isPro, setIsPro] = useState(false);
+  const [proPrice, setProPrice] = useState('₹99');
+  const [ad, setAd] = useState(null);
   const [paywallVisible, setPaywallVisible] = useState(false);
   const [paywallFeature, setPaywallFeature] = useState('');
 
@@ -50,6 +53,11 @@ export default function HomeScreen({ navigation }) {
     try {
       const res = await billingAPI.getStatus();
       setIsPro(res.data.isPro);
+      if (res.data.price) setProPrice(res.data.price);
+      if (!res.data.isPro) {
+        const country = res.data.country || detectCountry();
+        adsAPI.getBanner(country).then(r => setAd(r.data)).catch(() => {});
+      }
     } catch {
       // default to free if billing endpoint unreachable
     }
@@ -133,6 +141,23 @@ export default function HomeScreen({ navigation }) {
         ))}
       </ScrollView>
 
+      {/* Sponsored card — free tier only, backend-driven */}
+      {!isPro && ad && (
+        <TouchableOpacity
+          style={styles.sponsoredCard}
+          activeOpacity={0.85}
+          onPress={() => Linking.openURL(ad.url)}
+        >
+          <View style={styles.sponsoredBadge}><Text style={styles.sponsoredBadgeText}>AD</Text></View>
+          <Text style={styles.sponsoredEmoji}>{ad.emoji}</Text>
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Text style={styles.sponsoredTitle}>{ad.title}</Text>
+            <Text style={styles.sponsoredSub}>{ad.subtitle}</Text>
+          </View>
+          <Ionicons name="open-outline" size={16} color="#888" />
+        </TouchableOpacity>
+      )}
+
       {farms.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>{t('noFarmsYet')}</Text>
@@ -178,7 +203,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.divider} />
 
             <View style={styles.priceRow}>
-              <Text style={styles.price}>$4.99</Text>
+              <Text style={styles.price}>{proPrice}</Text>
               <Text style={styles.pricePer}> / month</Text>
             </View>
             <Text style={styles.priceNote}>Cancel anytime. No hidden fees.</Text>
@@ -283,4 +308,19 @@ const styles = StyleSheet.create({
   upgradeBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   laterBtn: { paddingVertical: 8 },
   laterText: { color: '#aaa', fontSize: 14 },
+
+  sponsoredCard: {
+    flexDirection: 'row', alignItems: 'center',
+    marginHorizontal: 15, marginTop: 10, marginBottom: 4,
+    backgroundColor: '#fff', borderRadius: 10, padding: 12,
+    borderWidth: 1, borderColor: '#eee',
+  },
+  sponsoredBadge: {
+    position: 'absolute', top: 6, right: 8,
+    backgroundColor: '#e0e0e0', borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1,
+  },
+  sponsoredBadgeText: { fontSize: 9, color: '#888', fontWeight: '700' },
+  sponsoredEmoji: { fontSize: 26 },
+  sponsoredTitle: { fontSize: 13, fontWeight: '700', color: '#333' },
+  sponsoredSub: { fontSize: 11, color: '#888', marginTop: 1 },
 });

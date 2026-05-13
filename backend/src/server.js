@@ -26,6 +26,7 @@ import chatbotRoutes from './routes/chatbot.js';
 import financialsRoutes from './routes/financials.js';
 import schemesRoutes from './routes/schemes.js';
 import billingRoutes from './routes/billing.js';
+import adsRoutes from './routes/ads.js';
 import rateLimit from 'express-rate-limit';
 
 // Real-time handlers
@@ -101,6 +102,7 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/financials', financialsRoutes);
 app.use('/api/schemes', schemesRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/ads', adsRoutes);
 
 // Socket.io Real-time Handlers
 setupSocketHandlers(io);

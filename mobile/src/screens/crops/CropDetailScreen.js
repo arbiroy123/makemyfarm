@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
-  Modal, TextInput, Alert, Share,
+  Modal, TextInput, Alert, Share, Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { cropAPI, achievementsAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
+import { detectCountry } from '../../utils/country';
 
 const STATUS_COLOR = {
   planted: '#4CAF50', growing: '#2196F3',
@@ -131,6 +132,11 @@ export default function CropDetailScreen({ route, navigation }) {
     });
   }, [crop]);
 
+  function handleYouTube() {
+    const query = encodeURIComponent(`how to grow ${crop?.vegetable_name || ''}`);
+    Linking.openURL(`https://www.youtube.com/results?search_query=${query}`);
+  }
+
   async function handleShare() {
     if (!crop) return;
     const days = daysGrown(crop.planting_date);
@@ -235,6 +241,16 @@ export default function CropDetailScreen({ route, navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* YouTube search */}
+      <TouchableOpacity style={styles.youtubeCta} activeOpacity={0.85} onPress={handleYouTube}>
+        <Ionicons name="logo-youtube" size={20} color="#fff" />
+        <View style={{ flex: 1, marginLeft: 10 }}>
+          <Text style={styles.youtubeCtaTitle}>Watch on YouTube</Text>
+          <Text style={styles.youtubeCtaSub}>How to grow {crop.vegetable_name}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#fff" />
+      </TouchableOpacity>
 
       {/* Diary CTA */}
       <TouchableOpacity
@@ -388,6 +404,35 @@ export default function CropDetailScreen({ route, navigation }) {
         </View>
       ) : null}
 
+      {/* Buy seeds — region-aware */}
+      {(() => {
+        const country = user?.country_code || detectCountry();
+        const q = encodeURIComponent(`${crop.vegetable_name} seeds`);
+        const shops = country === 'US'
+          ? [
+              { label: 'Amazon', url: `https://www.amazon.com/s?k=${q}`, icon: '📦' },
+              { label: 'Burpee Seeds', url: `https://www.burpee.com/search?q=${encodeURIComponent(crop.vegetable_name)}`, icon: '🌿' },
+            ]
+          : [
+              { label: 'Amazon.in', url: `https://www.amazon.in/s?k=${q}`, icon: '📦' },
+              { label: 'Flipkart', url: `https://www.flipkart.com/search?q=${q}`, icon: '🛒' },
+              { label: 'IndiaMART', url: `https://www.indiamart.com/search.mp?ss=${q}`, icon: '🌱' },
+            ];
+        return (
+          <View style={styles.seedSection}>
+            <Text style={styles.seedHeader}>🌱 Buy {crop.vegetable_name} Seeds</Text>
+            <View style={styles.seedRow}>
+              {shops.map(s => (
+                <TouchableOpacity key={s.label} style={styles.seedBtn} onPress={() => Linking.openURL(s.url)} activeOpacity={0.8}>
+                  <Text style={styles.seedBtnIcon}>{s.icon}</Text>
+                  <Text style={styles.seedBtnLabel}>{s.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        );
+      })()}
+
       {/* Growing story */}
       {crop.growing_story ? (
         <View style={styles.storyCard}>
@@ -431,6 +476,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12,
   },
   statusText: { color: '#fff', fontWeight: '700', fontSize: 12 },
+
+  youtubeCta: {
+    flexDirection: 'row', alignItems: 'center',
+    margin: 12, marginBottom: 0,
+    backgroundColor: '#FF0000', borderRadius: 12,
+    padding: 14,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3,
+    elevation: 2,
+  },
+  youtubeCtaTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  youtubeCtaSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
 
   diaryCta: {
     flexDirection: 'row', alignItems: 'center',
@@ -566,6 +622,13 @@ const styles = StyleSheet.create({
   recipeHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   recipeTitle: { fontSize: 14, fontWeight: '700', color: '#2e7d32' },
   recipeText: { fontSize: 13, color: '#1b5e20', lineHeight: 20 },
+
+  seedSection: { marginHorizontal: 12, marginTop: 10, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#c8e6c9', padding: 14 },
+  seedHeader: { fontSize: 14, fontWeight: '700', color: '#2e7d32', marginBottom: 10 },
+  seedRow: { flexDirection: 'row', gap: 8 },
+  seedBtn: { flex: 1, alignItems: 'center', backgroundColor: '#f1f8f1', borderRadius: 10, paddingVertical: 10, gap: 4 },
+  seedBtnIcon: { fontSize: 20 },
+  seedBtnLabel: { fontSize: 11, fontWeight: '600', color: '#2e7d32' },
 
   storyCard: {
     marginHorizontal: 12, marginTop: 10, marginBottom: 10,

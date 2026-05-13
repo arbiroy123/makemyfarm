@@ -4,8 +4,8 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 const VEG_EMOJI_MAP = {
   tomato: '🍅', pepper: '🫑', lettuce: '🥬', carrot: '🥕',
   cucumber: '🥒', bean: '🫘', pea: '🫛', corn: '🌽',
-  potato: '🥔', onion: '🧅', garlic: '🧄', spinach: '🌿',
-  kale: '🥦', broccoli: '🥦', squash: '🎃', pumpkin: '🎃',
+  potato: '🥔', onion: '🧅', garlic: '🧄', spinach: '🥬',
+  kale: '🥬', broccoli: '🥦', squash: '🎃', pumpkin: '🎃',
   eggplant: '🍆', zucchini: '🥒',
 };
 function vegEmoji(name) {

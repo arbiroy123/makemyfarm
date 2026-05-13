@@ -11,7 +11,7 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName, experienceLevel } = req.body;
+    const { email, password, firstName, lastName, experienceLevel, countryCode } = req.body;
 
     // Validate input
     if (!validateEmail(email)) {
@@ -32,12 +32,14 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
     const userId = uuidv4();
 
+    const country = ['IN', 'US'].includes(countryCode) ? countryCode : 'IN';
+
     // Create user
     const newUser = await query(
-      `INSERT INTO users (id, email, password_hash, first_name, last_name, experience_level)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, email, first_name, last_name, experience_level`,
-      [userId, email, hashedPassword, firstName, lastName, experienceLevel || 'novice']
+      `INSERT INTO users (id, email, password_hash, first_name, last_name, experience_level, country_code)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, email, first_name, last_name, experience_level, country_code`,
+      [userId, email, hashedPassword, firstName, lastName, experienceLevel || 'novice', country]
     );
 
     // Send verification email (non-blocking — don't fail registration if email is unavailable)
@@ -126,7 +128,7 @@ router.post('/verify-token', (req, res) => {
 // Get current user profile
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const user = await query('SELECT id, email, first_name, last_name, experience_level, is_admin, location, timezone FROM users WHERE id = $1', [req.user.userId]);
+    const user = await query('SELECT id, email, first_name, last_name, experience_level, is_admin, location, timezone, country_code FROM users WHERE id = $1', [req.user.userId]);
     res.json(user.rows[0]);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch profile' });
@@ -136,14 +138,18 @@ router.get('/profile', authenticateToken, async (req, res) => {
 // Update profile
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { firstName, lastName, experienceLevel, timezone, location } = req.body;
+    const { firstName, lastName, experienceLevel, timezone, location, countryCode } = req.body;
+    const country = countryCode && ['IN', 'US'].includes(countryCode) ? countryCode : undefined;
 
     const updated = await query(
-      `UPDATE users 
+      `UPDATE users
        SET first_name = $2, last_name = $3, experience_level = $4, timezone = $5, location = $6
+         ${country ? ', country_code = $7' : ''}
        WHERE id = $1
-       RETURNING id, email, first_name, last_name, experience_level`,
-      [req.user.userId, firstName, lastName, experienceLevel, timezone, location]
+       RETURNING id, email, first_name, last_name, experience_level, country_code`,
+      country
+        ? [req.user.userId, firstName, lastName, experienceLevel, timezone, location, country]
+        : [req.user.userId, firstName, lastName, experienceLevel, timezone, location]
     );
 
     res.json(updated.rows[0]);

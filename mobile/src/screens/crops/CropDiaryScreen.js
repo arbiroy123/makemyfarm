@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { cropAPI } from '../../api/client';
+import { cropAPI, billingAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
 
 const STAGES = [
@@ -39,6 +39,11 @@ export default function CropDiaryScreen({ route, navigation }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [isPro, setIsPro] = useState(true);
+
+  useEffect(() => {
+    billingAPI.getStatus().then(r => setIsPro(r.data.isPro)).catch(() => {});
+  }, []);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -102,7 +107,22 @@ export default function CropDiaryScreen({ route, navigation }) {
         />
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setShowAdd(true)} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.8}
+        onPress={() => {
+          const photoCount = entries.filter(e => e.photo_url).length;
+          if (!isPro && photoCount >= 10) {
+            Alert.alert(
+              '📸 Photo Limit Reached',
+              'Free accounts can store up to 10 diary photos per crop. Upgrade to Pro for unlimited photos.',
+              [{ text: 'Maybe Later', style: 'cancel' }, { text: 'Upgrade to Pro', style: 'default' }]
+            );
+            return;
+          }
+          setShowAdd(true);
+        }}
+      >
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
 

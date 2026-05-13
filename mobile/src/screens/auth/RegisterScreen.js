@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { authAPI } from '../../api/client';
 import LanguagePicker from '../../components/LanguagePicker';
+import { detectCountry } from '../../utils/country';
 
 function ExperienceDropdown({ value, onChange, disabled, levels, modalTitle, placeholder }) {
   const [open, setOpen] = useState(false);
@@ -87,6 +88,7 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('novice');
+  const [country, setCountry] = useState(() => detectCountry());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -127,7 +129,7 @@ export default function RegisterScreen({ navigation }) {
     }
     setLoading(true);
     try {
-      await authAPI.register(email, password, firstName, lastName, experienceLevel);
+      await authAPI.register(email, password, firstName, lastName, experienceLevel, country);
       navigation.navigate('Login');
     } catch (err) {
       setError(err.response?.data?.error || t('registrationFailed'));
@@ -193,6 +195,25 @@ export default function RegisterScreen({ navigation }) {
           secureTextEntry
           editable={!loading}
         />
+
+        <Text style={styles.label}>Your Country</Text>
+        <View style={styles.countryRow}>
+          {[
+            { code: 'IN', flag: '🇮🇳', label: 'India', price: '₹99/mo' },
+            { code: 'US', flag: '🇺🇸', label: 'USA', price: '$4.99/mo' },
+          ].map(opt => (
+            <TouchableOpacity
+              key={opt.code}
+              style={[styles.countryBtn, country === opt.code && styles.countryBtnActive]}
+              onPress={() => setCountry(opt.code)}
+              disabled={loading}
+            >
+              <Text style={styles.countryFlag}>{opt.flag}</Text>
+              <Text style={[styles.countryLabel, country === opt.code && styles.countryLabelActive]}>{opt.label}</Text>
+              <Text style={[styles.countryPrice, country === opt.code && styles.countryPriceActive]}>{opt.price} Pro</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <Text style={styles.label}>{t('farmingExperienceLabel')}</Text>
         <ExperienceDropdown
@@ -321,4 +342,15 @@ const styles = StyleSheet.create({
     color: '#c62828',
     fontSize: 14,
   },
+  countryRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  countryBtn: {
+    flex: 1, alignItems: 'center', padding: 12, borderRadius: 10,
+    borderWidth: 1.5, borderColor: '#ddd', backgroundColor: '#fff',
+  },
+  countryBtnActive: { borderColor: '#4CAF50', backgroundColor: '#f1f8f1' },
+  countryFlag: { fontSize: 28 },
+  countryLabel: { fontSize: 13, fontWeight: '700', color: '#555', marginTop: 4 },
+  countryLabelActive: { color: '#2e7d32' },
+  countryPrice: { fontSize: 11, color: '#aaa', marginTop: 2 },
+  countryPriceActive: { color: '#4CAF50' },
 });

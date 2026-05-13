@@ -220,6 +220,14 @@ export default function GovernmentSchemesScreen() {
                       <Text style={styles.applyBtnText}>Apply / Learn More</Text>
                     </TouchableOpacity>
                   )}
+
+                  <TouchableOpacity
+                    style={styles.kisanBtn}
+                    onPress={() => { setSelectedScheme(null); }}
+                  >
+                    <Ionicons name="chatbubble-ellipses-outline" size={16} color="#4CAF50" />
+                    <Text style={styles.kisanBtnText}>Ask KisanBot how to apply →</Text>
+                  </TouchableOpacity>
                 </>
               )}
             </ScrollView>
@@ -273,4 +281,6 @@ const styles = StyleSheet.create({
   tagText: { fontSize: 11, color: '#666' },
   applyBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#4CAF50', borderRadius: 12, padding: 15, marginTop: 20 },
   applyBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  kisanBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1.5, borderColor: '#4CAF50', borderRadius: 12, padding: 12, marginTop: 10 },
+  kisanBtnText: { color: '#4CAF50', fontWeight: '600', fontSize: 14 },
 });

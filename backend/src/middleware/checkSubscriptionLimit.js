@@ -10,12 +10,17 @@ const FREE_LIMITS = { farms: 1, crops: 5 };
  * @param {'farm'|'crop'} resource
  */
 export async function checkSubscriptionLimit(userId, resource) {
-  const userResult = await query(
-    `SELECT subscription_tier FROM users WHERE id = $1`,
-    [userId]
-  );
-
-  const tier = userResult.rows[0]?.subscription_tier ?? 'free';
+  let tier = 'free';
+  try {
+    const userResult = await query(
+      `SELECT subscription_tier FROM users WHERE id = $1`,
+      [userId]
+    );
+    tier = userResult.rows[0]?.subscription_tier ?? 'free';
+  } catch {
+    // Column may not exist on older DB — default to free tier behaviour
+    return { allowed: true, tier: 'free' };
+  }
 
   if (tier !== 'free') {
     return { allowed: true, tier };

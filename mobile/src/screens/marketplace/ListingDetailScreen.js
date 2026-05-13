@@ -16,9 +16,19 @@ export default function ListingDetailScreen({ route, navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!listingId) {
+      setLoading(false);
+      return;
+    }
     marketplaceAPI.getListing(listingId)
       .then(r => setListing(r.data))
-      .catch(() => Alert.alert('Error', 'Could not load listing.'))
+      .catch(err => {
+        const status = err?.response?.status;
+        const msg = status === 404
+          ? 'This listing no longer exists.'
+          : 'Could not load listing. Please check your connection.';
+        Alert.alert('Error', msg);
+      })
       .finally(() => setLoading(false));
   }, [listingId]);
 

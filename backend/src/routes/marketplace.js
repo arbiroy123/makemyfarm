@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
 
-// Nearby listings within a radius
-router.get('/nearby', authenticateToken, async (req, res) => {
+// Nearby listings within a radius — public, no auth required
+router.get('/nearby', async (req, res) => {
   try {
     const { latitude, longitude, radiusKm = 40 } = req.query;
     if (!latitude || !longitude) return res.status(400).json({ error: 'Location required' });

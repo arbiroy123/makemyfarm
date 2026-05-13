@@ -32,13 +32,14 @@ client.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  register: (email, password, firstName, lastName, experienceLevel) =>
+  register: (email, password, firstName, lastName, experienceLevel, countryCode) =>
     client.post('/auth/register', {
       email,
       password,
       firstName,
       lastName,
-      experienceLevel
+      experienceLevel,
+      countryCode,
     }),
   
   login: (email, password) =>
@@ -48,7 +49,10 @@ export const authAPI = {
     client.get('/auth/profile'),
   
   updateProfile: (data) =>
-    client.put('/auth/profile', data)
+    client.put('/auth/profile', data),
+
+  updateCountry: (countryCode) =>
+    client.put('/auth/profile', { countryCode })
 };
 
 // Farm API
@@ -280,6 +284,10 @@ export const billingAPI = {
   getStatus: () => client.get('/billing/status'),
   createCheckoutSession: () => client.post('/billing/create-checkout-session'),
   cancel: () => client.post('/billing/cancel'),
+};
+
+export const adsAPI = {
+  getBanner: (country = 'IN') => client.get(`/ads/banner?country=${country}`),
 };
 
 // KisanBot — AI Agronomist Chatbot API

@@ -1,88 +1,101 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  Dimensions, SafeAreaView, StatusBar,
+  Dimensions, StatusBar, ImageBackground,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
+const HEADER_H = Math.round(height * 0.42);
 
 const SLIDES = [
   {
     id: '1',
     icon: 'leaf',
-    color: '#4CAF50',
-    bg: '#e8f5e9',
+    color: '#2e7d32',
+    dark: '#1b5e20',
+    image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=700&auto=format&q=80',
     title: 'Welcome to FarmSync',
     subtitle: 'Your smart farming companion',
-    body: 'Manage your farms, track crops, get AI advice, and connect with farming communities — all in one app. Works in India and the USA.',
+    body: 'Manage farms, track crops, get AI advice, and connect with farming communities — all in one app. Works in India and the USA.',
   },
   {
     id: '2',
     icon: 'home',
-    color: '#2e7d32',
-    bg: '#f1f8e9',
+    color: '#388e3c',
+    dark: '#1b5e20',
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=700&auto=format&q=80',
     title: 'Farm Management',
     subtitle: 'Create & manage multiple farms',
-    body: 'Add backyard plots, greenhouses, or large fields. Invite collaborators, view activity timelines, and get season reports with yield stats.',
-    tips: ['Tap + on the Home screen to create a farm', 'Open a farm → Season Report for yearly stats'],
+    body: 'Add backyard plots, greenhouses, or large fields. Invite collaborators and get season reports with yield stats.',
+    tips: ['Tap + on Home to create a farm', 'Open a farm → Season Report for yearly stats'],
   },
   {
     id: '3',
     icon: 'flower',
-    color: '#388e3c',
-    bg: '#e8f5e9',
+    color: '#43a047',
+    dark: '#2e7d32',
+    image: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=700',
     title: 'Crop Tracking',
     subtitle: '56 vegetables ready to plant',
-    body: 'Plant crops from our database of 56 vegetables. Track growth stages, log diary entries with photos, and record your harvest yield.',
+    body: 'Plant crops from our database of 56 vegetables. Track growth stages, log diary entries with photos, and record harvest yields.',
     tips: ['Open a farm → Plant Crop to get started', 'Use the Crop Diary to log progress with photos'],
   },
   {
     id: '4',
     icon: 'chatbubble-ellipses',
-    color: '#4CAF50',
-    bg: '#e8f5e9',
+    color: '#1565C0',
+    dark: '#003c8f',
+    pro: true,
+    image: 'https://images.pexels.com/photos/2252584/pexels-photo-2252584.jpeg?auto=compress&cs=tinysrgb&w=700',
     title: 'KisanBot — AI Advisor',
-    subtitle: '⭐ Pro subscribers only',
-    body: 'Powered by Claude AI. Ask about pest control, soil health, the best crops for the season, or government schemes. Supports Hindi and English.\n\nAvailable exclusively with a FarmSync Pro subscription.',
-    tips: ['Tap KisanBot on the Home screen', 'Try: "Which crops to plant in June in India?"'],
+    subtitle: 'Powered by Claude AI',
+    body: 'Ask about pest control, soil health, best crops for the season, or government schemes. Supports Hindi and English.\n\nFree accounts get 5 questions/month.',
+    tips: ['Try: "Which crops to plant in June in India?"', 'Ask about PM-KISAN eligibility or USDA loans'],
   },
   {
     id: '5',
     icon: 'shield-checkmark',
-    color: '#2196F3',
-    bg: '#e3f2fd',
+    color: '#00796B',
+    dark: '#004d40',
+    pro: true,
+    image: 'https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg?auto=compress&cs=tinysrgb&w=700',
     title: 'Disease Detection',
-    subtitle: '⭐ Pro subscribers only',
-    body: 'Take a photo of a sick plant and get an instant AI diagnosis with treatment recommendations. Works offline too.\n\nAvailable exclusively with a FarmSync Pro subscription.',
-    tips: ['Open any crop → tap Diagnose Plant', 'Works best in good lighting'],
+    subtitle: 'AI-powered plant diagnosis',
+    body: 'Take a photo of a sick plant and get an instant AI diagnosis with treatment recommendations.',
+    tips: ['Open any crop → tap Diagnose Plant', 'Works best in natural daylight'],
   },
   {
     id: '6',
     icon: 'ribbon',
-    color: '#1976D2',
-    bg: '#e3f2fd',
+    color: '#1565C0',
+    dark: '#003c8f',
+    image: 'https://images.pexels.com/photos/265216/pexels-photo-265216.jpeg?auto=compress&cs=tinysrgb&w=700',
     title: 'Government Schemes',
-    subtitle: 'India & USA • More regions coming soon',
-    body: 'Discover schemes you qualify for. Currently covering India (PM-KISAN, PMFBY, Kisan Credit Card, e-NAM and more) and the USA (USDA FSA loans, EQIP, crop insurance).\n\nSupport for more regions coming soon.',
-    tips: ['Tap Govt Schemes on the Home screen', 'Switch between 🇮🇳 India and 🇺🇸 USA tabs'],
+    subtitle: 'India & USA • More regions coming',
+    body: 'Discover schemes you qualify for — PM-KISAN, PMFBY, Kisan Credit Card in India; USDA FSA loans, EQIP, crop insurance in the USA.',
+    tips: ['Tap Govt Schemes on Home', 'Switch between 🇮🇳 India and 🇺🇸 USA tabs'],
   },
   {
     id: '7',
     icon: 'bar-chart',
-    color: '#FF9800',
-    bg: '#fff3e0',
+    color: '#E65100',
+    dark: '#bf360c',
+    pro: true,
+    image: 'https://images.pexels.com/photos/2518861/pexels-photo-2518861.jpeg?auto=compress&cs=tinysrgb&w=700',
     title: 'Farm Finances',
-    subtitle: '⭐ Pro subscribers only',
-    body: 'Log seeds, labor, fertilizer costs and crop sale income. See profit/loss, ROI, and monthly bar charts. Supports ₹ INR and $ USD.\n\nAvailable exclusively with a FarmSync Pro subscription.',
-    tips: ['Tap Finances on the Home screen', 'Tap + to log any income or expense'],
+    subtitle: 'Track income, expenses & ROI',
+    body: 'Log seeds, labor and fertilizer costs, and crop sale income. See profit/loss, ROI, and monthly bar charts in ₹ or $.',
+    tips: ['Tap Finances on Home', 'Tap + to log any income or expense'],
   },
   {
     id: '8',
     icon: 'map',
-    color: '#9C27B0',
-    bg: '#f3e5f5',
+    color: '#6A1B9A',
+    dark: '#4a0072',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&auto=format&q=80',
     title: 'Community Map',
     subtitle: 'Find nearby farms & groups',
     body: 'See farms and community groups near you on an interactive map. Join groups, post in forums, and trade produce with neighbours.',
@@ -91,26 +104,30 @@ const SLIDES = [
   {
     id: '9',
     icon: 'storefront',
-    color: '#00796B',
-    bg: '#e0f2f1',
+    color: '#00695C',
+    dark: '#004d40',
+    image: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=700&auto=format&q=80',
     title: 'Marketplace',
     subtitle: 'Buy, sell & trade produce',
-    body: 'List surplus vegetables for sale, free giveaway, or trade. Browse nearby listings and connect directly with local farmers.',
-    tips: ['Tap the Market tab at the bottom', 'Create a listing with a photo for best results'],
+    body: 'List surplus vegetables for sale, giveaway, or trade. Browse nearby listings and connect directly with local farmers.',
+    tips: ['Tap the Market tab at the bottom', 'Add a photo to your listing for best results'],
   },
   {
     id: '10',
     icon: 'rocket',
-    color: '#4CAF50',
-    bg: '#e8f5e9',
-    title: "You're all set!",
-    subtitle: 'Start your farming journey',
+    color: '#E65100',
+    dark: '#bf360c',
+    last: true,
+    image: 'https://images.pexels.com/photos/247599/pexels-photo-247599.jpeg?auto=compress&cs=tinysrgb&w=700',
+    title: "You're All Set!",
+    subtitle: 'Start your farming journey today',
     body: 'Create your first farm, plant a crop, and explore KisanBot. Your data syncs offline automatically — farm even without internet.',
   },
 ];
 
 export default function TourScreen({ navigation }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [imgErrors, setImgErrors] = useState({});
   const flatListRef = useRef(null);
 
   const markSeen = () => AsyncStorage.setItem('tourSeen', 'true').catch(() => {});
@@ -126,43 +143,92 @@ export default function TourScreen({ navigation }) {
 
   const skip = () => { markSeen(); navigation.goBack(); };
 
-  const renderSlide = ({ item, index }) => (
-    <View style={[styles.slide, { width }]}>
-      <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
-        <Ionicons name={item.icon} size={64} color={item.color} />
-      </View>
+  const renderSlide = ({ item }) => {
+    const isLast = !!item.last;
+    const imgFailed = imgErrors[item.id];
 
-      <Text style={[styles.slideTitle, { color: item.color }]}>{item.title}</Text>
-      <Text style={styles.slideSubtitle}>{item.subtitle}</Text>
-      <Text style={styles.slideBody}>{item.body}</Text>
+    return (
+      <View style={[styles.slide, { width }]}>
+        {/* Photo header */}
+        <ImageBackground
+          source={(!imgFailed && item.image) ? { uri: item.image } : undefined}
+          style={[styles.slideHeader, { backgroundColor: item.color, height: HEADER_H }]}
+          resizeMode="cover"
+          onError={() => setImgErrors(prev => ({ ...prev, [item.id]: true }))}
+        >
+          {/* Gradient-like color overlay so the design stays on-brand */}
+          {!imgFailed && (
+            <View style={[styles.imgOverlay, { backgroundColor: item.dark }]} />
+          )}
 
-      {item.tips && (
-        <View style={styles.tipsBox}>
-          {item.tips.map((tip, i) => (
-            <View key={i} style={styles.tipRow}>
-              <Ionicons name="checkmark-circle" size={16} color={item.color} />
-              <Text style={styles.tipText}>{tip}</Text>
+          {/* Decorative circles */}
+          <View style={[styles.decCircle1, { backgroundColor: item.color }]} />
+          <View style={[styles.decCircle2, { backgroundColor: item.dark }]} />
+
+          {/* PRO badge */}
+          {item.pro && (
+            <View style={styles.proBadge}>
+              <Ionicons name="star" size={11} color="#fff" />
+              <Text style={styles.proBadgeText}>PRO</Text>
             </View>
-          ))}
-        </View>
-      )}
-    </View>
-  );
+          )}
 
+          {/* Last-slide star decorations */}
+          {isLast && (
+            <>
+              <Text style={styles.starDec1}>✨</Text>
+              <Text style={styles.starDec2}>⭐</Text>
+              <Text style={styles.starDec3}>✨</Text>
+            </>
+          )}
+
+          {/* Icon card */}
+          <View style={styles.iconCard}>
+            <Ionicons name={item.icon} size={54} color={item.color} />
+          </View>
+        </ImageBackground>
+
+        {/* White content card overlapping header */}
+        <View style={styles.contentCard}>
+          <Text style={[styles.slideTitle, isLast && { color: '#E65100' }]}>{item.title}</Text>
+          <Text style={styles.slideSubtitle}>{item.subtitle}</Text>
+          <Text style={styles.slideBody}>{item.body}</Text>
+
+          {item.tips && (
+            <View style={styles.tipsContainer}>
+              {item.tips.map((tip, i) => (
+                <View key={i} style={[styles.tipCard, { borderLeftColor: item.color }]}>
+                  <Ionicons name="checkmark-circle" size={15} color={item.color} style={{ marginTop: 1 }} />
+                  <Text style={styles.tipText}>{tip}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const slide = SLIDES[activeIndex];
   const isLast = activeIndex === SLIDES.length - 1;
-  const activeColor = SLIDES[activeIndex].color;
+  const progress = (activeIndex + 1) / SLIDES.length;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={slide.color} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={skip}>
+      {/* Thin progress bar */}
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: slide.color }]} />
+      </View>
+
+      {/* Skip / step */}
+      <SafeAreaView edges={['top']} style={styles.headerRow}>
+        <TouchableOpacity onPress={skip} style={styles.skipBtn}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
         <Text style={styles.stepText}>{activeIndex + 1} / {SLIDES.length}</Text>
-      </View>
+      </SafeAreaView>
 
       {/* Slides */}
       <FlatList
@@ -178,9 +244,10 @@ export default function TourScreen({ navigation }) {
           setActiveIndex(idx);
         }}
         scrollEventThrottle={16}
+        style={{ flex: 1 }}
       />
 
-      {/* Dot indicators */}
+      {/* Dots */}
       <View style={styles.dotsRow}>
         {SLIDES.map((_, i) => (
           <View
@@ -188,59 +255,132 @@ export default function TourScreen({ navigation }) {
             style={[
               styles.dot,
               i === activeIndex
-                ? [styles.dotActive, { backgroundColor: activeColor }]
+                ? [styles.dotActive, { backgroundColor: slide.color }]
                 : styles.dotInactive,
             ]}
           />
         ))}
       </View>
 
-      {/* Next / Get Started button */}
+      {/* Next / Get Started */}
       <TouchableOpacity
-        style={[styles.nextBtn, { backgroundColor: activeColor }]}
+        style={[styles.nextBtn, { backgroundColor: isLast ? '#F9A825' : slide.color }]}
         onPress={goNext}
+        activeOpacity={0.88}
       >
+        {isLast && <Ionicons name="star" size={18} color="#fff" style={{ marginRight: 4 }} />}
         <Text style={styles.nextBtnText}>{isLast ? 'Get Started' : 'Next'}</Text>
-        <Ionicons name={isLast ? 'checkmark' : 'arrow-forward'} size={20} color="#fff" />
+        <Ionicons name={isLast ? 'checkmark-circle' : 'arrow-forward'} size={20} color="#fff" style={{ marginLeft: 4 }} />
       </TouchableOpacity>
-    </SafeAreaView>
+
+      <View style={{ height: 16 }} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingHorizontal: 24, paddingVertical: 12,
+  root: { flex: 1, backgroundColor: '#fff' },
+
+  progressTrack: { height: 4, backgroundColor: '#e8e8e8', width: '100%' },
+  progressFill: { height: 4, borderRadius: 2 },
+
+  headerRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 20, paddingVertical: 10,
   },
+  skipBtn: { paddingVertical: 4, paddingHorizontal: 2 },
   skipText: { fontSize: 15, color: '#999', fontWeight: '500' },
-  stepText: { fontSize: 13, color: '#bbb' },
-  slide: {
-    paddingHorizontal: 28, paddingTop: 20,
+  stepText: { fontSize: 13, color: '#bbb', fontWeight: '500' },
+
+  slide: { flex: 1 },
+
+  slideHeader: {
+    width: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
-  iconCircle: {
-    width: 120, height: 120, borderRadius: 60,
+
+  imgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.62,
+  },
+
+  decCircle1: {
+    position: 'absolute', width: 240, height: 240, borderRadius: 120,
+    opacity: 0.22, top: -70, right: -70,
+  },
+  decCircle2: {
+    position: 'absolute', width: 170, height: 170, borderRadius: 85,
+    opacity: 0.18, bottom: -45, left: -45,
+  },
+
+  proBadge: {
+    position: 'absolute', top: 14, right: 18,
+    backgroundColor: 'rgba(249,168,37,0.92)',
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20,
+  },
+  proBadgeText: { fontSize: 11, color: '#fff', fontWeight: '800', letterSpacing: 0.5 },
+
+  starDec1: { position: 'absolute', top: 20, left: 30, fontSize: 28, opacity: 0.9 },
+  starDec2: { position: 'absolute', top: 28, right: 55, fontSize: 22, opacity: 0.9 },
+  starDec3: { position: 'absolute', bottom: 24, left: 60, fontSize: 20, opacity: 0.9 },
+
+  iconCard: {
+    width: 104, height: 104, borderRadius: 52,
+    backgroundColor: '#fff',
     justifyContent: 'center', alignItems: 'center',
-    marginBottom: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    elevation: 14,
+    zIndex: 10,
   },
-  slideTitle: { fontSize: 24, fontWeight: '800', textAlign: 'center', marginBottom: 6 },
-  slideSubtitle: { fontSize: 15, color: '#666', textAlign: 'center', marginBottom: 16, fontWeight: '500' },
-  slideBody: { fontSize: 15, color: '#555', textAlign: 'center', lineHeight: 23, marginBottom: 20 },
-  tipsBox: {
-    backgroundColor: '#f9f9f9', borderRadius: 12,
-    padding: 14, width: '100%', gap: 10,
+
+  contentCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    marginTop: -28,
+    paddingHorizontal: 26,
+    paddingTop: 28,
   },
-  tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  tipText: { fontSize: 13, color: '#444', flex: 1, lineHeight: 19 },
-  dotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginVertical: 16 },
-  dot: { height: 8, borderRadius: 4 },
-  dotActive: { width: 24 },
-  dotInactive: { width: 8, backgroundColor: '#ddd' },
+
+  slideTitle: {
+    fontSize: 26, fontWeight: '800', color: '#1a1a1a',
+    marginBottom: 6, textAlign: 'center',
+  },
+  slideSubtitle: {
+    fontSize: 14, color: '#777', textAlign: 'center',
+    fontWeight: '600', marginBottom: 14,
+  },
+  slideBody: {
+    fontSize: 14, color: '#555', textAlign: 'center',
+    lineHeight: 22, marginBottom: 18,
+  },
+
+  tipsContainer: { gap: 10 },
+  tipCard: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 10,
+    backgroundColor: '#f8f8f8', borderRadius: 10,
+    borderLeftWidth: 3, paddingHorizontal: 12, paddingVertical: 10,
+  },
+  tipText: { fontSize: 13, color: '#444', flex: 1, lineHeight: 20 },
+
+  dotsRow: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    gap: 6, marginTop: 8, marginBottom: 12,
+  },
+  dot: { height: 7, borderRadius: 4 },
+  dotActive: { width: 22 },
+  dotInactive: { width: 7, backgroundColor: '#ddd' },
+
   nextBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, marginHorizontal: 24, marginBottom: 16,
-    paddingVertical: 16, borderRadius: 14,
+    marginHorizontal: 24, paddingVertical: 16, borderRadius: 16,
   },
-  nextBtnText: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  nextBtnText: { color: '#fff', fontSize: 17, fontWeight: '800' },
 });

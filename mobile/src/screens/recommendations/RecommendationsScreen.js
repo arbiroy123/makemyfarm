@@ -8,19 +8,19 @@ import { Ionicons } from '@expo/vector-icons';
 const EMOJI_MAP = {
   'Tomato': '🍅', 'Lettuce': '🥬', 'Carrot': '🥕', 'Bell Pepper': '🫑',
   'Cucumber': '🥒', 'Zucchini': '🥒', 'Green Beans': '🫛', 'Spinach': '🥬',
-  'Bitter Gourd': '🫛', 'Okra': '🌿', 'Eggplant': '🍆', 'Fenugreek': '🍀',
-  'Bok Choy': '🥬', 'Daikon Radish': '🥛', 'Snow Peas': '🫛',
-  'Chinese Long Beans': '🫘', 'Artichoke': '🌸', 'Fennel': '🌾',
-  'Padron Pepper': '🌶️', 'Romanesco Broccoli': '🥦', 'Tomatillo': '🫒',
+  'Bitter Gourd': '🫛', 'Okra': '🫛', 'Eggplant': '🍆', 'Fenugreek': '🌿',
+  'Bok Choy': '🥬', 'Daikon Radish': '🥕', 'Snow Peas': '🫛',
+  'Chinese Long Beans': '🫘', 'Artichoke': '🌸', 'Fennel': '🌿',
+  'Padron Pepper': '🌶️', 'Romanesco Broccoli': '🥦', 'Tomatillo': '🍅',
   'Jalapeño Pepper': '🌶️', 'Poblano Pepper': '🫑', 'Chayote': '🍈',
   'Cilantro': '🌿', 'Collard Greens': '🥬', 'Sweet Potato': '🍠',
-  'Black-eyed Peas': '🫘', 'Mustard Greens': '🥬', 'Callaloo (Amaranth)': '🌺',
-  'Bottle Gourd': '🥥', 'Ridge Gourd': '🥒', 'Moringa': '🌳',
+  'Black-eyed Peas': '🫘', 'Mustard Greens': '🥬', 'Callaloo (Amaranth)': '🥬',
+  'Bottle Gourd': '🥒', 'Ridge Gourd': '🥒', 'Moringa': '🌳',
   'Cluster Beans (Guar)': '🫘', 'Napa Cabbage': '🥬', 'Lemongrass': '🎋',
   'Thai Basil': '🌿', 'Garlic Chives': '🌿', 'Sweet Basil': '🌿',
-  'Radicchio': '🫐', 'Broccoli Rabe (Cime di Rapa)': '🥦', 'Italian Parsley': '🌿',
+  'Radicchio': '🥬', 'Broccoli Rabe (Cime di Rapa)': '🥦', 'Italian Parsley': '🌿',
   'Mint': '🍃', 'Garlic': '🧄', 'Onion': '🧅', 'Potato': '🥔',
-  'Sweet Corn': '🌽', 'Pumpkin': '🎃', 'Beetroot': '🫐', 'Malabar Spinach': '🌿',
+  'Sweet Corn': '🌽', 'Pumpkin': '🎃', 'Beetroot': '🫐', 'Malabar Spinach': '🥬',
 };
 
 const THUMB_COLOR = {

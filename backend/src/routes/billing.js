@@ -13,14 +13,17 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-const PRO_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
+const PRICES = {
+  IN: { priceId: process.env.STRIPE_PRO_PRICE_ID_IN, amount: '₹99', currency: 'INR' },
+  US: { priceId: process.env.STRIPE_PRO_PRICE_ID_US, amount: '$4.99', currency: 'USD' },
+};
 const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // GET /api/billing/status — current user's subscription info
 router.get('/status', authenticateToken, async (req, res) => {
   try {
     const result = await query(
-      `SELECT subscription_tier, stripe_customer_id, stripe_subscription_id, subscription_expires_at
+      `SELECT subscription_tier, stripe_customer_id, stripe_subscription_id, subscription_expires_at, country_code
        FROM users WHERE id = $1`,
       [req.user.userId]
     );
@@ -28,12 +31,16 @@ router.get('/status', authenticateToken, async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
 
     const user = result.rows[0];
+    const region = PRICES[user.country_code] ?? PRICES.IN;
     res.json({
       tier: user.subscription_tier,
       isPro: user.subscription_tier === 'pro',
       stripeCustomerId: user.stripe_customer_id,
       subscriptionId: user.stripe_subscription_id,
       expiresAt: user.subscription_expires_at,
+      country: user.country_code,
+      price: region.amount,
+      currency: region.currency,
       limits: {
         farms: user.subscription_tier === 'free' ? 1 : null,
         crops: user.subscription_tier === 'free' ? 5 : null,
@@ -49,7 +56,7 @@ router.get('/status', authenticateToken, async (req, res) => {
 router.post('/create-checkout-session', authenticateToken, async (req, res) => {
   try {
     const userResult = await query(
-      `SELECT email, subscription_tier, stripe_customer_id FROM users WHERE id = $1`,
+      `SELECT email, subscription_tier, stripe_customer_id, country_code FROM users WHERE id = $1`,
       [req.user.userId]
     );
 
@@ -59,6 +66,11 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
 
     if (user.subscription_tier === 'pro') {
       return res.status(400).json({ error: 'Already subscribed to Pro' });
+    }
+
+    const region = PRICES[user.country_code] ?? PRICES.IN;
+    if (!region.priceId) {
+      return res.status(500).json({ error: `Stripe price not configured for region ${user.country_code}` });
     }
 
     // Reuse existing Stripe customer or create new one
@@ -80,7 +92,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'subscription',
-      line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
+      line_items: [{ price: region.priceId, quantity: 1 }],
       success_url: `${APP_URL}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/billing/cancel`,
       metadata: { userId: req.user.userId },

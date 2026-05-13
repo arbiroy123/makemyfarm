@@ -17,12 +17,25 @@ router.post('/', authenticateToken, async (req, res) => {
     const { name, description, farmType, sizeSqft, latitude, longitude, address, climateZone } = req.body;
     const farmId = uuidv4();
 
-    const result = await query(
-      `INSERT INTO farms (id, owner_id, name, description, farm_type, size_sqft, location, address, climate_zone)
-       VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326), $9, $10)
-       RETURNING *`,
-      [farmId, req.user.userId, name, description, farmType, sizeSqft, longitude, latitude, address, climateZone]
-    );
+    let result;
+    try {
+      // Try with PostGIS geography column first
+      result = await query(
+        `INSERT INTO farms (id, owner_id, name, description, farm_type, size_sqft, location, address, climate_zone)
+         VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326), $9, $10)
+         RETURNING *`,
+        [farmId, req.user.userId, name, description, farmType, sizeSqft, longitude, latitude, address, climateZone]
+      );
+    } catch (geoErr) {
+      // Fallback: insert without PostGIS location (stores other data, location left null)
+      console.warn('PostGIS unavailable, inserting farm without geolocation:', geoErr.message);
+      result = await query(
+        `INSERT INTO farms (id, owner_id, name, description, farm_type, size_sqft, address, climate_zone)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [farmId, req.user.userId, name, description, farmType, sizeSqft, address, climateZone]
+      );
+    }
 
     // Add owner as collaborator
     await query(
@@ -32,29 +45,47 @@ router.post('/', authenticateToken, async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create farm' });
+    console.error('Farm creation error:', error.message);
+    res.status(500).json({
+      error: 'Failed to create farm',
+      detail: process.env.NODE_ENV !== 'production' ? error.message : undefined,
+    });
   }
 });
 
 // Get user's farms
 router.get('/my-farms', authenticateToken, async (req, res) => {
   try {
-    const result = await query(
-      `SELECT f.*, 
-              ST_AsGeoJSON(f.location) as location_geojson,
-              COUNT(DISTINCT fc.user_id) as collaborator_count
-       FROM farms f
-       JOIN farm_collaborators fc ON f.id = fc.farm_id
-       WHERE fc.user_id = $1
-       GROUP BY f.id
-       ORDER BY f.created_at DESC`,
-      [req.user.userId]
-    );
+    let result;
+    try {
+      result = await query(
+        `SELECT f.*,
+                ST_AsGeoJSON(f.location) as location_geojson,
+                COUNT(DISTINCT fc.user_id) as collaborator_count
+         FROM farms f
+         JOIN farm_collaborators fc ON f.id = fc.farm_id
+         WHERE fc.user_id = $1
+         GROUP BY f.id
+         ORDER BY f.created_at DESC`,
+        [req.user.userId]
+      );
+    } catch {
+      // PostGIS unavailable — fall back to query without geo function
+      result = await query(
+        `SELECT f.*,
+                COUNT(DISTINCT fc.user_id) as collaborator_count
+         FROM farms f
+         JOIN farm_collaborators fc ON f.id = fc.farm_id
+         WHERE fc.user_id = $1
+         GROUP BY f.id
+         ORDER BY f.created_at DESC`,
+        [req.user.userId]
+      );
+    }
 
     res.json(result.rows);
   } catch (error) {
-    console.error(error);
+    console.error('Fetch farms error:', error.message);
     res.status(500).json({ error: 'Failed to fetch farms' });
   }
 });

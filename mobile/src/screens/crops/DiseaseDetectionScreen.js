@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Image,
-  ScrollView, ActivityIndicator, Alert,
+  ScrollView, ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -155,6 +155,26 @@ export default function DiseaseDetectionScreen({ route, navigation }) {
               <Text style={styles.diaryBtnText}>Save to Crop Diary</Text>
             </TouchableOpacity>
           )}
+
+          {/* Expert review upsell */}
+          <TouchableOpacity
+            style={styles.expertBtn}
+            onPress={() => Alert.alert(
+              '👨‍🌾 Talk to an Expert',
+              'Get a personalised review of your diagnosis from a certified agronomist within 24 hours.\n\nIndia: ₹149/session\nUSA: $4.99/session\n\nThis feature is coming very soon!',
+              [
+                { text: 'Remind Me Later', style: 'cancel' },
+                { text: 'Email Us', onPress: () => Linking.openURL(`mailto:experts@farmsync.app?subject=Expert Review Request — ${cropName || 'crop'}`) },
+              ]
+            )}
+          >
+            <Ionicons name="person-circle-outline" size={20} color="#fff" />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.expertBtnTitle}>Talk to an Expert</Text>
+              <Text style={styles.expertBtnSub}>Certified agronomist review · ₹149 / $4.99</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
       )}
 
@@ -233,6 +253,14 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   diaryBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+
+  expertBtn: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#6a1b9a', padding: 14, borderRadius: 12,
+    marginBottom: 12,
+  },
+  expertBtnTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  expertBtnSub: { color: 'rgba(255,255,255,0.8)', fontSize: 11, marginTop: 2 },
 
   tipsCard: {
     backgroundColor: '#fff8e1', margin: 12, borderRadius: 12,

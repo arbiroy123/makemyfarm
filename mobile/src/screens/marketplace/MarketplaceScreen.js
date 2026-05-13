@@ -14,7 +14,7 @@ const TYPE_LABELS = { free: 'FREE', sale: 'FOR SALE', trade: 'TRADE' };
 const VEG_EMOJI = {
   tomato: '🍅', pepper: '🫑', lettuce: '🥬', carrot: '🥕', cucumber: '🥒',
   zucchini: '🥒', bean: '🫘', pea: '🫛', corn: '🌽', potato: '🥔',
-  onion: '🧅', garlic: '🧄', spinach: '🌿', kale: '🥦', broccoli: '🥦',
+  onion: '🧅', garlic: '🧄', spinach: '🥬', kale: '🥬', broccoli: '🥦',
   cauliflower: '🥦', eggplant: '🍆', pumpkin: '🎃', squash: '🎃', herb: '🌿',
 };
 function vegEmoji(name) {
@@ -70,6 +70,7 @@ export default function MarketplaceScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('all');
   const [location, setLocation] = useState(null);
+  const [locationDenied, setLocationDenied] = useState(false);
 
   const load = useCallback(async (loc) => {
     const useLoc = loc || location;
@@ -77,8 +78,12 @@ export default function MarketplaceScreen({ navigation }) {
     try {
       const res = await marketplaceAPI.getNearby(useLoc.latitude, useLoc.longitude);
       setListings(res.data || []);
-    } catch {
-      Alert.alert('Error', 'Could not load listings.');
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status !== 401 && status !== 403) {
+        // Don't alert on auth errors — user can still see the empty state
+        Alert.alert('Error', 'Could not load listings. Please check your connection.');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -87,14 +92,20 @@ export default function MarketplaceScreen({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocationDenied(true);
+          setLoading(false);
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({});
+        setLocation(loc.coords);
+        load(loc.coords);
+      } catch {
+        setLocationDenied(true);
         setLoading(false);
-        return;
       }
-      const loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc.coords);
-      load(loc.coords);
     })();
   }, []);
 
@@ -125,9 +136,19 @@ export default function MarketplaceScreen({ navigation }) {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={['#4CAF50']} />}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
-              <Ionicons name="storefront-outline" size={64} color="#c8e6c9" />
-              <Text style={styles.emptyTitle}>No listings nearby</Text>
-              <Text style={styles.emptyText}>Be the first to list your surplus produce!</Text>
+              <Ionicons
+                name={locationDenied ? 'location-outline' : 'storefront-outline'}
+                size={64}
+                color="#c8e6c9"
+              />
+              <Text style={styles.emptyTitle}>
+                {locationDenied ? 'Location access needed' : 'No listings nearby'}
+              </Text>
+              <Text style={styles.emptyText}>
+                {locationDenied
+                  ? 'Enable location permission in your device settings to see nearby listings.'
+                  : 'Be the first to list your surplus produce!'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => (

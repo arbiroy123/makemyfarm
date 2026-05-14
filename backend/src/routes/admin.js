@@ -129,4 +129,78 @@ router.get('/users', requireAdmin, async (req, res) => {
   }
 });
 
+// PUT /admin/users/:id/tier — set subscription tier (for testing)
+router.put('/users/:id/tier', requireAdmin, async (req, res) => {
+  try {
+    const { tier } = req.body;
+    if (!['free', 'pro', 'community'].includes(tier)) {
+      return res.status(400).json({ error: 'tier must be free, pro, or community' });
+    }
+
+    const result = await query(
+      `UPDATE users SET subscription_tier = $1 WHERE id = $2
+       RETURNING id, email, subscription_tier`,
+      [tier, req.params.id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update tier' });
+  }
+});
+
+// POST /admin/seed-test-user — create/reset test Pro account (dev convenience)
+router.post('/seed-test-user', requireAdmin, async (req, res) => {
+  try {
+    const bcrypt = (await import('bcryptjs')).default;
+    const { v4: uuidv4 } = await import('uuid');
+
+    const email  = 'testpro@farmsync.app';
+    const pwHash = await bcrypt.hash('TestPro@123', 12);
+
+    // Upsert user
+    const upsert = await query(
+      `INSERT INTO users (id, email, password_hash, first_name, last_name,
+          experience_level, country_code, subscription_tier)
+       VALUES ($1,$2,$3,'Test','Pro','intermediate','IN','pro')
+       ON CONFLICT (email) DO UPDATE
+         SET subscription_tier = 'pro', first_name = 'Test', last_name = 'Pro'
+       RETURNING id, email, subscription_tier`,
+      [uuidv4(), email, pwHash]
+    );
+
+    const userId = upsert.rows[0].id;
+
+    // Ensure at least one farm exists for testing
+    const farmCheck = await query('SELECT id FROM farms WHERE owner_id = $1 LIMIT 1', [userId]);
+    if (farmCheck.rows.length === 0) {
+      const farmId = uuidv4();
+      await query(
+        `INSERT INTO farms (id, owner_id, name, description, farm_type, size_sqft,
+            location, address, climate_zone)
+         VALUES ($1,$2,'Test Backyard','Auto-seeded test farm','backyard',80,
+            ST_SetSRID(ST_MakePoint(72.8777,19.0760),4326),'Mumbai, India','Subtropical')`,
+        [farmId, userId]
+      );
+      await query(
+        `INSERT INTO farm_collaborators (farm_id, user_id, role) VALUES ($1,$2,'owner')`,
+        [farmId, userId]
+      );
+    }
+
+    res.json({
+      message: 'Test Pro user ready',
+      email,
+      password: 'TestPro@123',
+      tier: 'pro',
+      userId,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to seed test user' });
+  }
+});
+
 export default router;

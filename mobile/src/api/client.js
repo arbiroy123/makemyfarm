@@ -322,4 +322,28 @@ export const schemesAPI = {
     client.post('/schemes/check-eligibility', data),
 };
 
+// Today's Tasks API
+export const tasksAPI = {
+  getToday: () => client.get('/tasks/today'),
+  complete: (cropId, taskType) => client.post('/tasks/complete', { cropId, taskType }),
+};
+
+// Grow Stories API
+export const storiesAPI = {
+  getFeed: (page = 1) => client.get('/stories', { params: { page } }),
+  getMy: () => client.get('/stories/my'),
+  create: (data) => client.post('/stories', data),
+  like: (storyId) => client.post(`/stories/${storyId}/like`),
+  delete: (storyId) => client.delete(`/stories/${storyId}`),
+};
+
+// Succession Planner API
+export const successionAPI = {
+  calculate: (vegetableId, intervalWeeks, batches, startDate) =>
+    client.get('/succession/calculate', { params: { vegetableId, intervalWeeks, batches, startDate } }),
+  getFarmPlans: (farmId) => client.get(`/succession/farm/${farmId}`),
+  save: (data) => client.post('/succession', data),
+  delete: (planId) => client.delete(`/succession/${planId}`),
+};
+
 export default client;

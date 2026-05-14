@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import GrowStoriesScreen from './GrowStoriesScreen';
 
 const EXPERTS = [
   { name: 'Dr. Ramesh Patel', specialty: 'Soil & Crop Health', flag: '🇮🇳', rating: '4.9' },
@@ -14,7 +15,14 @@ const COMING_SOON = [
   { icon: 'megaphone-outline', label: 'Crop Price Alerts', desc: 'Get notified when mandi/market prices spike' },
 ];
 
+const TABS = [
+  { key: 'stories', label: 'Grow Stories', icon: 'camera-outline' },
+  { key: 'experts', label: 'Ask a Pro',    icon: 'person-circle-outline' },
+];
+
 export default function CommunityScreen() {
+  const [activeTab, setActiveTab] = useState('stories');
+
   function handleBookExpert(expert) {
     Alert.alert(
       `Book ${expert.name}`,
@@ -27,7 +35,7 @@ export default function CommunityScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="people" size={32} color="#fff" />
@@ -35,6 +43,26 @@ export default function CommunityScreen() {
         <Text style={styles.headerSub}>Connect · Learn · Grow together</Text>
       </View>
 
+      {/* Tab bar */}
+      <View style={styles.tabBar}>
+        {TABS.map(tab => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.tab, activeTab === tab.key && styles.tabActive]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Ionicons name={tab.icon} size={16} color={activeTab === tab.key ? '#4CAF50' : '#888'} />
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Grow Stories tab */}
+      {activeTab === 'stories' && <GrowStoriesScreen />}
+
+      {/* Ask a Pro / Experts tab */}
+      {activeTab === 'experts' && (
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Ask a Pro */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -90,7 +118,9 @@ export default function CommunityScreen() {
           </View>
         ))}
       </View>
-    </ScrollView>
+      </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -98,6 +128,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
 
   header: { backgroundColor: '#4CAF50', padding: 24, alignItems: 'center', gap: 8 },
+
+  // Tab bar
+  tabBar:          { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee' },
+  tab:             { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabActive:       { borderBottomColor: '#4CAF50' },
+  tabLabel:        { fontSize: 13, fontWeight: '600', color: '#888' },
+  tabLabelActive:  { color: '#4CAF50' },
   headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.85)' },
 

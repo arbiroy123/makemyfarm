@@ -45,6 +45,127 @@ export async function sendPushToUser(userId, title, body, data = {}) {
   }
 }
 
+// Harvest-to-recipe push — called from crop.js when a crop is marked harvested
+export async function sendHarvestRecipePush(userId, vegetableName, simpleRecipe) {
+  if (!simpleRecipe) return;
+  const recipeTitle = simpleRecipe.split('|')[0].replace(/^.*?:\s*/, '').trim();
+  await sendPushToUser(
+    userId,
+    `You harvested your ${vegetableName}!`,
+    `Tonight's idea: ${recipeTitle}. Tap to see the full recipe.`,
+    { screen: 'Home', action: 'harvest_recipe', vegetable: vegetableName }
+  );
+}
+
+// Stage-aware daily tip push — called from server.js cron each morning
+export async function runDailyGrowTips() {
+  try {
+    const crops = await query(
+      `SELECT c.id, c.planting_date, c.status,
+              v.name AS vegetable_name, v.care_tips,
+              fc.user_id
+       FROM crops c
+       JOIN vegetables v ON c.vegetable_id = v.id
+       JOIN farm_collaborators fc ON fc.farm_id = c.farm_id AND fc.role = 'owner'
+       WHERE c.status IN ('planted', 'growing', 'flowering', 'fruiting')`,
+      []
+    );
+
+    // Group crops by user so we send at most 1 push per user per day
+    const byUser = {};
+    for (const crop of crops.rows) {
+      if (!byUser[crop.user_id]) byUser[crop.user_id] = [];
+      byUser[crop.user_id].push(crop);
+    }
+
+    for (const [userId, userCrops] of Object.entries(byUser)) {
+      // Pick one crop — prefer the one closest to harvest
+      const crop = userCrops[0];
+      const daysPlanted = Math.floor((Date.now() - new Date(crop.planting_date)) / 86400000);
+
+      let tip = null;
+      if (daysPlanted <= 7) {
+        tip = `Your ${crop.vegetable_name} seedlings need consistent moisture — check soil daily this week.`;
+      } else if (daysPlanted <= 21) {
+        tip = `${crop.vegetable_name} entering active growth — thin crowded plants to improve airflow and yield.`;
+      } else if (crop.status === 'flowering') {
+        tip = `${crop.vegetable_name} is flowering — avoid heavy nitrogen now; switch to phosphorus-rich feed.`;
+      } else if (crop.status === 'fruiting') {
+        tip = `${crop.vegetable_name} is fruiting — water deeply every 2 days to prevent blossom end issues.`;
+      }
+
+      if (tip) {
+        await sendPushToUser(userId, `Today's grow tip`, tip, { screen: 'Home' });
+      }
+    }
+
+    console.log(`Daily grow tips sent for ${Object.keys(byUser).length} users`);
+  } catch (error) {
+    console.error('Daily grow tips job failed:', error.message);
+  }
+}
+
+// Frost alert for ALL growing crops (not just harvest-ready) — broader protection
+export async function runFrostAlerts() {
+  try {
+    const crops = await query(
+      `SELECT c.id, c.farm_id,
+              v.name AS vegetable_name, v.min_temp_celsius,
+              ST_Y(f.location::geometry) AS lat,
+              ST_X(f.location::geometry) AS lng,
+              fc.user_id
+       FROM crops c
+       JOIN vegetables v ON c.vegetable_id = v.id
+       JOIN farms f ON c.farm_id = f.id
+       JOIN farm_collaborators fc ON fc.farm_id = f.id AND fc.role = 'owner'
+       WHERE c.status IN ('planted', 'growing', 'seedling', 'flowering', 'fruiting')`,
+      []
+    );
+
+    // Deduplicate by user+location to avoid hammering the weather API
+    const checked = new Set();
+    for (const crop of crops.rows) {
+      if (!crop.lat || !crop.lng) continue;
+      const key = `${crop.user_id}:${Math.round(crop.lat * 10)}:${Math.round(crop.lng * 10)}`;
+      if (checked.has(key)) continue;
+      checked.add(key);
+
+      try {
+        const weatherRes = await axios.get(
+          `https://api.open-meteo.com/v1/forecast?latitude=${crop.lat}&longitude=${crop.lng}&daily=temperature_2m_min,precipitation_sum&forecast_days=2&timezone=auto`,
+          { timeout: 8000 }
+        );
+        const daily = weatherRes.data?.daily;
+        if (!daily) continue;
+
+        const hasFrost = daily.temperature_2m_min?.some(v => v < 2);
+        const hasHeavyRain = daily.precipitation_sum?.some(v => v > 20);
+
+        if (hasFrost) {
+          await sendPushToUser(
+            crop.user_id,
+            '❄️ Frost alert tonight',
+            `Cover tender plants — frost forecast in your area. Check your ${crop.vegetable_name} and other crops.`,
+            { screen: 'Home', action: 'frost_alert' }
+          );
+        } else if (hasHeavyRain) {
+          await sendPushToUser(
+            crop.user_id,
+            '🌧️ Heavy rain incoming',
+            `Check drainage around your crops — heavy rain expected. Harvest anything ready before it arrives.`,
+            { screen: 'Home', action: 'rain_alert' }
+          );
+        }
+      } catch (_) {
+        // individual location failures are silent
+      }
+    }
+    console.log(`Frost/weather alerts checked for ${checked.size} unique locations`);
+  } catch (error) {
+    console.error('Frost alert job failed:', error.message);
+  }
+}
+
 // Nightly weather check — called from server.js cron
 export async function runWeatherAlerts() {
   try {

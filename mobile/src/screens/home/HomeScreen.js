@@ -5,15 +5,18 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { farmAPI, billingAPI, adsAPI } from '../../api/client';
+import client from '../../api/client';
 import { detectCountry } from '../../utils/country';
 import { useFarmStore } from '../../store';
 import { Ionicons } from '@expo/vector-icons';
 
 const FEATURE_CARDS = [
-  { key: 'tour',       label: 'Take a Tour',  sublabel: 'See features',  icon: 'rocket',               color: '#9C27B0', bg: '#f3e5f5', screen: 'Tour',              pro: false },
-  { key: 'chatbot',    label: 'KisanBot',     sublabel: 'AI Advisor',    icon: 'chatbubble-ellipses',  color: '#4CAF50', bg: '#e8f5e9', screen: 'Chatbot',           pro: true  },
-  { key: 'schemes',    label: 'Govt Schemes', sublabel: 'India & US',    icon: 'ribbon',               color: '#2196F3', bg: '#e3f2fd', screen: 'GovernmentSchemes', pro: false },
-  { key: 'financials', label: 'Finances',     sublabel: 'Track P&L',     icon: 'bar-chart',            color: '#FF9800', bg: '#fff3e0', screen: 'FinancialDashboard',pro: true  },
+  { key: 'tour',        label: 'Take a Tour',   sublabel: 'See features',   icon: 'rocket',               color: '#9C27B0', bg: '#f3e5f5', screen: 'Tour',               pro: false },
+  { key: 'chatbot',     label: 'KisanBot',      sublabel: 'AI Advisor',     icon: 'chatbubble-ellipses',  color: '#4CAF50', bg: '#e8f5e9', screen: 'Chatbot',            pro: true  },
+  { key: 'schemes',     label: 'Govt Schemes',  sublabel: 'India & US',     icon: 'ribbon',               color: '#2196F3', bg: '#e3f2fd', screen: 'GovernmentSchemes',  pro: false },
+  { key: 'financials',  label: 'Finances',      sublabel: 'Track P&L',      icon: 'bar-chart',            color: '#FF9800', bg: '#fff3e0', screen: 'FinancialDashboard', pro: true  },
+  { key: 'succession',  label: 'Harvest Plan',  sublabel: 'Never run dry',  icon: 'calendar',             color: '#00897B', bg: '#e0f2f1', screen: 'SuccessionPlanner',  pro: false },
+  { key: 'stories',     label: 'Grow Stories',  sublabel: 'Community feed', icon: 'people',               color: '#7B1FA2', bg: '#f3e5f5', screen: 'GrowStories',        pro: false },
 ];
 
 const PRO_FEATURES = [
@@ -26,17 +29,31 @@ const PRO_FEATURES = [
 export default function HomeScreen({ navigation }) {
   const { t } = useTranslation();
   const { farms, setFarms } = useFarmStore();
-  const [loading, setLoading] = useState(true);
-  const [isPro, setIsPro] = useState(false);
+  const [loading, setLoading]   = useState(true);
+  const [isPro, setIsPro]       = useState(false);
   const [proPrice, setProPrice] = useState('₹99');
-  const [ad, setAd] = useState(null);
+  const [ad, setAd]             = useState(null);
   const [paywallVisible, setPaywallVisible] = useState(false);
   const [paywallFeature, setPaywallFeature] = useState('');
+  const [tasks, setTasks]       = useState([]);
+  const [taskCount, setTaskCount] = useState(0);
 
   useEffect(() => {
     loadFarms();
     loadBillingStatus();
+    loadTaskPreview();
   }, []);
+
+  const loadTaskPreview = async () => {
+    try {
+      const res = await client.get('/tasks/today');
+      const allTasks = res.data.tasks || [];
+      setTasks(allTasks.filter(t => t.priority === 'high').slice(0, 2));
+      setTaskCount(res.data.count || 0);
+    } catch {
+      // non-critical — ignore
+    }
+  };
 
   const loadFarms = async () => {
     try {
@@ -140,6 +157,29 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Today's Tasks widget */}
+      {taskCount > 0 && (
+        <TouchableOpacity style={styles.tasksWidget} onPress={() => navigation.navigate('TodayTasks')} activeOpacity={0.88}>
+          <View style={styles.tasksWidgetHeader}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Ionicons name="checkmark-done-circle" size={18} color="#4CAF50" />
+              <Text style={styles.tasksWidgetTitle}>Today on Your Farm</Text>
+            </View>
+            <View style={styles.taskCountBadge}>
+              <Text style={styles.taskCountText}>{taskCount}</Text>
+            </View>
+          </View>
+          {tasks.map((task, i) => (
+            <View key={i} style={styles.taskPreviewRow}>
+              <Ionicons name={task.type === 'harvest' ? 'basket' : task.type === 'water' ? 'water' : 'leaf'} size={14} color={task.color || '#4CAF50'} />
+              <Text style={styles.taskPreviewText} numberOfLines={1}>{task.title}</Text>
+              {task.priority === 'high' && <View style={styles.urgentDot} />}
+            </View>
+          ))}
+          <Text style={styles.tasksWidgetSeeAll}>See all tasks →</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Sponsored card — free tier only, backend-driven */}
       {!isPro && ad && (
@@ -308,6 +348,17 @@ const styles = StyleSheet.create({
   upgradeBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   laterBtn: { paddingVertical: 8 },
   laterText: { color: '#aaa', fontSize: 14 },
+
+  // Today's Tasks widget
+  tasksWidget:         { marginHorizontal: 15, marginTop: 12, marginBottom: 2, backgroundColor: '#fff', borderRadius: 14, padding: 14, borderLeftWidth: 4, borderLeftColor: '#4CAF50', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+  tasksWidgetHeader:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  tasksWidgetTitle:    { fontSize: 14, fontWeight: '700', color: '#222' },
+  taskCountBadge:      { backgroundColor: '#4CAF50', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
+  taskCountText:       { fontSize: 12, color: '#fff', fontWeight: '700' },
+  taskPreviewRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  taskPreviewText:     { flex: 1, fontSize: 13, color: '#444' },
+  urgentDot:           { width: 8, height: 8, borderRadius: 4, backgroundColor: '#e53935' },
+  tasksWidgetSeeAll:   { fontSize: 12, color: '#4CAF50', fontWeight: '600', marginTop: 4 },
 
   sponsoredCard: {
     flexDirection: 'row', alignItems: 'center',

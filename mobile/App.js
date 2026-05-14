@@ -58,6 +58,11 @@ import GardenPlannerScreen from './src/screens/planner/GardenPlannerScreen';
 import ChatbotScreen from './src/screens/chatbot/ChatbotScreen';
 import FinancialDashboardScreen from './src/screens/financials/FinancialDashboardScreen';
 import GovernmentSchemesScreen from './src/screens/schemes/GovernmentSchemesScreen';
+
+// Screens — Engagement Features (v2)
+import TodayTasksScreen from './src/screens/tasks/TodayTasksScreen';
+import GrowStoriesScreen from './src/screens/community/GrowStoriesScreen';
+import SuccessionPlannerScreen from './src/screens/recommendations/SuccessionPlannerScreen';
 import TourScreen from './src/screens/tour/TourScreen';
 
 // Components
@@ -221,6 +226,10 @@ function RootStack() {
           <Stack.Screen name="FinancialDashboard" component={FinancialDashboardScreen} options={{ title: 'Farm Finances', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
           <Stack.Screen name="GovernmentSchemes" component={GovernmentSchemesScreen} options={{ title: 'Government Schemes', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
           <Stack.Screen name="Tour" component={TourScreen} options={{ headerShown: false, presentation: 'modal' }} />
+          {/* Engagement Features v2 */}
+          <Stack.Screen name="TodayTasks" component={TodayTasksScreen} options={{ title: 'Today on Your Farm', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          <Stack.Screen name="GrowStories" component={GrowStoriesScreen} options={{ title: 'Grow Stories', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
+          <Stack.Screen name="SuccessionPlanner" component={SuccessionPlannerScreen} options={{ title: 'Continuous Harvest Planner', headerShown: true, headerStyle: HEADER_OPTS, headerTintColor: '#fff' }} />
         </>
       ) : isGuest ? (
         <Stack.Screen name="Guest" component={GuestStack} />

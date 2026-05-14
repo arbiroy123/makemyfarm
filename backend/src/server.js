@@ -16,7 +16,7 @@ import recommendationRoutes from './routes/recommendations.js';
 import mapRoutes from './routes/map.js';
 import syncRoutes from './routes/sync.js';
 import adminRoutes from './routes/admin.js';
-import notificationRoutes, { runWeatherAlerts } from './routes/notifications.js';
+import notificationRoutes, { runWeatherAlerts, runDailyGrowTips, runFrostAlerts } from './routes/notifications.js';
 import diseaseRoutes from './routes/disease.js';
 import achievementsRoutes from './routes/achievements.js';
 import calendarRoutes from './routes/calendar.js';
@@ -27,6 +27,9 @@ import financialsRoutes from './routes/financials.js';
 import schemesRoutes from './routes/schemes.js';
 import billingRoutes from './routes/billing.js';
 import adsRoutes from './routes/ads.js';
+import taskRoutes from './routes/tasks.js';
+import storiesRoutes from './routes/stories.js';
+import successionRoutes from './routes/succession.js';
 import rateLimit from 'express-rate-limit';
 
 // Real-time handlers
@@ -103,6 +106,9 @@ app.use('/api/financials', financialsRoutes);
 app.use('/api/schemes', schemesRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/ads', adsRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/stories', storiesRoutes);
+app.use('/api/succession', successionRoutes);
 
 // Socket.io Real-time Handlers
 setupSocketHandlers(io);
@@ -134,16 +140,31 @@ const PORT = process.env.PORT || 3000;
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
 
-    // Nightly weather alert cron — runs every night at 8 PM
+    // Scheduled cron jobs
     try {
       const { default: cron } = await import('node-cron');
+
+      // 7 AM — daily grow tips push
+      cron.schedule('0 7 * * *', async () => {
+        console.log('Running daily grow tips...');
+        await runDailyGrowTips();
+      });
+
+      // 6 PM — frost & weather alerts for growing crops
+      cron.schedule('0 18 * * *', async () => {
+        console.log('Running frost/weather alerts...');
+        await runFrostAlerts();
+      });
+
+      // 8 PM — harvest-ready weather check (existing)
       cron.schedule('0 20 * * *', async () => {
-        console.log('Running nightly weather alerts...');
+        console.log('Running harvest weather alerts...');
         await runWeatherAlerts();
       });
-      console.log('✓ Weather alert cron scheduled (nightly 8 PM)');
+
+      console.log('✓ Crons scheduled: grow tips (7 AM), frost alerts (6 PM), weather alerts (8 PM)');
     } catch {
-      console.warn('⚠ node-cron not available — weather alerts disabled (run: npm install node-cron)');
+      console.warn('⚠ node-cron not available — scheduled jobs disabled (run: npm install node-cron)');
     }
   } catch (error) {
     console.error('Failed to start server:', error);

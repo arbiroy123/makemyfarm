@@ -91,7 +91,7 @@ router.get('/my-farms', authenticateToken, async (req, res) => {
 });
 
 // Get single farm details
-router.get('/:farmId', async (req, res) => {
+router.get('/:farmId', authenticateToken, async (req, res) => {
   try {
     const result = await query(
       `SELECT f.*, ST_AsGeoJSON(f.location) as location_geojson
@@ -104,7 +104,19 @@ router.get('/:farmId', async (req, res) => {
       return res.status(404).json({ error: 'Farm not found' });
     }
 
-    // Get collaborators
+    const farm = result.rows[0];
+
+    // Allow access only to collaborators; public farms are visible to any authenticated user
+    if (!farm.is_public) {
+      const farmAccess = await query(
+        `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+        [req.params.farmId, req.user.userId]
+      );
+      if (farmAccess.rows.length === 0) {
+        return res.status(403).json({ error: 'Not authorized' });
+      }
+    }
+
     const collaborators = await query(
       `SELECT fc.user_id, u.first_name, u.last_name, u.email, fc.role
        FROM farm_collaborators fc
@@ -114,7 +126,7 @@ router.get('/:farmId', async (req, res) => {
     );
 
     res.json({
-      ...result.rows[0],
+      ...farm,
       collaborators: collaborators.rows
     });
   } catch (error) {
@@ -236,8 +248,14 @@ router.get('/:farmId/season-report', authenticateToken, async (req, res) => {
 });
 
 // Get farm activity log (for real-time updates)
-router.get('/:farmId/activity', async (req, res) => {
+router.get('/:farmId/activity', authenticateToken, async (req, res) => {
   try {
+    const farmAccess = await query(
+      `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+      [req.params.farmId, req.user.userId]
+    );
+    if (farmAccess.rows.length === 0) return res.status(403).json({ error: 'Not authorized' });
+
     const result = await query(
       `SELECT al.*, u.first_name, u.last_name
        FROM activity_log al

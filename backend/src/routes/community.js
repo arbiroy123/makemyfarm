@@ -13,7 +13,7 @@ router.post('/groups', authenticateToken, async (req, res) => {
 
     const result = await query(
       `INSERT INTO community_groups (id, name, description, location, address, admin_id)
-       VALUES ($1, $2, $3, ST_GeomFromText('POINT($5 $4)', 4326), $6, $7)
+       VALUES ($1, $2, $3, ST_SetSRID(ST_MakePoint($5, $4), 4326), $6, $7)
        RETURNING *`,
       [groupId, name, description, latitude, longitude, address, req.user.userId]
     );

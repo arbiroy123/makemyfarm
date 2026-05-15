@@ -193,7 +193,6 @@ router.post('/seed-test-user', requireAdmin, async (req, res) => {
     res.json({
       message: 'Test Pro user ready',
       email,
-      password: 'TestPro@123',
       tier: 'pro',
       userId,
     });

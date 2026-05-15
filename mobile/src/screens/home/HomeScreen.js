@@ -250,9 +250,17 @@ export default function HomeScreen({ navigation }) {
 
             <TouchableOpacity
               style={styles.upgradeBtn}
-              onPress={() => {
-                setPaywallVisible(false);
-                // TODO: navigate to in-app Stripe checkout when live
+              onPress={async () => {
+                try {
+                  const res = await billingAPI.createCheckoutSession();
+                  if (res?.url) {
+                    setPaywallVisible(false);
+                    Linking.openURL(res.url);
+                  }
+                } catch {
+                  setPaywallVisible(false);
+                  Linking.openURL('mailto:support@farmsync.app?subject=Pro%20Upgrade');
+                }
               }}
             >
               <Ionicons name="star" size={18} color="#fff" />

@@ -51,7 +51,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Get single crop with full vegetable guide
-router.get('/:cropId', async (req, res) => {
+router.get('/:cropId', authenticateToken, async (req, res) => {
   try {
     const result = await query(
       `SELECT c.*,
@@ -70,6 +70,13 @@ router.get('/:cropId', async (req, res) => {
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Crop not found' });
+    }
+    const farmAccess = await query(
+      `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+      [result.rows[0].farm_id, req.user.userId]
+    );
+    if (farmAccess.rows.length === 0) {
+      return res.status(403).json({ error: 'Not authorized' });
     }
     res.json(result.rows[0]);
   } catch (error) {
@@ -141,8 +148,16 @@ router.put('/:cropId', authenticateToken, async (req, res) => {
 // ─── Crop Diary ──────────────────────────────────────────────────────────────
 
 // List diary entries for a crop (oldest → newest, planting → harvest)
-router.get('/:cropId/diary', async (req, res) => {
+router.get('/:cropId/diary', authenticateToken, async (req, res) => {
   try {
+    const cropData = await query('SELECT farm_id FROM crops WHERE id = $1', [req.params.cropId]);
+    if (cropData.rows.length === 0) return res.status(404).json({ error: 'Crop not found' });
+    const farmAccess = await query(
+      `SELECT 1 FROM farm_collaborators WHERE farm_id = $1 AND user_id = $2`,
+      [cropData.rows[0].farm_id, req.user.userId]
+    );
+    if (farmAccess.rows.length === 0) return res.status(403).json({ error: 'Not authorized' });
+
     const result = await query(
       `SELECT d.id, d.crop_id, d.user_id, d.entry_date, d.growth_stage,
               d.note, d.photo_url, d.height_cm, d.created_at,

@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { cropAPI, achievementsAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
 import { detectCountry } from '../../utils/country';
+import { amazonInUrl, amazonUsUrl, burpeeUrl, flipkartUrl } from '../../utils/affiliateLinks';
 
 const STATUS_COLOR = {
   planted: '#4CAF50', growing: '#2196F3',
@@ -404,19 +405,19 @@ export default function CropDetailScreen({ route, navigation }) {
         </View>
       ) : null}
 
-      {/* Buy seeds — region-aware */}
+      {/* Buy seeds — region-aware, affiliate-tagged */}
       {(() => {
         const country = user?.country_code || detectCountry();
-        const q = encodeURIComponent(`${crop.vegetable_name} seeds`);
+        const vegName = crop.vegetable_name;
         const shops = country === 'US'
           ? [
-              { label: 'Amazon', url: `https://www.amazon.com/s?k=${q}`, icon: '📦' },
-              { label: 'Burpee Seeds', url: `https://www.burpee.com/search?q=${encodeURIComponent(crop.vegetable_name)}`, icon: '🌿' },
+              { label: 'Amazon',       url: amazonUsUrl(`${vegName} seeds`), icon: '📦' },
+              { label: 'Burpee Seeds', url: burpeeUrl(vegName),              icon: '🌿' },
             ]
           : [
-              { label: 'Amazon.in', url: `https://www.amazon.in/s?k=${q}`, icon: '📦' },
-              { label: 'Flipkart', url: `https://www.flipkart.com/search?q=${q}`, icon: '🛒' },
-              { label: 'IndiaMART', url: `https://www.indiamart.com/search.mp?ss=${q}`, icon: '🌱' },
+              { label: 'Amazon.in', url: amazonInUrl(`${vegName} seeds`), icon: '📦' },
+              { label: 'Flipkart',  url: flipkartUrl(`${vegName} seeds`), icon: '🛒' },
+              { label: 'IndiaMART', url: `https://www.indiamart.com/search.mp?ss=${encodeURIComponent(vegName + ' seeds')}`, icon: '🌱' },
             ];
         return (
           <View style={styles.seedSection}>

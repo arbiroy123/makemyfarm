@@ -4,6 +4,7 @@ import {
   Modal, TextInput, Alert, Share, Linking, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Speech from 'expo-speech';
 import { cropAPI, achievementsAPI } from '../../api/client';
 import { useAuthStore } from '../../store';
 import { detectCountry } from '../../utils/country';
@@ -14,13 +15,11 @@ const STATUS_COLOR = {
   harvested: '#FF9800', planned: '#9E9E9E', failed: '#f44336',
 };
 
-const LEVEL_ORDER = ['novice', 'beginner', 'intermediate', 'advanced', 'expert'];
 const LEVEL_LABEL = {
   novice: 'Novice', beginner: 'Beginner', intermediate: 'Intermediate',
   advanced: 'Advanced', expert: 'Expert',
 };
 
-// Parse pipe-separated "Title: Detail" steps
 function parseSteps(text) {
   if (!text) return [];
   return text.split('|').map((raw, i) => {
@@ -32,8 +31,7 @@ function parseSteps(text) {
 
 function daysRemaining(expectedDate) {
   if (!expectedDate) return null;
-  const diff = Math.ceil((new Date(expectedDate) - new Date()) / 86400000);
-  return diff;
+  return Math.ceil((new Date(expectedDate) - new Date()) / 86400000);
 }
 
 function formatDate(dateStr) {
@@ -41,49 +39,238 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// Specs row
-function SpecRow({ icon, label, value }) {
+function growthProgress(plantingDate, harvestDate) {
+  if (!plantingDate || !harvestDate) return null;
+  const start = new Date(plantingDate).getTime();
+  const end = new Date(harvestDate).getTime();
+  return Math.min(1, Math.max(0, (Date.now() - start) / (end - start)));
+}
+
+// ── Spec tile ─────────────────────────────────────────────────────────────────
+function SpecTile({ icon, label, value, color }) {
   return (
-    <View style={styles.specRow}>
-      <Ionicons name={icon} size={16} color="#4CAF50" />
-      <Text style={styles.specLabel}>{label}</Text>
-      <Text style={styles.specValue}>{value}</Text>
+    <View style={[styles.specTile, { borderTopColor: color }]}>
+      <View style={[styles.specTileIcon, { backgroundColor: color + '22' }]}>
+        <Ionicons name={icon} size={20} color={color} />
+      </View>
+      <Text style={styles.specTileValue}>{value}</Text>
+      <Text style={styles.specTileLabel}>{label}</Text>
     </View>
   );
 }
 
-// A single step rendered based on skill level
-function StepCard({ step, level }) {
-  const isExpert = level === 'advanced' || level === 'expert';
-  const isNovice = level === 'novice' || level === 'beginner';
-
-  if (isExpert) {
-    return (
-      <View style={styles.stepExpert}>
-        <Text style={styles.stepExpertBullet}>▸</Text>
-        <Text style={styles.stepExpertText}>{step.title}</Text>
+// ── Temperature range bar ─────────────────────────────────────────────────────
+function TempRangeBar({ min, optimal, max }) {
+  const range = (max - min) || 1;
+  return (
+    <View style={styles.tempBarWrap}>
+      <View style={styles.tempBarHeader}>
+        <Ionicons name="thermometer-outline" size={14} color="#FF7043" />
+        <Text style={styles.tempBarTitle}> Temperature range</Text>
       </View>
-    );
+      <View style={styles.tempBarTrack}>
+        <View style={[styles.tempBarCold, { flex: optimal - min }]} />
+        <View style={[styles.tempBarWarm, { flex: max - optimal }]} />
+      </View>
+      <View style={styles.tempBarLabels}>
+        <Text style={styles.tempBarMin}>{min}°C min</Text>
+        <Text style={styles.tempBarOpt}>{optimal}°C ideal</Text>
+        <Text style={styles.tempBarMax}>{max}°C max</Text>
+      </View>
+    </View>
+  );
+}
+
+// ── Step wizard ───────────────────────────────────────────────────────────────
+function StepWizard({ steps }) {
+  const [current, setCurrent] = useState(0);
+  if (!steps.length) return null;
+  const step = steps[current];
+  const isFirst = current === 0;
+  const isLast = current === steps.length - 1;
+
+  return (
+    <View style={styles.wizard}>
+      <View style={styles.wizardProgressTrack}>
+        <View style={[styles.wizardProgressFill, { width: `${((current + 1) / steps.length) * 100}%` }]} />
+      </View>
+      <Text style={styles.wizardCounter}>{current + 1} of {steps.length}</Text>
+
+      <View style={styles.wizardCard}>
+        <View style={styles.wizardNumBadge}>
+          <Text style={styles.wizardNumText}>{current + 1}</Text>
+        </View>
+        <Text style={styles.wizardStepTitle}>{step.title}</Text>
+        {step.detail ? <Text style={styles.wizardStepDetail}>{step.detail}</Text> : null}
+      </View>
+
+      <View style={styles.wizardNav}>
+        <TouchableOpacity
+          style={styles.wizardNavBtn}
+          onPress={() => setCurrent(c => c - 1)}
+          disabled={isFirst}
+        >
+          <Ionicons name="chevron-back" size={18} color={isFirst ? '#ccc' : '#4CAF50'} />
+          <Text style={[styles.wizardNavText, isFirst && styles.wizardNavOff]}>Prev</Text>
+        </TouchableOpacity>
+
+        <View style={styles.wizardDots}>
+          {steps.map((_, i) => (
+            <TouchableOpacity key={i} onPress={() => setCurrent(i)}>
+              <View style={[styles.wizardDot, i === current && styles.wizardDotActive]} />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.wizardNavBtn, styles.wizardNavBtnRight]}
+          onPress={() => setCurrent(c => c + 1)}
+          disabled={isLast}
+        >
+          <Text style={[styles.wizardNavText, isLast && styles.wizardNavOff]}>Next</Text>
+          <Ionicons name="chevron-forward" size={18} color={isLast ? '#ccc' : '#4CAF50'} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// ── Care checklist ────────────────────────────────────────────────────────────
+function CareChecklist({ steps }) {
+  const [checked, setChecked] = useState({});
+  return (
+    <View>
+      {steps.map(step => (
+        <TouchableOpacity
+          key={step.num}
+          style={styles.careItem}
+          onPress={() => setChecked(prev => ({ ...prev, [step.num]: !prev[step.num] }))}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.careCheck, checked[step.num] && styles.careCheckDone]}>
+            {checked[step.num] ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.careTitle, checked[step.num] && styles.careTitleDone]}>{step.title}</Text>
+            {step.detail ? <Text style={styles.careDetail}>{step.detail}</Text> : null}
+          </View>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+const NUTRITION_COLORS = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4', '#F44336'];
+
+// ── Fun fact — tap to reveal ──────────────────────────────────────────────────
+function FunFactCard({ text }) {
+  const [revealed, setRevealed] = useState(false);
+  return (
+    <TouchableOpacity
+      style={styles.funFactCard}
+      onPress={() => setRevealed(true)}
+      activeOpacity={revealed ? 1 : 0.85}
+    >
+      <View style={styles.funFactHeader}>
+        <Ionicons name="bulb-outline" size={18} color="#e65100" />
+        <Text style={styles.funFactTitle}>Did you know?</Text>
+        {!revealed && (
+          <View style={styles.funFactTapPill}>
+            <Text style={styles.funFactTapText}>tap to reveal</Text>
+          </View>
+        )}
+      </View>
+      {revealed ? (
+        <Text style={styles.funFactText}>{text}</Text>
+      ) : (
+        <View style={styles.funFactHidden}>
+          <Text style={styles.funFactHiddenIcon}>💡</Text>
+          <Text style={styles.funFactHiddenText}>A surprising fact awaits…</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+}
+
+// ── Nutrition — sentence bullets ──────────────────────────────────────────────
+function NutritionCard({ text }) {
+  const bullets = text.split(/\.\s+/).filter(Boolean).map(s => s.replace(/\.$/, '').trim());
+  return (
+    <View style={styles.nutritionCard}>
+      <View style={styles.nutritionHeader}>
+        <Ionicons name="fitness-outline" size={18} color="#00695c" />
+        <Text style={styles.nutritionTitle}>Nutrition</Text>
+      </View>
+      {bullets.map((b, i) => (
+        <View key={i} style={styles.nutritionBullet}>
+          <View style={[styles.nutritionDot, { backgroundColor: NUTRITION_COLORS[i % NUTRITION_COLORS.length] }]} />
+          <Text style={styles.nutritionBulletText}>{b}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+// ── Recipe card ───────────────────────────────────────────────────────────────
+function RecipeCard({ text }) {
+  // Data format: "Recipe Name — Instructions text"
+  const dashIdx = text.indexOf(' — ');
+  const recipeName = dashIdx > -1 ? text.slice(0, dashIdx).trim() : null;
+  const instructions = dashIdx > -1 ? text.slice(dashIdx + 3).trim() : text;
+  return (
+    <View style={styles.recipeCard}>
+      <View style={styles.recipeTopBar}>
+        <Ionicons name="restaurant-outline" size={14} color="#fff" />
+        <Text style={styles.recipeTopBarText}> TRY IT IN THE KITCHEN</Text>
+      </View>
+      <View style={styles.recipeBody}>
+        {recipeName ? <Text style={styles.recipeName}>{recipeName}</Text> : null}
+        <Text style={styles.recipeText}>{instructions}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ── Story card with audio ─────────────────────────────────────────────────────
+function StoryCard({ text }) {
+  const [speaking, setSpeaking] = useState(false);
+
+  async function toggleSpeech() {
+    const isSpeaking = await Speech.isSpeakingAsync();
+    if (isSpeaking) {
+      Speech.stop();
+      setSpeaking(false);
+    } else {
+      setSpeaking(true);
+      Speech.speak(text, {
+        rate: 0.9,
+        pitch: 1.0,
+        onDone: () => setSpeaking(false),
+        onStopped: () => setSpeaking(false),
+        onError: () => setSpeaking(false),
+      });
+    }
   }
 
   return (
-    <View style={[styles.stepCard, isNovice && styles.stepCardNovice]}>
-      <View style={styles.stepNum}>
-        <Text style={styles.stepNumText}>{step.num}</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.stepTitle}>{step.title}</Text>
-        {isNovice && step.detail ? (
-          <Text style={styles.stepDetail}>{step.detail}</Text>
-        ) : null}
-        {!isNovice && !isExpert && step.detail ? (
-          <Text style={styles.stepDetailMid}>{step.detail.split('.')[0]}.</Text>
-        ) : null}
+    <View style={styles.storyCard}>
+      <Text style={styles.storyQuoteMark}>"</Text>
+      <Text style={styles.storyText}>{text}</Text>
+      <View style={styles.storyFooter}>
+        <Ionicons name="person-circle-outline" size={16} color="#1976d2" />
+        <Text style={styles.storyAttrib}>Community grower</Text>
+        <TouchableOpacity style={[styles.storyAudioBtn, speaking && styles.storyAudioBtnActive]} onPress={toggleSpeech}>
+          <Ionicons name={speaking ? 'stop-circle' : 'volume-medium-outline'} size={16} color={speaking ? '#fff' : '#1976d2'} />
+          <Text style={[styles.storyAudioText, speaking && styles.storyAudioTextActive]}>
+            {speaking ? 'Stop' : 'Listen'}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
+// ── Collapsible section ───────────────────────────────────────────────────────
 function Section({ title, icon, children, collapsed = false }) {
   const [open, setOpen] = useState(!collapsed);
   return (
@@ -98,6 +285,7 @@ function Section({ title, icon, children, collapsed = false }) {
   );
 }
 
+// ── Main screen ───────────────────────────────────────────────────────────────
 export default function CropDetailScreen({ route, navigation }) {
   const { cropId } = route.params;
   const { user } = useAuthStore();
@@ -122,7 +310,6 @@ export default function CropDetailScreen({ route, navigation }) {
       .finally(() => setLoading(false));
   }, [cropId]);
 
-  // Set header share button
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -173,40 +360,41 @@ export default function CropDetailScreen({ route, navigation }) {
     }
   }
 
-  if (loading) {
-    return <View style={styles.center}><ActivityIndicator size="large" color="#4CAF50" /></View>;
-  }
-  if (error || !crop) {
-    return <View style={styles.center}><Text style={{ color: '#c62828' }}>{error || 'Crop not found'}</Text></View>;
-  }
+  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#4CAF50" /></View>;
+  if (error || !crop) return <View style={styles.center}><Text style={{ color: '#c62828' }}>{error || 'Crop not found'}</Text></View>;
 
   const plantingSteps = parseSteps(crop.planting_tips);
   const careSteps = parseSteps(crop.care_tips);
   const pestSteps = parseSteps(crop.pest_diseases);
   const days = daysRemaining(crop.expected_harvest_date);
+  const prog = growthProgress(crop.planting_date, crop.expected_harvest_date);
   const isExpert = level === 'advanced' || level === 'expert';
+
+  const specTiles = [
+    { icon: 'water-outline',  label: 'Watering',    value: `Every ${crop.water_frequency_days}d`,    color: '#2196F3' },
+    { icon: 'sunny-outline',  label: 'Sunlight',    value: `${crop.sunlight_hours} hrs/day`,         color: '#FFC107' },
+    { icon: 'leaf-outline',   label: 'Soil pH',     value: `${crop.ph_min} – ${crop.ph_max}`,       color: '#66BB6A' },
+    { icon: 'resize-outline', label: 'Spacing',     value: `${crop.spacing_cm} cm`,                  color: '#AB47BC' },
+    { icon: 'time-outline',   label: 'Harvest in',  value: `${crop.days_to_harvest} days`,           color: '#FF9800' },
+    ...(crop.yields_per_plant ? [{ icon: 'basket-outline', label: 'Yield/plant', value: `~${crop.yields_per_plant} kg`, color: '#26A69A' }] : []),
+    ...(crop.quantity_planted ? [{ icon: 'apps-outline',   label: 'Plants',      value: `${crop.quantity_planted} planted`, color: '#EC407A' }] : []),
+  ];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Header */}
+      {/* Hero image */}
       {crop.image_url ? (
-        <Image
-          source={{ uri: crop.image_url }}
-          style={styles.headerImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: crop.image_url }} style={styles.headerImage} resizeMode="cover" />
       ) : null}
       <View style={[styles.headerInfo, !crop.image_url && styles.headerInfoNoImg]}>
         <Text style={styles.cropName}>{crop.vegetable_name}</Text>
-        {crop.scientific_name ? (
-          <Text style={styles.scientific}>{crop.scientific_name}</Text>
-        ) : null}
+        {crop.scientific_name ? <Text style={styles.scientific}>{crop.scientific_name}</Text> : null}
         <View style={[styles.statusBadge, { backgroundColor: STATUS_COLOR[crop.status] || '#999' }]}>
           <Text style={styles.statusText}>{crop.status?.toUpperCase()}</Text>
         </View>
       </View>
 
-      {/* Action buttons */}
+      {/* Actions */}
       <View style={styles.actionRow}>
         <TouchableOpacity
           style={[styles.actionBtn, { backgroundColor: '#FF9800' }]}
@@ -224,7 +412,7 @@ export default function CropDetailScreen({ route, navigation }) {
         )}
       </View>
 
-      {/* Harvest yield modal */}
+      {/* Harvest modal */}
       <Modal visible={showHarvestModal} transparent animationType="slide" onRequestClose={() => setShowHarvestModal(false)}>
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
@@ -250,7 +438,7 @@ export default function CropDetailScreen({ route, navigation }) {
         </View>
       </Modal>
 
-      {/* YouTube search */}
+      {/* YouTube + Diary CTAs */}
       <TouchableOpacity style={styles.youtubeCta} activeOpacity={0.85} onPress={handleYouTube}>
         <Ionicons name="logo-youtube" size={20} color="#fff" />
         <View style={{ flex: 1, marginLeft: 10 }}>
@@ -260,7 +448,6 @@ export default function CropDetailScreen({ route, navigation }) {
         <Ionicons name="chevron-forward" size={20} color="#fff" />
       </TouchableOpacity>
 
-      {/* Diary CTA */}
       <TouchableOpacity
         style={styles.diaryCta}
         activeOpacity={0.85}
@@ -278,75 +465,80 @@ export default function CropDetailScreen({ route, navigation }) {
         <Ionicons name="chevron-forward" size={20} color="#fff" />
       </TouchableOpacity>
 
-      {/* Timeline */}
+      {/* Timeline + growth progress bar */}
       <View style={styles.timelineCard}>
-        <View style={styles.timelineItem}>
-          <Ionicons name="calendar" size={16} color="#4CAF50" />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.timelineLabel}>Planted</Text>
-            <Text style={styles.timelineValue}>{formatDate(crop.planting_date)}</Text>
+        <View style={styles.timelineRow}>
+          <View style={styles.timelineItem}>
+            <Ionicons name="calendar" size={16} color="#4CAF50" />
+            <View style={{ marginLeft: 8 }}>
+              <Text style={styles.timelineLabel}>Planted</Text>
+              <Text style={styles.timelineValue}>{formatDate(crop.planting_date)}</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.timelineDivider} />
-        <View style={styles.timelineItem}>
-          <Ionicons name="basket" size={16} color="#FF9800" />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.timelineLabel}>Expected Harvest</Text>
-            <Text style={styles.timelineValue}>{formatDate(crop.expected_harvest_date)}</Text>
+          <View style={styles.timelineDivider} />
+          <View style={styles.timelineItem}>
+            <Ionicons name="basket" size={16} color="#FF9800" />
+            <View style={{ marginLeft: 8 }}>
+              <Text style={styles.timelineLabel}>Harvest</Text>
+              <Text style={styles.timelineValue}>{formatDate(crop.expected_harvest_date)}</Text>
+            </View>
           </View>
+          {days !== null && crop.status !== 'harvested' && (
+            <View style={styles.daysChip}>
+              <Text style={styles.daysNumber}>{days > 0 ? days : 0}</Text>
+              <Text style={styles.daysLabel}>{days > 0 ? 'days left' : 'ready!'}</Text>
+            </View>
+          )}
         </View>
-        {days !== null && crop.status !== 'harvested' && (
-          <View style={styles.daysRemaining}>
-            <Text style={styles.daysNumber}>{days > 0 ? days : 0}</Text>
-            <Text style={styles.daysLabel}>{days > 0 ? 'days to harvest' : 'harvest time!'}</Text>
+        {prog !== null && crop.status !== 'harvested' && (
+          <View style={styles.growthBarWrap}>
+            <View style={styles.growthBarTrack}>
+              <View style={[styles.growthBarFill, { width: `${Math.round(prog * 100)}%` }]} />
+            </View>
+            <View style={styles.growthBarLabels}>
+              <Text style={styles.growthBarEdge}>🌱 Planted</Text>
+              <Text style={styles.growthBarPct}>{Math.round(prog * 100)}% grown</Text>
+              <Text style={styles.growthBarEdge}>🌾 Harvest</Text>
+            </View>
           </View>
         )}
       </View>
 
-      {/* Skill level indicator */}
+      {/* Skill level */}
       <View style={styles.levelBar}>
         <Ionicons name="person" size={14} color="#666" />
         <Text style={styles.levelText}>Guide adapted for: </Text>
         <Text style={styles.levelName}>{LEVEL_LABEL[level] || 'Novice'}</Text>
-        {isExpert && <Text style={styles.levelNote}> · Basics omitted</Text>}
+        {isExpert && <Text style={styles.levelNote}> · Expert mode</Text>}
       </View>
 
-      {/* Quick specs — always shown */}
+      {/* Quick Specs — tile grid */}
       <Section title="Quick Specs" icon="information-circle-outline">
-        <SpecRow icon="thermometer-outline" label="Temperature" value={`${crop.min_temp_celsius}°C – ${crop.max_temp_celsius}°C (ideal ${crop.optimal_temp_celsius}°C)`} />
-        <SpecRow icon="water-outline" label="Watering" value={`Every ${crop.water_frequency_days} days`} />
-        <SpecRow icon="sunny-outline" label="Sunlight" value={`${crop.sunlight_hours} hrs/day`} />
-        <SpecRow icon="leaf-outline" label="Soil pH" value={`${crop.ph_min} – ${crop.ph_max}`} />
-        <SpecRow icon="resize-outline" label="Spacing" value={`${crop.spacing_cm} cm`} />
-        <SpecRow icon="time-outline" label="Days to harvest" value={`${crop.days_to_harvest} days`} />
-        {crop.yields_per_plant ? (
-          <SpecRow icon="basket-outline" label="Yield per plant" value={`~${crop.yields_per_plant} kg`} />
-        ) : null}
-        {crop.quantity_planted ? (
-          <SpecRow icon="apps-outline" label="Plants" value={`${crop.quantity_planted} planted`} />
-        ) : null}
+        <View style={styles.specTilesGrid}>
+          {specTiles.map(t => <SpecTile key={t.label} {...t} />)}
+        </View>
+        <TempRangeBar
+          min={crop.min_temp_celsius}
+          optimal={crop.optimal_temp_celsius}
+          max={crop.max_temp_celsius}
+        />
       </Section>
 
-      {/* Planting guide */}
-      {!isExpert || plantingSteps.length > 0 ? (
-        <Section title="How to Plant" icon="earth-outline" collapsed={isExpert}>
-          {isExpert && (
-            <Text style={styles.expertNote}>Key steps only — expand for detail</Text>
-          )}
-          {plantingSteps.map(step => (
-            <StepCard key={step.num} step={step} level={level} />
-          ))}
+      {/* How to Plant — step wizard */}
+      {plantingSteps.length > 0 && (
+        <Section title="How to Plant" icon="earth-outline">
+          <StepWizard steps={plantingSteps} />
         </Section>
-      ) : null}
+      )}
 
-      {/* Care guide */}
-      <Section title="Ongoing Care" icon="flower-outline">
-        {careSteps.map(step => (
-          <StepCard key={step.num} step={step} level={level} />
-        ))}
-      </Section>
+      {/* Ongoing Care — checklist */}
+      {careSteps.length > 0 && (
+        <Section title="Ongoing Care" icon="flower-outline">
+          <CareChecklist steps={careSteps} />
+        </Section>
+      )}
 
-      {/* Pests & diseases */}
+      {/* Pests & Diseases */}
       <Section title="Pests & Diseases" icon="bug-outline" collapsed={true}>
         {pestSteps.map(step => (
           <View key={step.num} style={styles.pestCard}>
@@ -380,39 +572,15 @@ export default function CropDetailScreen({ route, navigation }) {
       )}
 
       {/* Fun fact */}
-      {crop.fun_fact ? (
-        <View style={styles.funFactCard}>
-          <View style={styles.funFactHeader}>
-            <Ionicons name="bulb-outline" size={18} color="#e65100" />
-            <Text style={styles.funFactTitle}>Did you know?</Text>
-          </View>
-          <Text style={styles.funFactText}>{crop.fun_fact}</Text>
-        </View>
-      ) : null}
+      {crop.fun_fact ? <FunFactCard text={crop.fun_fact} /> : null}
 
       {/* Nutrition */}
-      {crop.nutrition ? (
-        <View style={styles.nutritionCard}>
-          <View style={styles.nutritionHeader}>
-            <Ionicons name="fitness-outline" size={18} color="#00695c" />
-            <Text style={styles.nutritionTitle}>Nutrition</Text>
-          </View>
-          <Text style={styles.nutritionText}>{crop.nutrition}</Text>
-        </View>
-      ) : null}
+      {crop.nutrition ? <NutritionCard text={crop.nutrition} /> : null}
 
       {/* Simple recipe */}
-      {crop.simple_recipe ? (
-        <View style={styles.recipeCard}>
-          <View style={styles.recipeHeader}>
-            <Ionicons name="restaurant-outline" size={18} color="#2e7d32" />
-            <Text style={styles.recipeTitle}>Try it in the kitchen</Text>
-          </View>
-          <Text style={styles.recipeText}>{crop.simple_recipe}</Text>
-        </View>
-      ) : null}
+      {crop.simple_recipe ? <RecipeCard text={crop.simple_recipe} /> : null}
 
-      {/* Buy seeds — region-aware, affiliate-tagged */}
+      {/* Buy seeds */}
       {(() => {
         const country = user?.country_code || detectCountry();
         const vegName = crop.vegetable_name;
@@ -442,15 +610,7 @@ export default function CropDetailScreen({ route, navigation }) {
       })()}
 
       {/* Growing story */}
-      {crop.growing_story ? (
-        <View style={styles.storyCard}>
-          <View style={styles.storyHeader}>
-            <Ionicons name="people-outline" size={18} color="#1565c0" />
-            <Text style={styles.storyTitle}>From a real grower</Text>
-          </View>
-          <Text style={styles.storyText}>{crop.growing_story}</Text>
-        </View>
-      ) : null}
+      {crop.growing_story ? <StoryCard text={crop.growing_story} /> : null}
     </ScrollView>
   );
 }
@@ -479,51 +639,50 @@ const styles = StyleSheet.create({
   headerInfoNoImg: { paddingTop: 24 },
   cropName: { fontSize: 26, fontWeight: 'bold', color: '#fff' },
   scientific: { fontSize: 13, color: 'rgba(255,255,255,0.8)', fontStyle: 'italic', marginTop: 2 },
-  statusBadge: {
-    alignSelf: 'flex-start', marginTop: 8,
-    paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12,
-  },
+  statusBadge: { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
   statusText: { color: '#fff', fontWeight: '700', fontSize: 12 },
 
   youtubeCta: {
-    flexDirection: 'row', alignItems: 'center',
-    margin: 12, marginBottom: 0,
-    backgroundColor: '#FF0000', borderRadius: 12,
-    padding: 14,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3,
-    elevation: 2,
+    flexDirection: 'row', alignItems: 'center', margin: 12, marginBottom: 0,
+    backgroundColor: '#FF0000', borderRadius: 12, padding: 14,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3, elevation: 2,
   },
   youtubeCtaTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
   youtubeCtaSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
 
   diaryCta: {
-    flexDirection: 'row', alignItems: 'center',
-    margin: 12, marginBottom: 0,
-    backgroundColor: '#1976d2', borderRadius: 12,
-    padding: 14,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3,
-    elevation: 2,
+    flexDirection: 'row', alignItems: 'center', margin: 12, marginBottom: 0,
+    backgroundColor: '#1976d2', borderRadius: 12, padding: 14,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3, elevation: 2,
   },
   diaryCtaTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
   diaryCtaSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
 
+  // Timeline
   timelineCard: {
     backgroundColor: '#fff', margin: 12, borderRadius: 12, padding: 16,
-    flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3,
-    elevation: 2,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3, elevation: 2,
   },
-  timelineItem: { flexDirection: 'row', alignItems: 'center', flex: 1, minWidth: 130 },
+  timelineRow: { flexDirection: 'row', alignItems: 'center' },
+  timelineItem: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   timelineLabel: { fontSize: 11, color: '#888' },
-  timelineValue: { fontSize: 14, fontWeight: '600', color: '#333' },
+  timelineValue: { fontSize: 13, fontWeight: '600', color: '#333' },
   timelineDivider: { width: 1, height: 32, backgroundColor: '#eee', marginHorizontal: 12 },
-  daysRemaining: { alignItems: 'center', marginLeft: 12 },
-  daysNumber: { fontSize: 28, fontWeight: 'bold', color: '#4CAF50' },
-  daysLabel: { fontSize: 11, color: '#888' },
+  daysChip: {
+    alignItems: 'center', backgroundColor: '#f1f8f1',
+    borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6,
+  },
+  daysNumber: { fontSize: 22, fontWeight: 'bold', color: '#4CAF50', lineHeight: 26 },
+  daysLabel: { fontSize: 10, color: '#888' },
+  growthBarWrap: { marginTop: 14 },
+  growthBarTrack: { height: 8, backgroundColor: '#e8f5e9', borderRadius: 4, overflow: 'hidden' },
+  growthBarFill: { height: '100%', backgroundColor: '#4CAF50', borderRadius: 4 },
+  growthBarLabels: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 },
+  growthBarEdge: { fontSize: 10, color: '#888' },
+  growthBarPct: { fontSize: 11, fontWeight: '700', color: '#4CAF50' },
 
   levelBar: {
-    flexDirection: 'row', alignItems: 'center',
-    marginHorizontal: 12, marginBottom: 4,
+    flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginBottom: 4,
     backgroundColor: '#fff', borderRadius: 8, padding: 10,
     borderLeftWidth: 3, borderLeftColor: '#4CAF50',
   },
@@ -531,44 +690,74 @@ const styles = StyleSheet.create({
   levelName: { fontSize: 12, fontWeight: '700', color: '#2e7d32' },
   levelNote: { fontSize: 12, color: '#888', fontStyle: 'italic' },
 
-  section: {
-    backgroundColor: '#fff', marginHorizontal: 12, marginTop: 10,
-    borderRadius: 12, overflow: 'hidden',
-  },
-  sectionHeader: {
-    flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10,
-  },
+  section: { backgroundColor: '#fff', marginHorizontal: 12, marginTop: 10, borderRadius: 12, overflow: 'hidden' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
   sectionTitle: { flex: 1, fontSize: 15, fontWeight: '700', color: '#333' },
   sectionBody: { paddingHorizontal: 14, paddingBottom: 14 },
-  expertNote: { fontSize: 12, color: '#888', fontStyle: 'italic', marginBottom: 8 },
 
-  specRow: {
-    flexDirection: 'row', alignItems: 'center', paddingVertical: 7,
-    borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+  // Spec tiles
+  specTilesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  specTile: {
+    flexGrow: 1, minWidth: '28%',
+    backgroundColor: '#fafafa', borderRadius: 10, borderTopWidth: 3,
+    padding: 10, alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 2, elevation: 1,
   },
-  specLabel: { flex: 1, fontSize: 13, color: '#555', marginLeft: 10 },
-  specValue: { fontSize: 13, fontWeight: '600', color: '#333', textAlign: 'right', maxWidth: '55%' },
+  specTileIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
+  specTileValue: { fontSize: 13, fontWeight: '700', color: '#222', textAlign: 'center' },
+  specTileLabel: { fontSize: 10, color: '#999', marginTop: 3, textAlign: 'center' },
 
-  // Step cards
-  stepCard: {
-    flexDirection: 'row', alignItems: 'flex-start',
-    backgroundColor: '#f9f9f9', borderRadius: 8,
-    padding: 10, marginBottom: 8,
-  },
-  stepCardNovice: { backgroundColor: '#f1f8f1', borderLeftWidth: 3, borderLeftColor: '#a5d6a7' },
-  stepNum: {
-    width: 24, height: 24, borderRadius: 12,
-    backgroundColor: '#4CAF50', justifyContent: 'center', alignItems: 'center',
-    marginRight: 10, flexShrink: 0,
-  },
-  stepNumText: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
-  stepTitle: { fontSize: 13, fontWeight: '600', color: '#222' },
-  stepDetail: { fontSize: 12, color: '#555', marginTop: 4, lineHeight: 18 },
-  stepDetailMid: { fontSize: 12, color: '#666', marginTop: 3 },
+  // Temp bar
+  tempBarWrap: { backgroundColor: '#fff8f3', borderRadius: 10, padding: 12, marginTop: 2 },
+  tempBarHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  tempBarTitle: { fontSize: 11, color: '#888' },
+  tempBarTrack: { height: 10, borderRadius: 5, overflow: 'hidden', flexDirection: 'row' },
+  tempBarCold: { backgroundColor: '#81d4fa', borderTopLeftRadius: 5, borderBottomLeftRadius: 5 },
+  tempBarWarm: { backgroundColor: '#ff8a65', borderTopRightRadius: 5, borderBottomRightRadius: 5 },
+  tempBarLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+  tempBarMin: { fontSize: 10, color: '#1565c0' },
+  tempBarOpt: { fontSize: 10, fontWeight: '700', color: '#2e7d32', textAlign: 'center' },
+  tempBarMax: { fontSize: 10, color: '#c62828' },
 
-  stepExpert: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 4 },
-  stepExpertBullet: { color: '#4CAF50', fontWeight: 'bold', marginRight: 8, fontSize: 14 },
-  stepExpertText: { fontSize: 13, color: '#333', flex: 1 },
+  // Step wizard
+  wizard: { marginTop: 4 },
+  wizardProgressTrack: { height: 4, backgroundColor: '#e8f5e9', borderRadius: 2, overflow: 'hidden', marginBottom: 6 },
+  wizardProgressFill: { height: '100%', backgroundColor: '#4CAF50', borderRadius: 2 },
+  wizardCounter: { fontSize: 11, color: '#aaa', textAlign: 'right', marginBottom: 10 },
+  wizardCard: {
+    backgroundColor: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 12,
+    borderLeftWidth: 4, borderLeftColor: '#4CAF50',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 1,
+  },
+  wizardNumBadge: {
+    width: 30, height: 30, borderRadius: 15, backgroundColor: '#4CAF50',
+    justifyContent: 'center', alignItems: 'center', marginBottom: 8,
+  },
+  wizardNumText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  wizardStepTitle: { fontSize: 15, fontWeight: '700', color: '#222', marginBottom: 6 },
+  wizardStepDetail: { fontSize: 13, color: '#555', lineHeight: 19 },
+  wizardNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  wizardNavBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 6, paddingHorizontal: 8 },
+  wizardNavBtnRight: { justifyContent: 'flex-end' },
+  wizardNavText: { fontSize: 13, fontWeight: '600', color: '#4CAF50' },
+  wizardNavOff: { color: '#ccc' },
+  wizardDots: { flexDirection: 'row', gap: 5, alignItems: 'center' },
+  wizardDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#ddd' },
+  wizardDotActive: { backgroundColor: '#4CAF50', width: 18 },
+
+  // Care checklist
+  careItem: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 12,
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+  },
+  careCheck: {
+    width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#4CAF50',
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0, marginTop: 1,
+  },
+  careCheckDone: { backgroundColor: '#4CAF50', borderColor: '#4CAF50' },
+  careTitle: { fontSize: 13, fontWeight: '600', color: '#222' },
+  careTitleDone: { color: '#aaa', textDecorationLine: 'line-through' },
+  careDetail: { fontSize: 12, color: '#666', marginTop: 3, lineHeight: 17 },
 
   pestCard: {
     backgroundColor: '#fff8f0', borderRadius: 8, borderLeftWidth: 3,
@@ -578,58 +767,44 @@ const styles = StyleSheet.create({
   pestDetail: { fontSize: 12, color: '#555', marginTop: 3, lineHeight: 17 },
 
   companionCard: {
-    marginHorizontal: 12, marginTop: 10,
-    backgroundColor: '#f1f8e9',
-    borderRadius: 16,
-    borderWidth: 1, borderColor: '#c8e6c9',
-    padding: 14,
+    marginHorizontal: 12, marginTop: 10, backgroundColor: '#f1f8e9',
+    borderRadius: 16, borderWidth: 1, borderColor: '#c8e6c9', padding: 14,
   },
   companionCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
-  companionCardIconWrap: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#c8e6c9', justifyContent: 'center', alignItems: 'center',
-  },
+  companionCardIconWrap: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#c8e6c9', justifyContent: 'center', alignItems: 'center' },
   companionCardTitle: { fontSize: 14, fontWeight: '700', color: '#1b5e20' },
   companionCardSubtitle: { fontSize: 11, color: '#558b2f', marginTop: 1 },
   companionPillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  companionPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: '#fff', borderRadius: 20,
-    borderWidth: 1, borderColor: '#a5d6a7',
-    paddingHorizontal: 11, paddingVertical: 6,
-  },
+  companionPill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#fff', borderRadius: 20, borderWidth: 1, borderColor: '#a5d6a7', paddingHorizontal: 11, paddingVertical: 6 },
   companionPillEmoji: { fontSize: 12 },
   companionPillText: { fontSize: 13, color: '#2e7d32', fontWeight: '600' },
 
-  funFactCard: {
-    marginHorizontal: 12, marginTop: 10,
-    backgroundColor: '#fff8e1', borderRadius: 12,
-    borderLeftWidth: 4, borderLeftColor: '#FF9800',
-    padding: 14,
-  },
-  funFactHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  funFactTitle: { fontSize: 14, fontWeight: '700', color: '#e65100' },
+  // Fun fact — tap to reveal
+  funFactCard: { marginHorizontal: 12, marginTop: 10, backgroundColor: '#fff8e1', borderRadius: 12, borderWidth: 1, borderColor: '#FFE082', padding: 14 },
+  funFactHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  funFactTitle: { flex: 1, fontSize: 14, fontWeight: '700', color: '#e65100' },
+  funFactTapPill: { backgroundColor: '#FF9800', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3 },
+  funFactTapText: { fontSize: 10, fontWeight: '700', color: '#fff' },
+  funFactHidden: { alignItems: 'center', paddingVertical: 12, gap: 6 },
+  funFactHiddenIcon: { fontSize: 28 },
+  funFactHiddenText: { fontSize: 13, color: '#BF8000', fontStyle: 'italic' },
   funFactText: { fontSize: 13, color: '#4e342e', lineHeight: 20 },
 
-  nutritionCard: {
-    marginHorizontal: 12, marginTop: 10,
-    backgroundColor: '#e0f2f1', borderRadius: 12,
-    borderLeftWidth: 4, borderLeftColor: '#00695c',
-    padding: 14,
-  },
-  nutritionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  // Nutrition — bullet sentences
+  nutritionCard: { marginHorizontal: 12, marginTop: 10, backgroundColor: '#e0f2f1', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#00695c', padding: 14 },
+  nutritionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   nutritionTitle: { fontSize: 14, fontWeight: '700', color: '#00695c' },
-  nutritionText: { fontSize: 13, color: '#004d40', lineHeight: 20 },
+  nutritionBullet: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 7 },
+  nutritionDot: { width: 8, height: 8, borderRadius: 4, marginTop: 5, flexShrink: 0 },
+  nutritionBulletText: { flex: 1, fontSize: 13, color: '#004d40', lineHeight: 19 },
 
-  recipeCard: {
-    marginHorizontal: 12, marginTop: 10,
-    backgroundColor: '#f1f8e9', borderRadius: 12,
-    borderLeftWidth: 4, borderLeftColor: '#558b2f',
-    padding: 14,
-  },
-  recipeHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  recipeTitle: { fontSize: 14, fontWeight: '700', color: '#2e7d32' },
-  recipeText: { fontSize: 13, color: '#1b5e20', lineHeight: 20 },
+  // Recipe card — named recipe style
+  recipeCard: { marginHorizontal: 12, marginTop: 10, backgroundColor: '#FAFAF0', borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#C8E6C9' },
+  recipeTopBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#558b2f', paddingHorizontal: 14, paddingVertical: 8 },
+  recipeTopBarText: { fontSize: 11, color: '#fff', fontWeight: '700', letterSpacing: 0.8 },
+  recipeBody: { padding: 14 },
+  recipeName: { fontSize: 17, fontWeight: '800', color: '#2e7d32', marginBottom: 8 },
+  recipeText: { fontSize: 13, color: '#33691e', lineHeight: 20 },
 
   seedSection: { marginHorizontal: 12, marginTop: 10, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#c8e6c9', padding: 14 },
   seedHeader: { fontSize: 14, fontWeight: '700', color: '#2e7d32', marginBottom: 10 },
@@ -638,13 +813,14 @@ const styles = StyleSheet.create({
   seedBtnIcon: { fontSize: 20 },
   seedBtnLabel: { fontSize: 11, fontWeight: '600', color: '#2e7d32' },
 
-  storyCard: {
-    marginHorizontal: 12, marginTop: 10, marginBottom: 10,
-    backgroundColor: '#e3f2fd', borderRadius: 12,
-    borderLeftWidth: 4, borderLeftColor: '#1976d2',
-    padding: 14,
-  },
-  storyHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  storyTitle: { fontSize: 14, fontWeight: '700', color: '#1565c0' },
-  storyText: { fontSize: 13, color: '#1a237e', lineHeight: 20, fontStyle: 'italic' },
+  // Story — typographic quote card with audio
+  storyCard: { marginHorizontal: 12, marginTop: 10, marginBottom: 10, backgroundColor: '#e3f2fd', borderRadius: 12, padding: 16 },
+  storyQuoteMark: { fontSize: 56, lineHeight: 48, color: '#90CAF9', fontWeight: '900', marginBottom: -8 },
+  storyText: { fontSize: 13, color: '#1a237e', lineHeight: 21, fontStyle: 'italic', marginBottom: 12 },
+  storyFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, borderTopWidth: 1, borderTopColor: '#BBDEFB', paddingTop: 10 },
+  storyAttrib: { flex: 1, fontSize: 12, color: '#1976d2', fontWeight: '600' },
+  storyAudioBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#1976d2' },
+  storyAudioBtnActive: { backgroundColor: '#1976d2', borderColor: '#1976d2' },
+  storyAudioText: { fontSize: 12, fontWeight: '700', color: '#1976d2' },
+  storyAudioTextActive: { color: '#fff' },
 });

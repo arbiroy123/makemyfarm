@@ -10,13 +10,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 const HEADER_H = Math.round(height * 0.42);
 
+// AI-generated images via Pollinations.ai (free, no API key, cached by prompt+seed)
+function aiImg(prompt, seed) {
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=700&height=420&nologo=true&seed=${seed}`;
+}
+
 const SLIDES = [
   {
     id: '1',
     icon: 'leaf',
     color: '#2e7d32',
     dark: '#1b5e20',
-    image: 'https://images.pexels.com/photos/1084540/pexels-photo-1084540.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('lush green vegetable farm at sunrise aerial view golden light professional photography vibrant crops', 101),
     title: 'Welcome to FarmSync',
     subtitle: 'Your smart farming companion',
     body: 'Manage farms, track crops, get AI advice, and connect with farming communities — all in one app. Works in India and the USA.',
@@ -26,7 +31,7 @@ const SLIDES = [
     icon: 'home',
     color: '#388e3c',
     dark: '#1b5e20',
-    image: 'https://images.pexels.com/photos/1459331/pexels-photo-1459331.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('organized raised garden beds backyard overhead view neat vegetable rows sunny day small farm', 202),
     title: 'Farm Management',
     subtitle: 'Create & manage multiple farms',
     body: 'Add backyard plots, greenhouses, or large fields. Invite collaborators and get season reports with yield stats.',
@@ -37,7 +42,7 @@ const SLIDES = [
     icon: 'flower',
     color: '#43a047',
     dark: '#2e7d32',
-    image: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('farmer inspecting healthy tomato plants ripe red tomatoes lush vegetable garden bright sunlight', 303),
     title: 'Crop Tracking',
     subtitle: '56 vegetables ready to plant',
     body: 'Plant crops from our database of 56 vegetables. Track growth stages, log diary entries with photos, and record harvest yields.',
@@ -49,7 +54,7 @@ const SLIDES = [
     color: '#1565C0',
     dark: '#003c8f',
     pro: true,
-    image: 'https://images.pexels.com/photos/2252584/pexels-photo-2252584.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('smiling Indian farmer using smartphone in green wheat field agricultural technology golden hour', 404),
     title: 'KisanBot — AI Advisor',
     subtitle: 'Powered by Claude AI',
     body: 'Ask about pest control, soil health, best crops for the season, or government schemes. Supports Hindi and English.\n\nFree accounts get 5 questions/month.',
@@ -61,7 +66,7 @@ const SLIDES = [
     color: '#00796B',
     dark: '#004d40',
     pro: true,
-    image: 'https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('farmer closely examining plant leaves for disease natural sunlight magnifying glass green garden', 505),
     title: 'Disease Detection',
     subtitle: 'AI-powered plant diagnosis',
     body: 'Take a photo of a sick plant and get an instant AI diagnosis with treatment recommendations.',
@@ -72,7 +77,7 @@ const SLIDES = [
     icon: 'ribbon',
     color: '#1565C0',
     dark: '#003c8f',
-    image: 'https://images.pexels.com/photos/265216/pexels-photo-265216.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('Indian farmer receiving government agricultural scheme benefit certificate happy smile official', 606),
     title: 'Government Schemes',
     subtitle: 'India & USA • More regions coming',
     body: 'Discover schemes you qualify for — PM-KISAN, PMFBY, Kisan Credit Card in India; USDA FSA loans, EQIP, crop insurance in the USA.',
@@ -84,7 +89,7 @@ const SLIDES = [
     color: '#E65100',
     dark: '#bf360c',
     pro: true,
-    image: 'https://images.pexels.com/photos/2518861/pexels-photo-2518861.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('farm financial planning notebook calculator fresh vegetables on wooden table income tracking agriculture', 707),
     title: 'Farm Finances',
     subtitle: 'Track income, expenses & ROI',
     body: 'Log seeds, labor and fertilizer costs, and crop sale income. See profit/loss, ROI, and monthly bar charts in ₹ or $.',
@@ -95,7 +100,7 @@ const SLIDES = [
     icon: 'map',
     color: '#6A1B9A',
     dark: '#4a0072',
-    image: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('aerial view colorful community garden plots neighborhood urban farming diverse vegetable beds', 808),
     title: 'Community Map',
     subtitle: 'Find nearby farms & groups',
     body: 'See farms and community groups near you on an interactive map. Join groups, post in forums, and trade produce with neighbours.',
@@ -106,7 +111,7 @@ const SLIDES = [
     icon: 'storefront',
     color: '#00695C',
     dark: '#004d40',
-    image: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('vibrant fresh vegetable market stall colorful tomatoes carrots greens produce display outdoor bazaar', 909),
     title: 'Marketplace',
     subtitle: 'Buy, sell & trade produce',
     body: 'List surplus vegetables for sale, giveaway, or trade. Browse nearby listings and connect directly with local farmers.',
@@ -118,7 +123,7 @@ const SLIDES = [
     color: '#E65100',
     dark: '#bf360c',
     last: true,
-    image: 'https://images.pexels.com/photos/247599/pexels-photo-247599.jpeg?auto=compress&cs=tinysrgb&w=700',
+    image: aiImg('happy farmer holding overflowing basket of fresh harvested vegetables smiling in lush green field success', 1010),
     title: "You're All Set!",
     subtitle: 'Start your farming journey today',
     body: 'Create your first farm, plant a crop, and explore KisanBot. Your data syncs offline automatically — farm even without internet.',

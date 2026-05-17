@@ -62,7 +62,8 @@ router.get('/:cropId', authenticateToken, async (req, res) => {
               v.ph_min, v.ph_max, v.season, v.climate_zones,
               v.yields_per_plant, v.planting_tips, v.care_tips,
               v.pest_diseases, v.companion_plants,
-              v.fun_fact, v.growing_story, v.simple_recipe, v.nutrition
+              v.fun_fact, v.growing_story, v.simple_recipe, v.nutrition,
+              v.image_url
        FROM crops c
        JOIN vegetables v ON c.vegetable_id = v.id
        WHERE c.id = $1`,

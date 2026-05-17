@@ -189,22 +189,20 @@ export default function CropDetailScreen({ route, navigation }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Header */}
-      <View style={styles.header}>
-        {crop.image_url ? (
-          <Image
-            source={{ uri: crop.image_url }}
-            style={styles.headerImage}
-            resizeMode="cover"
-          />
+      {crop.image_url ? (
+        <Image
+          source={{ uri: crop.image_url }}
+          style={styles.headerImage}
+          resizeMode="cover"
+        />
+      ) : null}
+      <View style={[styles.headerInfo, !crop.image_url && styles.headerInfoNoImg]}>
+        <Text style={styles.cropName}>{crop.vegetable_name}</Text>
+        {crop.scientific_name ? (
+          <Text style={styles.scientific}>{crop.scientific_name}</Text>
         ) : null}
-        <View style={[styles.headerOverlay, !crop.image_url && styles.headerOverlayNoImg]}>
-          <Text style={styles.cropName}>{crop.vegetable_name}</Text>
-          {crop.scientific_name ? (
-            <Text style={styles.scientific}>{crop.scientific_name}</Text>
-          ) : null}
-          <View style={[styles.statusBadge, { backgroundColor: STATUS_COLOR[crop.status] || '#999' }]}>
-            <Text style={styles.statusText}>{crop.status?.toUpperCase()}</Text>
-          </View>
+        <View style={[styles.statusBadge, { backgroundColor: STATUS_COLOR[crop.status] || '#999' }]}>
+          <Text style={styles.statusText}>{crop.status?.toUpperCase()}</Text>
         </View>
       </View>
 
@@ -476,17 +474,9 @@ const styles = StyleSheet.create({
   modalConfirm: { flex: 2, padding: 12, borderRadius: 8, alignItems: 'center', backgroundColor: '#4CAF50' },
   modalConfirmText: { color: '#fff', fontWeight: '700' },
 
-  header: { backgroundColor: '#4CAF50', overflow: 'hidden' },
   headerImage: { width: '100%', height: 200 },
-  headerOverlay: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    padding: 16, paddingTop: 40,
-    backgroundColor: 'rgba(0,0,0,0.38)',
-  },
-  headerOverlayNoImg: {
-    position: 'relative', backgroundColor: '#4CAF50',
-    padding: 20, paddingTop: 24,
-  },
+  headerInfo: { backgroundColor: '#2e7d32', padding: 16 },
+  headerInfoNoImg: { paddingTop: 24 },
   cropName: { fontSize: 26, fontWeight: 'bold', color: '#fff' },
   scientific: { fontSize: 13, color: 'rgba(255,255,255,0.8)', fontStyle: 'italic', marginTop: 2 },
   statusBadge: {

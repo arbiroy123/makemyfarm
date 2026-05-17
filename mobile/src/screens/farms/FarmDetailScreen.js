@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  ActivityIndicator, FlatList,
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { farmAPI, cropAPI } from '../../api/client';
+import { CropCardSkeleton } from '../../components/Skeleton';
 import { C, R, Sh } from '../../theme';
 
 const STATUS_COLOR = {
@@ -35,14 +35,13 @@ const FARM_TYPE_META = {
 
 function daysUntil(dateStr) {
   if (!dateStr) return null;
-  const diff = Math.ceil((new Date(dateStr) - new Date()) / 86400000);
-  return diff;
+  return Math.ceil((new Date(dateStr) - new Date()) / 86400000);
 }
 
 function harvestCountdownColor(days) {
   if (days === null) return C.muted;
-  if (days < 0)  return C.harvested;
-  if (days <= 7) return C.failed;
+  if (days < 0)   return C.harvested;
+  if (days <= 7)  return C.failed;
   if (days <= 14) return C.harvested;
   return C.growing;
 }
@@ -69,53 +68,29 @@ function vegEmoji(name) {
   return Object.entries(VEGGIE_EMOJI).find(([k]) => l.includes(k))?.[1] || '🌱';
 }
 
-export default function FarmDetailScreen({ route, navigation }) {
-  const { t } = useTranslation();
-  const { farmId } = route.params;
-  const [farm, setFarm]     = useState(null);
-  const [crops, setCrops]   = useState([]);
-  const [loading, setLoading] = useState(true);
+// Crop card with press-scale and staggered entrance animation
+function CropCard({ item, onPress, entranceAnim }) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const statusColor = STATUS_COLOR[item.status] || C.muted;
+  const statusIcon  = STATUS_ICON[item.status]  || 'leaf-outline';
+  const days        = daysUntil(item.expected_harvest_date);
+  const cdColor     = harvestCountdownColor(days);
+  const cdLabel     = harvestCountdownLabel(days);
 
-  useEffect(() => { loadFarmDetails(); }, []);
-
-  const loadFarmDetails = async () => {
-    try {
-      const [farmRes, cropsRes] = await Promise.all([
-        farmAPI.getFarmDetail(farmId),
-        cropAPI.getFarmCrops(farmId),
-      ]);
-      setFarm(farmRes.data);
-      setCrops(cropsRes.data);
-    } catch (error) {
-      console.error('Failed to load farm details:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <View style={s.center}><ActivityIndicator size="large" color={C.mid} /></View>;
-  }
-
-  if (!farm) {
-    return <View style={s.center}><Text style={{ color: C.muted }}>{t('farmNotFound')}</Text></View>;
-  }
-
-  const typeMeta  = FARM_TYPE_META[farm.farm_type] || FARM_TYPE_META.backyard;
-  const activeCrops = crops.filter(c => c.status !== 'harvested' && c.status !== 'failed').length;
-
-  const renderCropCard = ({ item }) => {
-    const statusColor = STATUS_COLOR[item.status] || C.muted;
-    const statusIcon  = STATUS_ICON[item.status]  || 'leaf-outline';
-    const days        = daysUntil(item.expected_harvest_date);
-    const cdColor     = harvestCountdownColor(days);
-    const cdLabel     = harvestCountdownLabel(days);
-
-    return (
+  return (
+    <Animated.View style={{
+      opacity: entranceAnim,
+      transform: [
+        { translateY: entranceAnim.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) },
+        { scale },
+      ],
+    }}>
       <TouchableOpacity
         style={[s.cropCard, Sh.xs]}
-        onPress={() => navigation.navigate('CropDetail', { cropId: item.id })}
-        activeOpacity={0.88}
+        onPress={onPress}
+        onPressIn={() => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, friction: 10, tension: 80 }).start()}
+        onPressOut={() => Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 6 }).start()}
+        activeOpacity={1}
       >
         <View style={[s.cropAccent, { backgroundColor: statusColor }]} />
         <View style={s.cropBody}>
@@ -138,8 +113,75 @@ export default function FarmDetailScreen({ route, navigation }) {
           )}
         </View>
       </TouchableOpacity>
-    );
+    </Animated.View>
+  );
+}
+
+export default function FarmDetailScreen({ route, navigation }) {
+  const { t } = useTranslation();
+  const { farmId } = route.params;
+  const [farm, setFarm]       = useState(null);
+  const [crops, setCrops]     = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Pre-allocated entrance animations for up to 20 crop cards
+  const cropAnims = useRef(Array.from({ length: 20 }, () => new Animated.Value(0))).current;
+
+  useEffect(() => { loadFarmDetails(); }, []);
+
+  const loadFarmDetails = async () => {
+    try {
+      const [farmRes, cropsRes] = await Promise.all([
+        farmAPI.getFarmDetail(farmId),
+        cropAPI.getFarmCrops(farmId),
+      ]);
+      setFarm(farmRes.data);
+      setCrops(cropsRes.data);
+      const count = cropsRes.data.length;
+      if (count > 0) {
+        Animated.stagger(
+          60,
+          cropAnims.slice(0, count).map(a =>
+            Animated.spring(a, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true })
+          )
+        ).start();
+      }
+    } catch (error) {
+      console.error('Failed to load farm details:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+        {/* Hero placeholder — keeps the green bar visible while loading */}
+        <View style={[s.hero, { minHeight: 110 }]}>
+          <View style={[s.heroDeco, s.decoA]} />
+          <View style={[s.heroDeco, s.decoB]} />
+        </View>
+        {/* Crop skeletons */}
+        <View style={s.section}>
+          <View style={[s.sectionHeader, { marginBottom: 12 }]}>
+            <View style={{ width: 100, height: 17, backgroundColor: C.border, borderRadius: R.sm, opacity: 0.5 }} />
+          </View>
+          <View style={{ gap: 8 }}>
+            <CropCardSkeleton />
+            <CropCardSkeleton />
+            <CropCardSkeleton />
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  if (!farm) {
+    return <View style={s.center}><Text style={{ color: C.muted }}>{t('farmNotFound')}</Text></View>;
+  }
+
+  const typeMeta   = FARM_TYPE_META[farm.farm_type] || FARM_TYPE_META.backyard;
+  const activeCrops = crops.filter(c => c.status !== 'harvested' && c.status !== 'failed').length;
 
   return (
     <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
@@ -157,7 +199,6 @@ export default function FarmDetailScreen({ route, navigation }) {
             <Text style={s.heroType}>{farm.farm_type}</Text>
           </View>
         </View>
-        {/* Stat chips */}
         <View style={s.statRow}>
           <View style={s.statChip}>
             <Ionicons name="expand-outline" size={13} color="rgba(255,255,255,0.8)" />
@@ -214,7 +255,14 @@ export default function FarmDetailScreen({ route, navigation }) {
           </View>
         ) : (
           <View style={{ gap: 8 }}>
-            {crops.map(item => <View key={item.id}>{renderCropCard({ item })}</View>)}
+            {crops.map((item, i) => (
+              <CropCard
+                key={item.id}
+                item={item}
+                onPress={() => navigation.navigate('CropDetail', { cropId: item.id })}
+                entranceAnim={cropAnims[i]}
+              />
+            ))}
           </View>
         )}
       </View>
@@ -230,7 +278,7 @@ export default function FarmDetailScreen({ route, navigation }) {
             key={item.label}
             style={[s.quickRow, i < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: C.border }]}
             onPress={item.onPress}
-            activeOpacity={0.8}
+            activeOpacity={0.75}
           >
             <View style={[s.quickIcon, { backgroundColor: item.color + '1A' }]}>
               <Ionicons name={item.icon} size={18} color={item.color} />
@@ -310,7 +358,7 @@ const s = StyleSheet.create({
     borderRadius: R.pill, paddingHorizontal: 8, paddingVertical: 4,
   },
   statusTxt:   { fontSize: 11, fontWeight: '700', textTransform: 'capitalize' },
-  countdownRow:{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, paddingTop: 8 },
+  countdownRow:{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, paddingTop: 8, borderTopWidth: 1 },
   countdownTxt:{ fontSize: 12, fontWeight: '600' },
 
   // Empty crops

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  FlatList, ActivityIndicator, Modal, Linking,
+  Modal, Linking, Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { farmAPI, billingAPI, adsAPI } from '../../api/client';
 import client from '../../api/client';
 import { detectCountry } from '../../utils/country';
 import { useFarmStore, useAuthStore } from '../../store';
+import { FarmCardSkeleton } from '../../components/Skeleton';
 import { C, R, Sh } from '../../theme';
 
 const FEATURE_CARDS = [
@@ -27,18 +28,11 @@ const PRO_FEATURES = [
   { icon: 'home',                text: 'Unlimited farms & crops (free tier: 1 farm, 5 crops)' },
 ];
 
-function farmTypeColor(type) {
-  return C.farmType[type] || C.farmType.default;
-}
-
-function farmTypeIcon(type) {
-  const map = {
-    backyard: 'home-outline', greenhouse: 'leaf-outline',
-    field: 'earth-outline', rooftop: 'business-outline',
-    balcony: 'flower-outline', community: 'people-outline',
-  };
-  return map[type] || 'leaf-outline';
-}
+const FARM_TYPE_ICON = {
+  backyard: 'home-outline', greenhouse: 'leaf-outline',
+  field: 'earth-outline', rooftop: 'business-outline',
+  balcony: 'flower-outline', community: 'people-outline',
+};
 
 function greeting(name) {
   const h = new Date().getHours();
@@ -48,6 +42,63 @@ function greeting(name) {
 
 function todayLabel() {
   return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+// Farm card with press-scale and staggered entrance animation
+function FarmCard({ item, onPress, entranceAnim }) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const accent = C.farmType[item.farm_type] || C.farmType.default;
+  const activeCrops = item.crop_count ?? 0;
+  const typeIcon = FARM_TYPE_ICON[item.farm_type] || 'leaf-outline';
+
+  return (
+    <Animated.View style={{
+      opacity: entranceAnim,
+      transform: [
+        { translateY: entranceAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) },
+        { scale },
+      ],
+    }}>
+      <TouchableOpacity
+        style={[s.farmCard, Sh.sm]}
+        onPress={onPress}
+        onPressIn={() => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, friction: 10, tension: 80 }).start()}
+        onPressOut={() => Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 6 }).start()}
+        activeOpacity={1}
+      >
+        <View style={[s.farmAccent, { backgroundColor: accent }]} />
+        <View style={s.farmBody}>
+          <View style={s.farmTop}>
+            <Text style={s.farmName} numberOfLines={1}>{item.name}</Text>
+            {activeCrops > 0 && (
+              <View style={[s.cropCountChip, { backgroundColor: accent + '22' }]}>
+                <Text style={[s.cropCountTxt, { color: accent }]}>{activeCrops} crops</Text>
+              </View>
+            )}
+          </View>
+          <View style={s.farmMeta}>
+            <View style={s.farmMetaItem}>
+              <Ionicons name={typeIcon} size={13} color={accent} />
+              <Text style={s.farmMetaTxt}>{item.farm_type || 'farm'}</Text>
+            </View>
+            {item.size_sqft ? (
+              <View style={s.farmMetaItem}>
+                <Ionicons name="expand-outline" size={13} color={C.muted} />
+                <Text style={s.farmMetaTxt}>{item.size_sqft} sq ft</Text>
+              </View>
+            ) : null}
+            {item.climate_zone ? (
+              <View style={s.farmMetaItem}>
+                <Ionicons name="partly-sunny-outline" size={13} color={C.muted} />
+                <Text style={s.farmMetaTxt}>{item.climate_zone}</Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={C.border} style={{ alignSelf: 'center' }} />
+      </TouchableOpacity>
+    </Animated.View>
+  );
 }
 
 export default function HomeScreen({ navigation }) {
@@ -65,11 +116,26 @@ export default function HomeScreen({ navigation }) {
   const [tasks, setTasks]       = useState([]);
   const [taskCount, setTaskCount] = useState(0);
 
+  // Pre-allocated entrance animations for up to 20 farm cards
+  const entranceAnims = useRef(Array.from({ length: 20 }, () => new Animated.Value(0))).current;
+
   useEffect(() => {
     loadFarms();
     loadBillingStatus();
     loadTaskPreview();
   }, []);
+
+  // Stagger in farm cards when loading finishes
+  useEffect(() => {
+    if (!loading && farms.length > 0) {
+      Animated.stagger(
+        70,
+        entranceAnims.slice(0, farms.length).map(a =>
+          Animated.spring(a, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true })
+        )
+      ).start();
+    }
+  }, [loading]);
 
   const loadTaskPreview = async () => {
     try {
@@ -117,54 +183,6 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const renderFarmCard = ({ item }) => {
-    const accent = farmTypeColor(item.farm_type);
-    const activeCrops = item.crop_count ?? 0;
-    return (
-      <TouchableOpacity
-        style={[s.farmCard, Sh.sm]}
-        onPress={() => navigation.navigate('FarmDetail', { farmId: item.id })}
-        activeOpacity={0.88}
-      >
-        {/* Left accent bar */}
-        <View style={[s.farmAccent, { backgroundColor: accent }]} />
-        <View style={s.farmBody}>
-          <View style={s.farmTop}>
-            <Text style={s.farmName} numberOfLines={1}>{item.name}</Text>
-            {activeCrops > 0 && (
-              <View style={[s.cropCountChip, { backgroundColor: accent + '22' }]}>
-                <Text style={[s.cropCountTxt, { color: accent }]}>{activeCrops} crops</Text>
-              </View>
-            )}
-          </View>
-          <View style={s.farmMeta}>
-            <View style={s.farmMetaItem}>
-              <Ionicons name={farmTypeIcon(item.farm_type)} size={13} color={accent} />
-              <Text style={s.farmMetaTxt}>{item.farm_type || 'farm'}</Text>
-            </View>
-            {item.size_sqft ? (
-              <View style={s.farmMetaItem}>
-                <Ionicons name="expand-outline" size={13} color={C.muted} />
-                <Text style={s.farmMetaTxt}>{item.size_sqft} sq ft</Text>
-              </View>
-            ) : null}
-            {item.climate_zone ? (
-              <View style={s.farmMetaItem}>
-                <Ionicons name="partly-sunny-outline" size={13} color={C.muted} />
-                <Text style={s.farmMetaTxt}>{item.climate_zone}</Text>
-              </View>
-            ) : null}
-          </View>
-        </View>
-        <Ionicons name="chevron-forward" size={18} color={C.border} style={{ alignSelf: 'center' }} />
-      </TouchableOpacity>
-    );
-  };
-
-  if (loading) {
-    return <View style={s.center}><ActivityIndicator size="large" color={C.mid} /></View>;
-  }
-
   return (
     <View style={s.root}>
       {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -200,7 +218,7 @@ export default function HomeScreen({ navigation }) {
               key={card.key}
               style={[s.featureCard, Sh.xs]}
               onPress={() => handleFeaturePress(card)}
-              activeOpacity={0.85}
+              activeOpacity={0.75}
             >
               {card.pro && !isPro && (
                 <View style={s.proBadge}>
@@ -268,10 +286,18 @@ export default function HomeScreen({ navigation }) {
         {/* ── Farms ────────────────────────────────────────────────────── */}
         <View style={s.sectionHeader}>
           <Text style={s.sectionTitle}>{t('yourFarms')}</Text>
-          <Text style={s.sectionCount}>{farms.length} {farms.length === 1 ? 'farm' : 'farms'}</Text>
+          {!loading && (
+            <Text style={s.sectionCount}>{farms.length} {farms.length === 1 ? 'farm' : 'farms'}</Text>
+          )}
         </View>
 
-        {farms.length === 0 ? (
+        {loading ? (
+          <View style={{ paddingHorizontal: 16, gap: 10 }}>
+            <FarmCardSkeleton />
+            <FarmCardSkeleton />
+            <FarmCardSkeleton />
+          </View>
+        ) : farms.length === 0 ? (
           <View style={s.empty}>
             <Text style={s.emptyIcon}>🌿</Text>
             <Text style={s.emptyTitle}>{t('noFarmsYet')}</Text>
@@ -283,8 +309,13 @@ export default function HomeScreen({ navigation }) {
           </View>
         ) : (
           <View style={{ paddingHorizontal: 16, gap: 10 }}>
-            {farms.map(item => (
-              <View key={item.id}>{renderFarmCard({ item })}</View>
+            {farms.map((item, i) => (
+              <FarmCard
+                key={item.id}
+                item={item}
+                onPress={() => navigation.navigate('FarmDetail', { farmId: item.id })}
+                entranceAnim={entranceAnims[i]}
+              />
             ))}
           </View>
         )}
@@ -348,13 +379,10 @@ export default function HomeScreen({ navigation }) {
 }
 
 const s = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: C.page },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  root: { flex: 1, backgroundColor: C.page },
 
   // Header
-  header: {
-    backgroundColor: C.forest, paddingBottom: 18, overflow: 'hidden',
-  },
+  header: { backgroundColor: C.forest, paddingBottom: 18, overflow: 'hidden' },
   headerDeco: { position: 'absolute', borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.05)' },
   decoA:      { width: 200, height: 200, top: -80, right: -40 },
   decoB:      { width: 130, height: 130, bottom: -50, left: 20 },

@@ -55,17 +55,17 @@ router.get('/plans', authenticateToken, async (req, res) => {
 // Save a garden plan
 router.post('/plans', authenticateToken, async (req, res) => {
   try {
-    const { farmId, name, gridData } = req.body;
+    const { farmId, name, gridData, plotSize } = req.body;
     const id = uuidv4();
     const result = await query(
-      `INSERT INTO garden_plans (id, user_id, farm_id, name, grid_data)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO garden_plans (id, user_id, farm_id, name, grid_data, plot_size)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [id, req.user.userId, farmId || null, name || 'My Garden', JSON.stringify(gridData || {})]
+      [id, req.user.userId, farmId || null, name || 'My Garden', gridData || {}, plotSize || 'medium']
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error(error);
+    console.error('Save plan error:', error);
     res.status(500).json({ error: 'Failed to save plan' });
   }
 });

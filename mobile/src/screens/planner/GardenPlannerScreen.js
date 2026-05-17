@@ -1,20 +1,19 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, FlatList, Alert, ActivityIndicator, Dimensions,
+  TextInput, FlatList, Alert, ActivityIndicator, Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { plannerAPI, achievementsAPI } from '../../api/client';
 import { useFarmStore } from '../../store';
 
-const { width: SCREEN_W } = Dimensions.get('window');
-const CELL = 46;
+const CELL = 48;
 const EMPTY = null;
 
 const PLOT_SIZES = [
-  { key: 'small',  label: 'Small',  desc: '4 × 5 ft',  cols: 5,  rows: 4  },
-  { key: 'medium', label: 'Medium', desc: '6 × 8 ft',  cols: 8,  rows: 6  },
-  { key: 'large',  label: 'Large',  desc: '8 × 12 ft', cols: 12, rows: 8  },
+  { key: 'small',  label: 'Small',  desc: '4 × 5 ft',  cols: 5,  rows: 4 },
+  { key: 'medium', label: 'Medium', desc: '6 × 8 ft',  cols: 8,  rows: 6 },
+  { key: 'large',  label: 'Large',  desc: '8 × 12 ft', cols: 12, rows: 8 },
 ];
 
 const COLORS = [
@@ -28,8 +27,8 @@ const EMOJI_MAP = {
   bean:'🫘', pea:'🫛', corn:'🌽', potato:'🥔', onion:'🧅', garlic:'🧄',
   spinach:'🥬', kale:'🥬', broccoli:'🥦', squash:'🎃', pumpkin:'🎃',
   basil:'🌿', mint:'🌿', herb:'🌿', rosemary:'🌿', purslane:'🌿',
-  lentil:'🫘', chickpea:'🫘', sorghum:'🌾', pigeon:'🫘', radish:'🌱',
-  beet:'🌱', cabbage:'🥬', cauliflower:'🥦', eggplant:'🍆', okra:'🌱',
+  lentil:'🫘', chickpea:'🫘', sorghum:'🌾', radish:'🌱', beet:'🌱',
+  cabbage:'🥬', cauliflower:'🥦', eggplant:'🍆', okra:'🌱',
   fenugreek:'🌿', coriander:'🌿',
 };
 
@@ -52,9 +51,9 @@ export default function GardenPlannerScreen({ navigation }) {
   const { farms } = useFarmStore();
   const [vegetables, setVegetables] = useState([]);
   const [plotSize, setPlotSize]     = useState(PLOT_SIZES[1]);
-  const [grid, setGrid]             = useState(() => makeGrid(PLOT_SIZES[1].rows, PLOT_SIZES[1].cols));
+  const [grid, setGrid]             = useState(() => makeGrid(6, 8));
   const [mode, setMode]             = useState(MODE.PLANT);
-  const [selectedVeg, setSelectedVeg]   = useState(null);
+  const [selectedVeg, setSelectedVeg]     = useState(null);
   const [inspectedCell, setInspectedCell] = useState(null);
   const [search, setSearch]         = useState('');
   const [planName, setPlanName]     = useState('My Garden');
@@ -74,12 +73,11 @@ export default function GardenPlannerScreen({ navigation }) {
   }, []);
 
   const stats = useMemo(() => {
-    const placed = Object.values(grid).filter(Boolean);
-    const total  = placed.length;
+    const vals     = Object.values(grid);
+    const placed   = vals.filter(Boolean);
     const varieties = new Set(placed).size;
-    const totalCells = plotSize.rows * plotSize.cols;
-    return { total, varieties, free: totalCells - total };
-  }, [grid, plotSize]);
+    return { total: placed.length, varieties, free: vals.length - placed.length };
+  }, [grid]);
 
   const filteredVegs = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -93,8 +91,8 @@ export default function GardenPlannerScreen({ navigation }) {
   function isCompanionOf(sourceKey, r, c) {
     if (!sourceKey || !grid[sourceKey]) return false;
     const companions = getCompanionNames(grid[sourceKey]);
-    const targetVeg  = vegetables.find(v => v.id === grid[cellKey(r, c)]);
-    return !!targetVeg && companions.some(cp => targetVeg.name.toLowerCase().includes(cp.toLowerCase()));
+    const target = vegetables.find(v => v.id === grid[cellKey(r, c)]);
+    return !!target && companions.some(cp => target.name.toLowerCase().includes(cp.toLowerCase()));
   }
 
   function handleCellPress(r, c) {
@@ -104,7 +102,7 @@ export default function GardenPlannerScreen({ navigation }) {
     } else if (mode === MODE.ERASE) {
       setGrid(prev => ({ ...prev, [key]: EMPTY }));
     } else if (mode === MODE.INSPECT) {
-      setInspectedCell(prev => (prev === key ? null : key));
+      setInspectedCell(prev => prev === key ? null : key);
     }
   }
 
@@ -116,19 +114,18 @@ export default function GardenPlannerScreen({ navigation }) {
 
   function pickVeg(id) {
     if (mode !== MODE.PLANT) switchMode(MODE.PLANT);
-    setSelectedVeg(prev => (prev === id ? null : id));
+    setSelectedVeg(prev => prev === id ? null : id);
     setInspectedCell(null);
   }
 
   function changePlotSize(size) {
     if (size.key === plotSize.key) return;
-    const hasPlants = Object.values(grid).some(Boolean);
     const apply = () => {
       setPlotSize(size);
       setGrid(makeGrid(size.rows, size.cols));
       setInspectedCell(null);
     };
-    hasPlants
+    Object.values(grid).some(Boolean)
       ? Alert.alert('Change Plot Size?', 'All placed plants will be cleared.', [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Change', style: 'destructive', onPress: apply },
@@ -151,228 +148,230 @@ export default function GardenPlannerScreen({ navigation }) {
     setSaving(true);
     try {
       const farmId = farms?.[0]?.id || null;
-      await plannerAPI.savePlan({ farmId, name: planName, gridData: grid, plotSize: plotSize.key });
+      await plannerAPI.savePlan({
+        farmId,
+        name: planName,
+        gridData: grid,
+        plotSize: plotSize.key,
+      });
       achievementsAPI.checkAchievements().catch(() => {});
-      Alert.alert('Saved!', `"${planName}" is saved to your garden.`, [
+      Alert.alert('Saved!', `"${planName}" is saved.`, [
         { text: 'Done', onPress: () => navigation.goBack() },
         { text: 'Keep Editing' },
       ]);
-    } catch {
-      Alert.alert('Error', 'Could not save. Check your connection and try again.');
+    } catch (err) {
+      Alert.alert('Save Failed', err?.response?.data?.error || 'Check your connection and try again.');
     } finally {
       setSaving(false);
     }
   }
 
-  const inspectedVeg = inspectedCell ? vegetables.find(v => v.id === grid[inspectedCell]) : null;
-  const companions   = inspectedVeg ? getCompanionNames(grid[inspectedCell]) : [];
+  const inspectedVeg = inspectedCell
+    ? vegetables.find(v => v.id === grid[inspectedCell])
+    : null;
+  const companions = inspectedVeg ? getCompanionNames(grid[inspectedCell]) : [];
 
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator size="large" color="#4CAF50" /></View>;
+    return <View style={s.center}><ActivityIndicator size="large" color="#4CAF50" /></View>;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={s.root}>
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <View style={styles.header}>
-        <Ionicons name="leaf" size={20} color="#fff" style={{ marginRight: 6 }} />
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <View style={s.header}>
+        <Ionicons name="leaf" size={18} color="#fff" />
         <TextInput
-          style={styles.planNameInput}
+          style={s.nameInput}
           value={planName}
           onChangeText={setPlanName}
           placeholder="Plan name…"
-          placeholderTextColor="rgba(255,255,255,0.65)"
+          placeholderTextColor="rgba(255,255,255,0.55)"
         />
-        <TouchableOpacity onPress={clearAll} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Ionicons name="trash-outline" size={19} color="rgba(255,255,255,0.85)" />
+        <TouchableOpacity onPress={clearAll} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Ionicons name="trash-outline" size={18} color="rgba(255,255,255,0.8)" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={savePlan} style={[styles.saveBtn, saving && { opacity: 0.55 }]} disabled={saving}>
-          <Ionicons name="save-outline" size={16} color="#fff" />
-          <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save'}</Text>
+        <TouchableOpacity
+          style={[s.saveBtn, saving && { opacity: 0.5 }]}
+          onPress={savePlan}
+          disabled={saving}
+        >
+          <Text style={s.saveBtnTxt}>{saving ? 'Saving…' : 'Save'}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* ── Plot size ───────────────────────────────────────────────────── */}
-      <View style={styles.sizeBar}>
-        {PLOT_SIZES.map(s => (
+      {/* ── Plot size ────────────────────────────────────────────────────── */}
+      <View style={s.sizeRow}>
+        {PLOT_SIZES.map(sz => (
           <TouchableOpacity
-            key={s.key}
-            style={[styles.sizeChip, plotSize.key === s.key && styles.sizeChipOn]}
-            onPress={() => changePlotSize(s)}
+            key={sz.key}
+            style={[s.sizeChip, plotSize.key === sz.key && s.sizeChipOn]}
+            onPress={() => changePlotSize(sz)}
           >
-            <Text style={[styles.sizeChipLabel, plotSize.key === s.key && styles.sizeChipLabelOn]}>{s.label}</Text>
-            <Text style={[styles.sizeChipSub,   plotSize.key === s.key && styles.sizeChipSubOn  ]}>{s.desc}</Text>
+            <Text style={[s.sizeLabel, plotSize.key === sz.key && s.sizeLabelOn]}>{sz.label}</Text>
+            <Text style={[s.sizeSub,   plotSize.key === sz.key && s.sizeSubOn  ]}>{sz.desc}</Text>
           </TouchableOpacity>
         ))}
-        <View style={styles.cellNote}>
-          <Ionicons name="information-circle-outline" size={12} color="#aaa" />
-          <Text style={styles.cellNoteText}> 1 cell = 1 sq ft</Text>
+        <View style={s.sqftNote}>
+          <Text style={s.sqftTxt}>1 cell = 1 sq ft</Text>
         </View>
       </View>
 
-      {/* ── Stats bar ───────────────────────────────────────────────────── */}
-      {stats.total > 0 && (
-        <View style={styles.statsBar}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNum}>{stats.total}</Text>
-            <Text style={styles.statLbl}>plants</Text>
-          </View>
-          <View style={styles.statDiv} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNum}>{stats.varieties}</Text>
-            <Text style={styles.statLbl}>varieties</Text>
-          </View>
-          <View style={styles.statDiv} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNum}>{stats.free}</Text>
-            <Text style={styles.statLbl}>sq ft free</Text>
-          </View>
-        </View>
-      )}
-
-      {/* ── Mode bar ────────────────────────────────────────────────────── */}
-      <View style={styles.modeBar}>
-        <TouchableOpacity
-          style={[styles.modeBtn, mode === MODE.PLANT && styles.modeBtnPlant]}
-          onPress={() => switchMode(MODE.PLANT)}
-        >
-          <Text style={styles.modeBtnIcon}>🌱</Text>
-          <Text style={[styles.modeBtnTxt, mode === MODE.PLANT && styles.modeBtnTxtOn]}>Plant</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.modeBtn, mode === MODE.ERASE && styles.modeBtnErase]}
-          onPress={() => switchMode(MODE.ERASE)}
-        >
-          <Text style={styles.modeBtnIcon}>🧹</Text>
-          <Text style={[styles.modeBtnTxt, mode === MODE.ERASE && styles.modeBtnTxtOn]}>Erase</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.modeBtn, mode === MODE.INSPECT && styles.modeBtnInspect]}
-          onPress={() => switchMode(MODE.INSPECT)}
-        >
-          <Text style={styles.modeBtnIcon}>🔍</Text>
-          <Text style={[styles.modeBtnTxt, mode === MODE.INSPECT && styles.modeBtnTxtOn]}>Inspect</Text>
-        </TouchableOpacity>
-
-        {/* Contextual hint */}
-        <View style={styles.modeHintBox}>
-          {mode === MODE.PLANT && !selectedVeg && (
-            <Text style={styles.modeHint}>Pick a vegetable below ↓</Text>
-          )}
+      {/* ── Mode bar ─────────────────────────────────────────────────────── */}
+      <View style={s.modeRow}>
+        {[
+          { m: MODE.PLANT,   icon: '🌱', label: 'Plant',   active: s.modePlant   },
+          { m: MODE.ERASE,   icon: '🧹', label: 'Erase',   active: s.modeErase   },
+          { m: MODE.INSPECT, icon: '🔍', label: 'Inspect', active: s.modeInspect },
+        ].map(({ m, icon, label, active }) => (
+          <TouchableOpacity
+            key={m}
+            style={[s.modeBtn, mode === m && active]}
+            onPress={() => switchMode(m)}
+          >
+            <Text style={s.modeBtnIcon}>{icon}</Text>
+            <Text style={[s.modeBtnTxt, mode === m && s.modeBtnTxtOn]}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+        {/* Inline hint */}
+        <View style={s.hintBox}>
+          {mode === MODE.PLANT && !selectedVeg && <Text style={s.hint}>Pick a veg below ↓</Text>}
           {mode === MODE.PLANT && selectedVeg && (
-            <View style={styles.placingRow}>
-              <Text style={styles.placingText} numberOfLines={1}>
-                Placing {vegEmoji(vegetables.find(v => v.id === selectedVeg)?.name)}{' '}
-                <Text style={{ fontWeight: '700' }}>{vegetables.find(v => v.id === selectedVeg)?.name}</Text>
+            <View style={s.placingRow}>
+              <Text style={s.placingTxt} numberOfLines={1}>
+                {vegEmoji(vegetables.find(v => v.id === selectedVeg)?.name)}{' '}
+                {vegetables.find(v => v.id === selectedVeg)?.name}
               </Text>
-              <TouchableOpacity onPress={() => setSelectedVeg(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                <Ionicons name="close-circle" size={15} color="#999" />
+              <TouchableOpacity onPress={() => setSelectedVeg(null)}>
+                <Ionicons name="close-circle" size={14} color="#aaa" />
               </TouchableOpacity>
             </View>
           )}
-          {mode === MODE.ERASE && <Text style={styles.modeHint}>Tap any plant to remove it</Text>}
-          {mode === MODE.INSPECT && <Text style={styles.modeHint}>Tap a plant to see companions</Text>}
+          {mode === MODE.ERASE   && <Text style={s.hint}>Tap a plant to remove it</Text>}
+          {mode === MODE.INSPECT && <Text style={s.hint}>Tap a plant to see companions</Text>}
         </View>
       </View>
 
-      {/* ── Empty state hint ─────────────────────────────────────────────── */}
-      {stats.total === 0 && (
-        <View style={styles.emptyHint}>
-          <Text style={styles.emptyHintIcon}>🌿</Text>
-          <Text style={styles.emptyHintText}>Select a vegetable below, then tap grid cells to plant it</Text>
+      {/* ── Stats strip ──────────────────────────────────────────────────── */}
+      {stats.total > 0 && (
+        <View style={s.statsRow}>
+          <Text style={s.statChip}>🌿 {stats.total} plants</Text>
+          <Text style={s.statChip}>🎨 {stats.varieties} varieties</Text>
+          <Text style={s.statChip}>⬜ {stats.free} sq ft free</Text>
         </View>
       )}
 
-      {/* ── Grid ─────────────────────────────────────────────────────────── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.gridScroll}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}>
+      {/* ── Empty state ──────────────────────────────────────────────────── */}
+      {stats.total === 0 && (
+        <View style={s.emptyHint}>
+          <Text style={s.emptyIcon}>🌿</Text>
+          <Text style={s.emptyTxt}>Select a vegetable below, then tap the grid cells to plant it. Each square = 1 sq ft.</Text>
+        </View>
+      )}
+
+      {/* ── Grid (horizontal scroll only) ───────────────────────────────── */}
+      <ScrollView
+        style={s.gridScroll}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={s.gridContent}
+        bounces={false}
+      >
+        <View>
           {plotSize.key === 'large' && (
-            <View style={styles.compassRow}>
-              <Text style={styles.compassTxt}>☀️  South — more sun exposure</Text>
-              <Text style={styles.compassTxt}>North ↑</Text>
+            <View style={s.compassRow}>
+              <Text style={s.compassTxt}>☀️  South  (more sun)</Text>
+              <Text style={s.compassTxt}>North  ↑</Text>
             </View>
           )}
-          <View style={styles.grid}>
-            {Array.from({ length: plotSize.rows }, (_, r) => (
-              <View key={r} style={styles.gridRow}>
-                {Array.from({ length: plotSize.cols }, (_, c) => {
-                  const key    = cellKey(r, c);
-                  const vegId  = grid[key];
-                  const veg    = vegId ? vegetables.find(v => v.id === vegId) : null;
-                  const isInsp = inspectedCell === key;
-                  const isComp = isCompanionOf(inspectedCell, r, c);
-                  return (
-                    <TouchableOpacity
-                      key={c}
-                      style={[
-                        styles.cell,
-                        veg       && { backgroundColor: colorMap.current[veg.id] || '#c8e6c9' },
-                        isInsp    && styles.cellInsp,
-                        isComp    && styles.cellComp,
-                        mode === MODE.ERASE && veg && styles.cellEraseHover,
-                      ]}
-                      onPress={() => handleCellPress(r, c)}
-                      activeOpacity={0.7}
-                    >
-                      {veg
-                        ? <Text style={styles.cellEmoji}>{vegEmoji(veg.name)}</Text>
-                        : <Text style={styles.cellDot}>·</Text>
-                      }
-                      {isComp && (
-                        <View style={styles.compBadge}><Text style={styles.compBadgeTxt}>✓</Text></View>
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            ))}
-          </View>
-        </ScrollView>
+          {Array.from({ length: plotSize.rows }, (_, r) => (
+            <View key={r} style={s.gridRow}>
+              {Array.from({ length: plotSize.cols }, (_, c) => {
+                const key   = cellKey(r, c);
+                const vegId = grid[key];
+                const veg   = vegId ? vegetables.find(v => v.id === vegId) : null;
+                const isInsp  = inspectedCell === key;
+                const isComp  = isCompanionOf(inspectedCell, r, c);
+                const isErase = mode === MODE.ERASE && !!veg;
+                return (
+                  <TouchableOpacity
+                    key={c}
+                    style={[
+                      s.cell,
+                      veg    && { backgroundColor: colorMap.current[veg.id] || '#c8e6c9' },
+                      isInsp && s.cellInsp,
+                      isComp && s.cellComp,
+                      isErase && s.cellErase,
+                    ]}
+                    onPress={() => handleCellPress(r, c)}
+                    activeOpacity={0.7}
+                  >
+                    {veg
+                      ? <Text style={s.cellEmoji}>{vegEmoji(veg.name)}</Text>
+                      : <Text style={s.cellDot}>·</Text>
+                    }
+                    {isComp && <View style={s.compDot}><Text style={s.compDotTxt}>✓</Text></View>}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
-      {/* ── Companion panel ──────────────────────────────────────────────── */}
-      {mode === MODE.INSPECT && inspectedVeg && (
-        <View style={styles.companionPanel}>
-          <View style={styles.companionPanelTop}>
-            <Text style={styles.companionPanelTitle}>
-              {vegEmoji(inspectedVeg.name)}  {inspectedVeg.name}  —  Good neighbors
-            </Text>
-            <TouchableOpacity onPress={() => setInspectedCell(null)}>
-              <Ionicons name="close" size={18} color="#888" />
-            </TouchableOpacity>
-          </View>
-          {companions.length > 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 6 }}>
-              {companions.map((cp, i) => (
-                <View key={i} style={styles.companionTag}>
-                  <Text style={styles.companionTagTxt}>🌱 {cp}</Text>
+      {/* ── Companion panel (modal-style overlay at bottom) ─────────────── */}
+      <Modal
+        visible={mode === MODE.INSPECT && !!inspectedVeg}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setInspectedCell(null)}
+      >
+        <TouchableOpacity style={s.modalBackdrop} activeOpacity={1} onPress={() => setInspectedCell(null)}>
+          <View style={s.companionSheet}>
+            <View style={s.sheetHandle} />
+            <View style={s.sheetHeader}>
+              <Text style={s.sheetTitle}>
+                {vegEmoji(inspectedVeg?.name)}  {inspectedVeg?.name}  — Good neighbors
+              </Text>
+              <TouchableOpacity onPress={() => setInspectedCell(null)}>
+                <Ionicons name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+            {companions.length > 0 ? (
+              <>
+                <Text style={s.sheetSub}>Plant these nearby — they help each other grow</Text>
+                <View style={s.tagWrap}>
+                  {companions.map((cp, i) => (
+                    <View key={i} style={s.tag}>
+                      <Text style={s.tagTxt}>{vegEmoji(cp)} {cp}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </ScrollView>
-          ) : (
-            <Text style={styles.companionNone}>No specific companions listed for this plant.</Text>
-          )}
-        </View>
-      )}
+              </>
+            ) : (
+              <Text style={s.sheetSub}>No specific companion plants listed for this vegetable.</Text>
+            )}
+            <Text style={s.sheetNote}>Cells with a ✓ badge are already good neighbors in your grid.</Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       {/* ── Vegetable tray ───────────────────────────────────────────────── */}
-      <View style={styles.tray}>
-        <View style={styles.trayTopRow}>
-          <Text style={styles.trayTitle}>Vegetables</Text>
-          <View style={styles.searchBox}>
+      <View style={s.tray}>
+        <View style={s.trayTop}>
+          <Text style={s.trayTitle}>Vegetables</Text>
+          <View style={s.searchBox}>
             <Ionicons name="search-outline" size={13} color="#bbb" />
             <TextInput
-              style={styles.searchInput}
+              style={s.searchInput}
               value={search}
               onChangeText={setSearch}
               placeholder="Search…"
               placeholderTextColor="#ccc"
-              returnKeyType="search"
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch('')}>
-                <Ionicons name="close-circle" size={14} color="#bbb" />
+                <Ionicons name="close-circle" size={13} color="#bbb" />
               </TouchableOpacity>
             )}
           </View>
@@ -384,8 +383,8 @@ export default function GardenPlannerScreen({ navigation }) {
           keyExtractor={v => v.id}
           contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 6, gap: 8 }}
           ListEmptyComponent={
-            <View style={{ paddingVertical: 14, paddingHorizontal: 20 }}>
-              <Text style={{ color: '#aaa', fontSize: 13 }}>No vegetables match "{search}"</Text>
+            <View style={{ paddingVertical: 16, paddingLeft: 10 }}>
+              <Text style={{ color: '#bbb', fontSize: 13 }}>No results for "{search}"</Text>
             </View>
           }
           renderItem={({ item }) => {
@@ -393,17 +392,17 @@ export default function GardenPlannerScreen({ navigation }) {
             return (
               <TouchableOpacity
                 style={[
-                  styles.trayItem,
+                  s.trayItem,
                   { backgroundColor: colorMap.current[item.id] || '#e8f5e9' },
-                  active && styles.trayItemActive,
+                  active && s.trayItemOn,
                 ]}
                 onPress={() => pickVeg(item.id)}
                 activeOpacity={0.75}
               >
-                <Text style={styles.trayEmoji}>{vegEmoji(item.name)}</Text>
-                <Text style={styles.trayName} numberOfLines={1}>{item.name}</Text>
+                <Text style={s.trayEmoji}>{vegEmoji(item.name)}</Text>
+                <Text style={s.trayName} numberOfLines={1}>{item.name}</Text>
                 {item.difficulty_level === 'easy' && (
-                  <View style={styles.easyBadge}><Text style={styles.easyBadgeTxt}>Easy</Text></View>
+                  <View style={s.easyBadge}><Text style={s.easyTxt}>Easy</Text></View>
                 )}
               </TouchableOpacity>
             );
@@ -414,151 +413,142 @@ export default function GardenPlannerScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f4f0' },
-  center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
+const s = StyleSheet.create({
+  root:   { flex: 1, backgroundColor: '#f0f4f0' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   // Header
   header: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#388e3c', paddingHorizontal: 12, paddingVertical: 11, gap: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: '#388e3c', paddingHorizontal: 14, paddingVertical: 10,
   },
-  planNameInput: {
+  nameInput: {
     flex: 1, color: '#fff', fontSize: 15, fontWeight: '700',
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.4)', paddingVertical: 3,
+    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.35)', paddingVertical: 2,
   },
-  headerBtn: { padding: 4 },
   saveBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: 'rgba(0,0,0,0.22)', borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 7,
+    backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 8,
+    paddingHorizontal: 14, paddingVertical: 6,
   },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  saveBtnTxt: { color: '#fff', fontWeight: '700', fontSize: 13 },
 
-  // Plot size bar
-  sizeBar: {
+  // Plot size
+  sizeRow: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
-    paddingHorizontal: 10, paddingVertical: 8, gap: 7,
+    paddingHorizontal: 10, paddingVertical: 7, gap: 6,
     borderBottomWidth: 1, borderBottomColor: '#eee',
   },
   sizeChip: {
-    flex: 1, borderRadius: 10, borderWidth: 1.5, borderColor: '#e0e0e0',
-    paddingVertical: 6, alignItems: 'center',
+    flex: 1, borderRadius: 9, borderWidth: 1.5, borderColor: '#e5e5e5',
+    paddingVertical: 5, alignItems: 'center',
   },
-  sizeChipOn:      { borderColor: '#4CAF50', backgroundColor: '#e8f5e9' },
-  sizeChipLabel:   { fontSize: 12, fontWeight: '700', color: '#999' },
-  sizeChipLabelOn: { color: '#2e7d32' },
-  sizeChipSub:     { fontSize: 10, color: '#bbb', marginTop: 1 },
-  sizeChipSubOn:   { color: '#66bb6a' },
-  cellNote:        { flexDirection: 'row', alignItems: 'center', paddingLeft: 4 },
-  cellNoteText:    { fontSize: 10, color: '#bbb' },
-
-  // Stats
-  statsBar: {
-    flexDirection: 'row', backgroundColor: '#f9fbe7',
-    paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: '#f0f4c3',
-    justifyContent: 'center',
-  },
-  statItem:  { alignItems: 'center', paddingHorizontal: 20 },
-  statNum:   { fontSize: 17, fontWeight: '800', color: '#33691e' },
-  statLbl:   { fontSize: 10, color: '#8d9e30', marginTop: 1 },
-  statDiv:   { width: 1, backgroundColor: '#dce775', alignSelf: 'stretch' },
+  sizeChipOn:  { borderColor: '#4CAF50', backgroundColor: '#e8f5e9' },
+  sizeLabel:   { fontSize: 12, fontWeight: '700', color: '#aaa' },
+  sizeLabelOn: { color: '#2e7d32' },
+  sizeSub:     { fontSize: 10, color: '#ccc', marginTop: 1 },
+  sizeSubOn:   { color: '#81c784' },
+  sqftNote:    { paddingLeft: 4 },
+  sqftTxt:     { fontSize: 10, color: '#bbb' },
 
   // Mode bar
-  modeBar: {
+  modeRow: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
     paddingHorizontal: 10, paddingVertical: 7, gap: 6,
     borderBottomWidth: 1, borderBottomColor: '#eee',
   },
   modeBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20,
-    borderWidth: 1.5, borderColor: '#e5e5e5', backgroundColor: '#fafafa',
+    paddingHorizontal: 10, paddingVertical: 6,
+    borderRadius: 20, borderWidth: 1.5, borderColor: '#ebebeb',
   },
-  modeBtnPlant:   { borderColor: '#4CAF50', backgroundColor: '#e8f5e9' },
-  modeBtnErase:   { borderColor: '#e53935', backgroundColor: '#ffebee' },
-  modeBtnInspect: { borderColor: '#1976d2', backgroundColor: '#e3f2fd' },
-  modeBtnIcon:    { fontSize: 14 },
-  modeBtnTxt:     { fontSize: 12, color: '#999', fontWeight: '600' },
-  modeBtnTxtOn:   { color: '#333' },
-  modeHintBox:    { flex: 1, paddingLeft: 4 },
-  modeHint:       { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
-  placingRow:     { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 },
-  placingText:    { fontSize: 11, color: '#555', flex: 1 },
+  modePlant:   { borderColor: '#4CAF50', backgroundColor: '#e8f5e9' },
+  modeErase:   { borderColor: '#e53935', backgroundColor: '#ffebee' },
+  modeInspect: { borderColor: '#1976d2', backgroundColor: '#e3f2fd' },
+  modeBtnIcon: { fontSize: 13 },
+  modeBtnTxt:  { fontSize: 11, color: '#bbb', fontWeight: '600' },
+  modeBtnTxtOn:{ color: '#333' },
+  hintBox:     { flex: 1, paddingLeft: 2 },
+  hint:        { fontSize: 11, color: '#bbb', fontStyle: 'italic' },
+  placingRow:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  placingTxt:  { fontSize: 11, color: '#555', flex: 1 },
+
+  // Stats strip
+  statsRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: '#f9fbe7', paddingHorizontal: 12, paddingVertical: 6,
+    borderBottomWidth: 1, borderBottomColor: '#f0f4c3',
+  },
+  statChip: { fontSize: 11, color: '#558b2f', fontWeight: '600' },
 
   // Empty state
   emptyHint: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#fffde7', marginHorizontal: 12, marginTop: 10,
-    borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
-    borderWidth: 1, borderColor: '#fff9c4',
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    margin: 10, borderRadius: 10, padding: 12,
+    backgroundColor: '#fffde7', borderWidth: 1, borderColor: '#fff9c4',
   },
-  emptyHintIcon: { fontSize: 22 },
-  emptyHintText: { flex: 1, fontSize: 12, color: '#827717', lineHeight: 17 },
+  emptyIcon: { fontSize: 22 },
+  emptyTxt:  { flex: 1, fontSize: 12, color: '#827717', lineHeight: 17 },
 
   // Grid
-  gridScroll: { flex: 1 },
-  gridWrapper: { padding: 10 },
-  compassRow: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    paddingHorizontal: 4, paddingBottom: 4,
-  },
-  compassTxt: { fontSize: 10, color: '#aaa', fontStyle: 'italic' },
-  grid:       { gap: 3 },
-  gridRow:    { flexDirection: 'row', gap: 3 },
+  gridScroll:  { flex: 1 },
+  gridContent: { padding: 10 },
+  compassRow:  { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2, marginBottom: 4 },
+  compassTxt:  { fontSize: 10, color: '#bbb', fontStyle: 'italic' },
+  gridRow:     { flexDirection: 'row', marginBottom: 3 },
   cell: {
-    width: CELL, height: CELL, borderRadius: 7,
-    borderWidth: 1, borderColor: '#dde',
-    backgroundColor: '#fff',
-    justifyContent: 'center', alignItems: 'center',
+    width: CELL, height: CELL, marginRight: 3,
+    borderRadius: 8, borderWidth: 1, borderColor: '#dde',
+    backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center',
   },
-  cellInsp:       { borderColor: '#1976d2', borderWidth: 2.5, shadowColor: '#1976d2', shadowRadius: 4, elevation: 4 },
-  cellComp:       { borderColor: '#43a047', borderWidth: 2, backgroundColor: '#e8f5e9' },
-  cellEraseHover: { borderColor: '#e53935', borderWidth: 2, opacity: 0.75 },
-  cellEmoji:      { fontSize: 22 },
-  cellDot:        { fontSize: 20, color: '#ddd' },
-  compBadge:      { position: 'absolute', top: 2, right: 2, backgroundColor: '#43a047', borderRadius: 6, width: 13, height: 13, justifyContent: 'center', alignItems: 'center' },
-  compBadgeTxt:   { fontSize: 8, color: '#fff', fontWeight: '900' },
+  cellInsp:  { borderColor: '#1976d2', borderWidth: 2.5 },
+  cellComp:  { borderColor: '#43a047', borderWidth: 2, backgroundColor: '#e8f5e9' },
+  cellErase: { borderColor: '#e53935', borderWidth: 2, opacity: 0.65 },
+  cellEmoji: { fontSize: 22 },
+  cellDot:   { fontSize: 18, color: '#ddd' },
+  compDot: {
+    position: 'absolute', top: 2, right: 2,
+    width: 14, height: 14, borderRadius: 7,
+    backgroundColor: '#43a047', justifyContent: 'center', alignItems: 'center',
+  },
+  compDotTxt: { fontSize: 8, color: '#fff', fontWeight: '900' },
 
-  // Companion panel
-  companionPanel: {
-    backgroundColor: '#e3f2fd', borderTopWidth: 1, borderTopColor: '#bbdefb',
-    paddingHorizontal: 14, paddingVertical: 10,
+  // Companion modal sheet
+  modalBackdrop: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'flex-end',
   },
-  companionPanelTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  companionPanelTitle:{ fontSize: 13, fontWeight: '700', color: '#0d47a1', flex: 1 },
-  companionTag: {
-    backgroundColor: '#fff', borderRadius: 14,
-    paddingHorizontal: 10, paddingVertical: 4,
-    marginRight: 6, borderWidth: 1, borderColor: '#90caf9',
+  companionSheet: {
+    backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    padding: 20, paddingBottom: 36,
   },
-  companionTagTxt: { fontSize: 12, color: '#1565c0' },
-  companionNone:   { fontSize: 12, color: '#888', marginTop: 4 },
+  sheetHandle: {
+    width: 40, height: 4, borderRadius: 2,
+    backgroundColor: '#ddd', alignSelf: 'center', marginBottom: 14,
+  },
+  sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  sheetTitle:  { fontSize: 15, fontWeight: '700', color: '#1a237e', flex: 1 },
+  sheetSub:    { fontSize: 13, color: '#888', marginBottom: 12 },
+  tagWrap:     { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  tag:         { backgroundColor: '#e3f2fd', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 5 },
+  tagTxt:      { fontSize: 13, color: '#1565c0', fontWeight: '600' },
+  sheetNote:   { fontSize: 11, color: '#bbb', fontStyle: 'italic' },
 
   // Tray
-  tray: { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 8, paddingBottom: 4 },
-  trayTopRow: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 12, marginBottom: 6, gap: 10,
-  },
-  trayTitle: { fontSize: 12, fontWeight: '700', color: '#666' },
+  tray:    { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 8, paddingBottom: 4 },
+  trayTop: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, marginBottom: 6, gap: 10 },
+  trayTitle:  { fontSize: 12, fontWeight: '700', color: '#666' },
   searchBox: {
     flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: '#f5f5f5', borderRadius: 8,
-    paddingHorizontal: 8, paddingVertical: 5,
+    backgroundColor: '#f5f5f5', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5,
   },
   searchInput: { flex: 1, fontSize: 12, color: '#333', padding: 0 },
   trayItem: {
-    alignItems: 'center', borderRadius: 10,
-    padding: 8, minWidth: 66,
-    borderWidth: 2, borderColor: 'transparent',
+    alignItems: 'center', borderRadius: 10, padding: 8,
+    minWidth: 66, borderWidth: 2, borderColor: 'transparent',
   },
-  trayItemActive: { borderColor: '#333', shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 3, elevation: 3 },
-  trayEmoji: { fontSize: 24 },
-  trayName:  { fontSize: 10, color: '#333', marginTop: 3, textAlign: 'center', maxWidth: 64 },
-  easyBadge: {
-    marginTop: 3, backgroundColor: '#e8f5e9', borderRadius: 5,
-    paddingHorizontal: 5, paddingVertical: 1,
-  },
-  easyBadgeTxt: { fontSize: 8, color: '#2e7d32', fontWeight: '700' },
+  trayItemOn: { borderColor: '#333' },
+  trayEmoji:  { fontSize: 24 },
+  trayName:   { fontSize: 10, color: '#333', marginTop: 3, textAlign: 'center', maxWidth: 64 },
+  easyBadge:  { marginTop: 3, backgroundColor: '#e8f5e9', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 1 },
+  easyTxt:    { fontSize: 8, color: '#2e7d32', fontWeight: '700' },
 });

@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "एकत्र पिकवूया",
-
   "login": "लॉगिन",
   "register": "नोंदणी करा",
   "email": "ईमेल",
@@ -23,7 +22,6 @@
   "pwdUpper": "एक मोठे अक्षर (A–Z)",
   "pwdLower": "एक लहान अक्षर (a–z)",
   "pwdNumber": "एक अंक (0–9)",
-
   "novice": "नवशिके",
   "beginner": "प्रारंभिक",
   "intermediate": "मध्यम",
@@ -34,13 +32,11 @@
   "intermediateHint": "बहुतेक भाज्यांशी परिचित, २+ हंगामाचा अनुभव",
   "advancedHint": "वर्षभर उगवतो, कीड व्यवस्थापन आणि मृदा विज्ञानात निपुण",
   "expertHint": "व्यावसायिक शेतकरी किंवा दशकांचा अनुभव",
-
   "yourFarms": "तुमच्या शेती",
   "noFarmsYet": "अजून कोणतीही शेती नाही",
   "createFirstFarm": "पहिली शेती तयार करा",
   "noDescription": "कोणताही तपशील नाही",
   "sqFt": "{{value}} चौ.फूट",
-
   "createNewFarm": "नवीन शेती तयार करा",
   "farmName": "शेतीचे नाव",
   "farmNamePlaceholder": "उदा. माझी बाग",
@@ -64,7 +60,6 @@
   "climateUnavailable": "या स्थानासाठी हवामान डेटा उपलब्ध नाही",
   "climateDetectFailed": "हवामान क्षेत्र शोधता आले नाही",
   "createFarmFailed": "शेती तयार करण्यात अयशस्वी",
-
   "backyardGarden": "मागील अंगण बाग",
   "backyardGardenHint": "लहान घरची बाग, साधारणतः ५०० चौ.फूटपेक्षा कमी",
   "containerGarden": "कुंडी बाग",
@@ -81,7 +76,6 @@
   "largeFarmHint": "व्यावसायिक किंवा मोठ्या प्रमाणावर उगवण, ५,०००+ चौ.फूट",
   "mixedHybrid": "मिश्र / संकर",
   "mixedHybridHint": "विविध उगवण पद्धतींचे संयोजन",
-
   "tropical": "उष्णकटिबंधीय",
   "tropicalHint": "वर्षभर उष्णता — उष्णता प्रिय पिकांसाठी आदर्श",
   "aridDesert": "शुष्क (वाळवंट)",
@@ -100,7 +94,6 @@
   "subarcticHint": "लहान हंगाम — फक्त कठीण पिके",
   "temperate": "समशीतोष्ण",
   "temperateHint": "मध्यम हवामान — बहुतेक पिकांसाठी योग्य",
-
   "cropsCount": "पिके ({{count}})",
   "noCropsYet": "अजून कोणतेही पीक लावले नाही",
   "farmNotFound": "शेती सापडली नाही",
@@ -110,10 +103,9 @@
   "planted": "लावले",
   "expectedHarvest": "अपेक्षित कापणी",
   "zoneLabel": "क्षेत्र {{zone}}",
-
-  "searchVegetables": "भाज्या शोधा...",
-  "noVegetablesFound": "कोणत्याही भाज्या सापडल्या नाहीत",
-  "loadingVegetables": "भाज्या लोड होत आहेत...",
+  "searchVegetables": "झाडे, फळे आणि फुले शोधा...",
+  "noVegetablesFound": "कोणतेही झाड सापडले नाही",
+  "loadingVegetables": "झाडे लोड होत आहेत...",
   "plantingDate": "लागवड तारीख",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "झाडांची संख्या",
@@ -128,7 +120,6 @@
   "difficultyEasy": "सोपे",
   "difficultyModerate": "मध्यम",
   "difficultyAdvanced": "प्रगत",
-
   "quickSpecs": "द्रुत तपशील",
   "temperature": "तापमान",
   "tempRange": "{{min}}°C – {{max}}°C (आदर्श {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "पीक सापडले नाही",
   "daysToHarvestCountdown": "दिवस बाकी",
   "harvestTime": "कापणीची वेळ!",
-
   "whatToGrow": "काय उगवायचे",
   "seasonalRecommendations": "तुमच्या हवामानासाठी हंगामी शिफारसी",
   "daysLabel": "{{count}} दिवस",
   "sunHours": "{{hours}} तास सूर्यप्रकाश",
-
   "profile": "प्रोफाइल",
   "profileComingSoon": "प्रोफाइल वैशिष्ट्ये लवकरच येत आहेत...",
   "language": "भाषा",
   "changeLanguage": "भाषा बदला",
   "selectLanguage": "भाषा निवडा",
-
   "community": "समुदाय",
   "communityComingSoon": "समुदाय वैशिष्ट्ये लवकरच येत आहेत...",
-
   "communityMap": "सामुदायिक नकाशा",
   "mapComingSoon": "वेबसाठी नकाशा दृश्य लवकरच",
-
   "tabHome": "माझ्या शेती",
   "tabMap": "नकाशा",
   "tabMapShort": "नकाशा",
@@ -182,7 +168,6 @@
   "tabProfile": "प्रोफाइल",
   "navPlantCrop": "पीक लावा",
   "navCropDetail": "पीक तपशील",
-
   "termsTitle": "अटी आणि शर्ती",
   "termsSubtitle": "सुरू ठेवण्यासाठी कृपया वाचा आणि स्वीकारा",
   "termsAgree": "मी अटी आणि शर्ती वाचल्या आणि मान्य केल्या",

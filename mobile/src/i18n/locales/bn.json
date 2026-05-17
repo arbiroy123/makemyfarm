@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "একসাথে চাষ করি",
-
   "login": "লগইন",
   "register": "নিবন্ধন করুন",
   "email": "ইমেইল",
@@ -23,7 +22,6 @@
   "pwdUpper": "একটি বড় হাতের অক্ষর (A–Z)",
   "pwdLower": "একটি ছোট হাতের অক্ষর (a–z)",
   "pwdNumber": "একটি সংখ্যা (0–9)",
-
   "novice": "নবীন",
   "beginner": "শিক্ষার্থী",
   "intermediate": "মধ্যবর্তী",
@@ -34,13 +32,11 @@
   "intermediateHint": "বেশিরভাগ সবজির সাথে পরিচিত, ২+ মৌসুমের অভিজ্ঞতা",
   "advancedHint": "সারা বছর চাষ করেন, কীটপতঙ্গ ব্যবস্থাপনা ও মাটি বিজ্ঞানে দক্ষ",
   "expertHint": "পেশাদার কৃষক বা দশকের অভিজ্ঞতা",
-
   "yourFarms": "আপনার খামার",
   "noFarmsYet": "এখনো কোনো খামার নেই",
   "createFirstFarm": "প্রথম খামার তৈরি করুন",
   "noDescription": "কোনো বিবরণ নেই",
   "sqFt": "{{value}} বর্গ ফুট",
-
   "createNewFarm": "নতুন খামার তৈরি করুন",
   "farmName": "খামারের নাম",
   "farmNamePlaceholder": "যেমন: আমার বাগান",
@@ -64,7 +60,6 @@
   "climateUnavailable": "এই অবস্থানের জন্য জলবায়ু ডেটা পাওয়া যাচ্ছে না",
   "climateDetectFailed": "জলবায়ু অঞ্চল সনাক্ত করা যায়নি",
   "createFarmFailed": "খামার তৈরি করতে ব্যর্থ",
-
   "backyardGarden": "পিছনের বাগান",
   "backyardGardenHint": "ছোট গৃহ বাগান, সাধারণত ৫০০ বর্গ ফুটের কম",
   "containerGarden": "পাত্রের বাগান",
@@ -81,7 +76,6 @@
   "largeFarmHint": "বাণিজ্যিক বা বৃহৎ মাত্রার চাষ, ৫,০০০+ বর্গ ফুট",
   "mixedHybrid": "মিশ্র / হাইব্রিড",
   "mixedHybridHint": "বিভিন্ন চাষ পদ্ধতির সমন্বয়",
-
   "tropical": "ক্রান্তীয়",
   "tropicalHint": "সারা বছর উষ্ণ — তাপ-প্রেমী ফসলের জন্য আদর্শ",
   "aridDesert": "শুষ্ক (মরুভূমি)",
@@ -100,7 +94,6 @@
   "subarcticHint": "ছোট মৌসুম — শুধু কঠোর ফসল",
   "temperate": "নাতিশীতোষ্ণ",
   "temperateHint": "মাঝারি জলবায়ু — বেশিরভাগ ফসলের জন্য উপযুক্ত",
-
   "cropsCount": "ফসল ({{count}})",
   "noCropsYet": "এখনো কোনো ফসল লাগানো হয়নি",
   "farmNotFound": "খামার পাওয়া যায়নি",
@@ -110,10 +103,9 @@
   "planted": "লাগানো হয়েছে",
   "expectedHarvest": "প্রত্যাশিত ফসল",
   "zoneLabel": "অঞ্চল {{zone}}",
-
-  "searchVegetables": "সবজি খুঁজুন...",
-  "noVegetablesFound": "কোনো সবজি পাওয়া যায়নি",
-  "loadingVegetables": "সবজি লোড হচ্ছে...",
+  "searchVegetables": "গাছ, ফল ও ফুল খুঁজুন...",
+  "noVegetablesFound": "কোনো গাছ পাওয়া যায়নি",
+  "loadingVegetables": "গাছ লোড হচ্ছে...",
   "plantingDate": "রোপণের তারিখ",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "গাছের সংখ্যা",
@@ -128,7 +120,6 @@
   "difficultyEasy": "সহজ",
   "difficultyModerate": "মাঝারি",
   "difficultyAdvanced": "উন্নত",
-
   "quickSpecs": "দ্রুত বিবরণ",
   "temperature": "তাপমাত্রা",
   "tempRange": "{{min}}°C – {{max}}°C (আদর্শ {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "ফসল পাওয়া যায়নি",
   "daysToHarvestCountdown": "দিন বাকি",
   "harvestTime": "ফসল কাটার সময়!",
-
   "whatToGrow": "কী চাষ করবেন",
   "seasonalRecommendations": "আপনার জলবায়ুর জন্য মৌসুমী সুপারিশ",
   "daysLabel": "{{count}} দিন",
   "sunHours": "{{hours}}ঘ সূর্য",
-
   "profile": "প্রোফাইল",
   "profileComingSoon": "প্রোফাইল বৈশিষ্ট্য শীঘ্রই আসছে...",
   "language": "ভাষা",
   "changeLanguage": "ভাষা পরিবর্তন করুন",
   "selectLanguage": "ভাষা নির্বাচন করুন",
-
   "community": "সম্প্রদায়",
   "communityComingSoon": "সম্প্রদায় বৈশিষ্ট্য শীঘ্রই আসছে...",
-
   "communityMap": "সম্প্রদায়ের মানচিত্র",
   "mapComingSoon": "ওয়েবের জন্য মানচিত্র দৃশ্য শীঘ্রই",
-
   "tabHome": "আমার খামার",
   "tabMap": "মানচিত্র",
   "tabMapShort": "মানচিত্র",
@@ -182,7 +168,6 @@
   "tabProfile": "প্রোফাইল",
   "navPlantCrop": "ফসল লাগান",
   "navCropDetail": "ফসলের বিবরণ",
-
   "termsTitle": "শর্তাবলী",
   "termsSubtitle": "অনুগ্রহ করে পড়ুন এবং চালিয়ে যেতে স্বীকার করুন",
   "termsAgree": "আমি শর্তাবলী পড়েছি এবং সম্মতি দিচ্ছি",

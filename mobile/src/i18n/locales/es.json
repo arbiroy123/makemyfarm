@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "Crecer Juntos",
-
   "login": "Iniciar Sesión",
   "register": "Registrarse",
   "email": "Correo electrónico",
@@ -23,7 +22,6 @@
   "pwdUpper": "Una letra mayúscula (A–Z)",
   "pwdLower": "Una letra minúscula (a–z)",
   "pwdNumber": "Un número (0–9)",
-
   "novice": "Principiante",
   "beginner": "Básico",
   "intermediate": "Intermedio",
@@ -34,13 +32,11 @@
   "intermediateHint": "Cómodo con la mayoría de vegetales, más de 2 temporadas de experiencia",
   "advancedHint": "Cultiva todo el año, manejo de plagas y ciencia del suelo",
   "expertHint": "Agricultor profesional o décadas de experiencia",
-
   "yourFarms": "Mis Granjas",
   "noFarmsYet": "Sin granjas aún",
   "createFirstFarm": "Crear mi primera granja",
   "noDescription": "Sin descripción",
   "sqFt": "{{value}} pies²",
-
   "createNewFarm": "Crear nueva granja",
   "farmName": "Nombre de la granja",
   "farmNamePlaceholder": "ej. Mi huerto trasero",
@@ -64,7 +60,6 @@
   "climateUnavailable": "Datos climáticos no disponibles para esta ubicación",
   "climateDetectFailed": "No se pudo detectar la zona climática",
   "createFarmFailed": "Error al crear la granja",
-
   "backyardGarden": "Huerto trasero",
   "backyardGardenHint": "Jardín doméstico pequeño, generalmente menos de 46 m²",
   "containerGarden": "Jardín en macetas",
@@ -81,7 +76,6 @@
   "largeFarmHint": "Cultivo comercial o a gran escala, más de 465 m²",
   "mixedHybrid": "Mixto / Híbrido",
   "mixedHybridHint": "Combinación de diferentes métodos de cultivo",
-
   "tropical": "Tropical",
   "tropicalHint": "Calor durante todo el año — ideal para cultivos que necesitan calor",
   "aridDesert": "Árido (Desierto)",
@@ -100,7 +94,6 @@
   "subarcticHint": "Temporada corta — solo cultivos resistentes",
   "temperate": "Templado",
   "temperateHint": "Clima moderado — apto para la mayoría de cultivos",
-
   "cropsCount": "Cultivos ({{count}})",
   "noCropsYet": "Aún no hay cultivos plantados",
   "farmNotFound": "Granja no encontrada",
@@ -110,10 +103,9 @@
   "planted": "Plantado",
   "expectedHarvest": "Cosecha esperada",
   "zoneLabel": "Zona {{zone}}",
-
-  "searchVegetables": "Buscar vegetales...",
-  "noVegetablesFound": "No se encontraron vegetales",
-  "loadingVegetables": "Cargando vegetales...",
+  "searchVegetables": "Buscar plantas, frutas y flores...",
+  "noVegetablesFound": "No se encontraron plantas",
+  "loadingVegetables": "Cargando plantas...",
   "plantingDate": "Fecha de siembra",
   "plantingDatePlaceholder": "AAAA-MM-DD",
   "numberOfPlants": "Número de plantas",
@@ -128,7 +120,6 @@
   "difficultyEasy": "Fácil",
   "difficultyModerate": "Moderado",
   "difficultyAdvanced": "Avanzado",
-
   "quickSpecs": "Especificaciones",
   "temperature": "Temperatura",
   "tempRange": "{{min}}°C – {{max}}°C (ideal {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "Cultivo no encontrado",
   "daysToHarvestCountdown": "días para cosechar",
   "harvestTime": "¡hora de cosechar!",
-
   "whatToGrow": "Qué cultivar",
   "seasonalRecommendations": "Recomendaciones estacionales para tu clima",
   "daysLabel": "{{count}} días",
   "sunHours": "{{hours}}h de sol",
-
   "profile": "Perfil",
   "profileComingSoon": "Funciones de perfil próximamente...",
   "language": "Idioma",
   "changeLanguage": "Cambiar idioma",
   "selectLanguage": "Seleccionar idioma",
-
   "community": "Comunidad",
   "communityComingSoon": "Funciones de comunidad próximamente...",
-
   "communityMap": "Mapa comunitario",
   "mapComingSoon": "Vista de mapa próximamente para web",
-
   "tabHome": "Mis granjas",
   "tabMap": "Mapa",
   "tabMapShort": "Mapa",
@@ -182,7 +168,6 @@
   "tabProfile": "Perfil",
   "navPlantCrop": "Plantar cultivo",
   "navCropDetail": "Detalle del cultivo",
-
   "termsTitle": "Términos y condiciones",
   "termsSubtitle": "Por favor lee y acepta para continuar",
   "termsAgree": "He leído y acepto los Términos y Condiciones",

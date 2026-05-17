@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "मिलकर उगाएँ",
-
   "login": "लॉगिन",
   "register": "रजिस्टर करें",
   "email": "ईमेल",
@@ -23,7 +22,6 @@
   "pwdUpper": "एक बड़ा अक्षर (A–Z)",
   "pwdLower": "एक छोटा अक्षर (a–z)",
   "pwdNumber": "एक अंक (0–9)",
-
   "novice": "नौसिखिया",
   "beginner": "शुरुआती",
   "intermediate": "मध्यम",
@@ -34,13 +32,11 @@
   "intermediateHint": "अधिकांश सब्जियों से परिचित, 2+ मौसम का अनुभव",
   "advancedHint": "साल भर उगाते हैं, कीट प्रबंधन और मिट्टी विज्ञान में कुशल",
   "expertHint": "पेशेवर किसान या दशकों का अनुभव",
-
   "yourFarms": "आपके खेत",
   "noFarmsYet": "अभी कोई खेत नहीं",
   "createFirstFarm": "अपना पहला खेत बनाएँ",
   "noDescription": "कोई विवरण नहीं",
   "sqFt": "{{value}} वर्ग फुट",
-
   "createNewFarm": "नया खेत बनाएँ",
   "farmName": "खेत का नाम",
   "farmNamePlaceholder": "जैसे: मेरा बगीचा",
@@ -64,7 +60,6 @@
   "climateUnavailable": "इस स्थान के लिए जलवायु डेटा उपलब्ध नहीं",
   "climateDetectFailed": "जलवायु क्षेत्र नहीं पहचाना जा सका",
   "createFarmFailed": "खेत बनाने में विफल",
-
   "backyardGarden": "पिछवाड़े का बगीचा",
   "backyardGardenHint": "छोटा घरेलू बगीचा, आमतौर पर 46 वर्ग मीटर से कम",
   "containerGarden": "गमले का बगीचा",
@@ -81,7 +76,6 @@
   "largeFarmHint": "व्यावसायिक या बड़े पैमाने पर खेती",
   "mixedHybrid": "मिश्रित / हाइब्रिड",
   "mixedHybridHint": "विभिन्न खेती विधियों का संयोजन",
-
   "tropical": "उष्णकटिबंधीय",
   "tropicalHint": "साल भर गर्मी — गर्मी पसंद फसलों के लिए आदर्श",
   "aridDesert": "शुष्क (रेगिस्तान)",
@@ -100,7 +94,6 @@
   "subarcticHint": "छोटा मौसम — केवल कठोर फसलें",
   "temperate": "समशीतोष्ण",
   "temperateHint": "मध्यम जलवायु — अधिकांश फसलों के लिए उपयुक्त",
-
   "cropsCount": "फसलें ({{count}})",
   "noCropsYet": "अभी कोई फसल नहीं लगाई गई",
   "farmNotFound": "खेत नहीं मिला",
@@ -110,10 +103,9 @@
   "planted": "बोया गया",
   "expectedHarvest": "अपेक्षित फसल",
   "zoneLabel": "क्षेत्र {{zone}}",
-
-  "searchVegetables": "सब्जियाँ खोजें...",
-  "noVegetablesFound": "कोई सब्जी नहीं मिली",
-  "loadingVegetables": "सब्जियाँ लोड हो रही हैं...",
+  "searchVegetables": "पौधे, फल और फूल खोजें...",
+  "noVegetablesFound": "कोई पौधा नहीं मिला",
+  "loadingVegetables": "पौधे लोड हो रहे हैं...",
   "plantingDate": "बुआई की तारीख",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "पौधों की संख्या",
@@ -128,7 +120,6 @@
   "difficultyEasy": "आसान",
   "difficultyModerate": "मध्यम",
   "difficultyAdvanced": "उन्नत",
-
   "quickSpecs": "त्वरित विशिष्टताएँ",
   "temperature": "तापमान",
   "tempRange": "{{min}}°C – {{max}}°C (आदर्श {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "फसल नहीं मिली",
   "daysToHarvestCountdown": "दिन बाकी",
   "harvestTime": "फसल का समय!",
-
   "whatToGrow": "क्या उगाएँ",
   "seasonalRecommendations": "आपकी जलवायु के लिए मौसमी सुझाव",
   "daysLabel": "{{count}} दिन",
   "sunHours": "{{hours}} घंटे धूप",
-
   "profile": "प्रोफ़ाइल",
   "profileComingSoon": "प्रोफ़ाइल सुविधाएँ जल्द आ रही हैं...",
   "language": "भाषा",
   "changeLanguage": "भाषा बदलें",
   "selectLanguage": "भाषा चुनें",
-
   "community": "समुदाय",
   "communityComingSoon": "समुदाय सुविधाएँ जल्द आ रही हैं...",
-
   "communityMap": "सामुदायिक मानचित्र",
   "mapComingSoon": "मानचित्र दृश्य जल्द वेब पर",
-
   "tabHome": "मेरे खेत",
   "tabMap": "मानचित्र",
   "tabMapShort": "मानचित्र",
@@ -182,7 +168,6 @@
   "tabProfile": "प्रोफ़ाइल",
   "navPlantCrop": "फसल लगाएँ",
   "navCropDetail": "फसल विवरण",
-
   "termsTitle": "नियम और शर्तें",
   "termsSubtitle": "जारी रखने के लिए कृपया पढ़ें और स्वीकार करें",
   "termsAgree": "मैंने नियम और शर्तें पढ़ी और स्वीकार की हैं",

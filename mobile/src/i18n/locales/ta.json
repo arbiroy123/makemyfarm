@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "சேர்ந்து வளர்ப்போம்",
-
   "login": "உள்நுழைவு",
   "register": "பதிவு செய்யுங்கள்",
   "email": "மின்னஞ்சல்",
@@ -23,7 +22,6 @@
   "pwdUpper": "ஒரு பெரிய எழுத்து (A–Z)",
   "pwdLower": "ஒரு சிறிய எழுத்து (a–z)",
   "pwdNumber": "ஒரு எண் (0–9)",
-
   "novice": "புதியவர்",
   "beginner": "தொடக்கநிலை",
   "intermediate": "இடைநிலை",
@@ -34,13 +32,11 @@
   "intermediateHint": "பெரும்பாலான காய்கறிகளில் தேர்ச்சி, 2+ பருவகாலம் அனுபவம்",
   "advancedHint": "ஆண்டு முழுவதும் வளர்க்கிறார்கள், பூச்சி மேலாண்மை & மண் விஞ்ஞானத்தில் திறமை",
   "expertHint": "தொழில்முறை வளர்ப்பாளர் அல்லது பல தசாப்தங்களின் அனுபவம்",
-
   "yourFarms": "உங்கள் பண்ணைகள்",
   "noFarmsYet": "இன்னும் பண்ணைகள் இல்லை",
   "createFirstFarm": "உங்கள் முதல் பண்ணையை உருவாக்கவும்",
   "noDescription": "விளக்கம் இல்லை",
   "sqFt": "{{value}} சதுர அடி",
-
   "createNewFarm": "புதிய பண்ணை உருவாக்கவும்",
   "farmName": "பண்ணையின் பெயர்",
   "farmNamePlaceholder": "எ.கா. என் தோட்டம்",
@@ -64,7 +60,6 @@
   "climateUnavailable": "இந்த இடத்திற்கு காலநிலை தரவு கிடைக்கவில்லை",
   "climateDetectFailed": "காலநிலை மண்டலத்தை கண்டறிய முடியவில்லை",
   "createFarmFailed": "பண்ணை உருவாக்க தோல்வியடைந்தது",
-
   "backyardGarden": "பின் தோட்டம்",
   "backyardGardenHint": "சிறிய வீட்டு தோட்டம், பொதுவாக 500 சதுர அடிக்கும் குறைவு",
   "containerGarden": "கொள்கலன் தோட்டம்",
@@ -81,7 +76,6 @@
   "largeFarmHint": "வணிக அல்லது பெரிய அளவில் வளர்ப்பு, 5,000+ சதுர அடி",
   "mixedHybrid": "கலப்பு / இனக்கலப்பு",
   "mixedHybridHint": "வெவ்வேறு வளர்ப்பு முறைகளின் கலவை",
-
   "tropical": "வெப்பமண்டல",
   "tropicalHint": "ஆண்டு முழுவதும் வெப்பம் — வெப்பம் விரும்பும் பயிர்களுக்கு சிறந்தது",
   "aridDesert": "வறண்ட (பாலைவனம்)",
@@ -100,7 +94,6 @@
   "subarcticHint": "குறுகிய பருவம் — கடினமான பயிர்கள் மட்டுமே",
   "temperate": "மிதமான",
   "temperateHint": "மிதமான காலநிலை — பெரும்பாலான பயிர்களுக்கு ஏற்றது",
-
   "cropsCount": "பயிர்கள் ({{count}})",
   "noCropsYet": "இன்னும் பயிர்கள் நடப்படவில்லை",
   "farmNotFound": "பண்ணை கிடைக்கவில்லை",
@@ -110,10 +103,9 @@
   "planted": "நடப்பட்டது",
   "expectedHarvest": "எதிர்பார்க்கப்படும் அறுவடை",
   "zoneLabel": "மண்டலம் {{zone}}",
-
-  "searchVegetables": "காய்கறிகளை தேடுங்கள்...",
-  "noVegetablesFound": "காய்கறிகள் கிடைக்கவில்லை",
-  "loadingVegetables": "காய்கறிகள் ஏற்றப்படுகின்றன...",
+  "searchVegetables": "தாவரங்கள், பழங்கள் & பூக்கள் தேடுங்கள்...",
+  "noVegetablesFound": "தாவரங்கள் கிடைக்கவில்லை",
+  "loadingVegetables": "தாவரங்கள் ஏற்றப்படுகின்றன...",
   "plantingDate": "நடும் தேதி",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "தாவரங்களின் எண்ணிக்கை",
@@ -128,7 +120,6 @@
   "difficultyEasy": "எளிதான",
   "difficultyModerate": "மிதமான",
   "difficultyAdvanced": "மேம்பட்ட",
-
   "quickSpecs": "விரைவு விவரங்கள்",
   "temperature": "வெப்பநிலை",
   "tempRange": "{{min}}°C – {{max}}°C (சிறந்தது {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "பயிர் கிடைக்கவில்லை",
   "daysToHarvestCountdown": "நாட்கள் மீதமுள்ளன",
   "harvestTime": "அறுவடை நேரம்!",
-
   "whatToGrow": "என்ன வளர்க்க வேண்டும்",
   "seasonalRecommendations": "உங்கள் காலநிலைக்கு பருவகால பரிந்துரைகள்",
   "daysLabel": "{{count}} நாட்கள்",
   "sunHours": "{{hours}} மணி சூரியன்",
-
   "profile": "சுயவிவரம்",
   "profileComingSoon": "சுயவிவர அம்சங்கள் விரைவில் வரும்...",
   "language": "மொழி",
   "changeLanguage": "மொழியை மாற்றவும்",
   "selectLanguage": "மொழியை தேர்ந்தெடுக்கவும்",
-
   "community": "சமூகம்",
   "communityComingSoon": "சமூக அம்சங்கள் விரைவில் வரும்...",
-
   "communityMap": "சமூக வரைபடம்",
   "mapComingSoon": "வலையில் வரைபட காட்சி விரைவில்",
-
   "tabHome": "என் பண்ணைகள்",
   "tabMap": "வரைபடம்",
   "tabMapShort": "வரைபடம்",
@@ -182,7 +168,6 @@
   "tabProfile": "சுயவிவரம்",
   "navPlantCrop": "பயிர் நடுங்கள்",
   "navCropDetail": "பயிர் விவரம்",
-
   "termsTitle": "விதிமுறைகள் & நிபந்தனைகள்",
   "termsSubtitle": "தொடர தயவுசெய்து படித்து ஒப்புக்கொள்ளுங்கள்",
   "termsAgree": "நான் விதிமுறைகள் & நிபந்தனைகளை படித்து ஒப்புக்கொள்கிறேன்",

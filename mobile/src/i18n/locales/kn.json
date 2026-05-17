@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "ಒಟ್ಟಿಗೆ ಬೆಳೆಯೋಣ",
-
   "login": "ಲಾಗಿನ್",
   "register": "ನೋಂದಣಿ ಮಾಡಿ",
   "email": "ಇಮೇಲ್",
@@ -23,7 +22,6 @@
   "pwdUpper": "ಒಂದು ದೊಡ್ಡ ಅಕ್ಷರ (A–Z)",
   "pwdLower": "ಒಂದು ಸಣ್ಣ ಅಕ್ಷರ (a–z)",
   "pwdNumber": "ಒಂದು ಸಂಖ್ಯೆ (0–9)",
-
   "novice": "ಹೊಸಬರು",
   "beginner": "ಆರಂಭಿಕ",
   "intermediate": "ಮಧ್ಯಂತರ",
@@ -34,13 +32,11 @@
   "intermediateHint": "ಹೆಚ್ಚಿನ ತರಕಾರಿಗಳೊಂದಿಗೆ ಪರಿಚಿತ, 2+ ಋತುಗಳ ಅನುಭವ",
   "advancedHint": "ವರ್ಷದಾದ್ಯಂತ ಬೆಳೆಸುತ್ತಾರೆ, ಕೀಟ ನಿರ್ವಹಣೆ & ಮಣ್ಣು ವಿಜ್ಞಾನದಲ್ಲಿ ನಿಪುಣರು",
   "expertHint": "ವೃತ್ತಿಪರ ಬೆಳೆಗಾರ ಅಥವಾ ದಶಕಗಳ ಅನುಭವ",
-
   "yourFarms": "ನಿಮ್ಮ ಜಮೀನುಗಳು",
   "noFarmsYet": "ಇನ್ನೂ ಜಮೀನುಗಳಿಲ್ಲ",
   "createFirstFarm": "ನಿಮ್ಮ ಮೊದಲ ಜಮೀನು ರಚಿಸಿ",
   "noDescription": "ವಿವರಣೆ ಇಲ್ಲ",
   "sqFt": "{{value}} ಚ.ಅಡಿ",
-
   "createNewFarm": "ಹೊಸ ಜಮೀನು ರಚಿಸಿ",
   "farmName": "ಜಮೀನಿನ ಹೆಸರು",
   "farmNamePlaceholder": "ಉದಾ. ನನ್ನ ತೋಟ",
@@ -64,7 +60,6 @@
   "climateUnavailable": "ಈ ಸ್ಥಳಕ್ಕೆ ಹವಾಮಾನ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
   "climateDetectFailed": "ಹವಾಮಾನ ವಲಯ ಪತ್ತೆ ಮಾಡಲಾಗಲಿಲ್ಲ",
   "createFarmFailed": "ಜಮೀನು ರಚಿಸಲು ವಿಫಲವಾಯಿತು",
-
   "backyardGarden": "ಹಿಂಭಾಗ ತೋಟ",
   "backyardGardenHint": "ಸಣ್ಣ ಮನೆ ತೋಟ, ಸಾಮಾನ್ಯವಾಗಿ 500 ಚ.ಅಡಿಗಿಂತ ಕಡಿಮೆ",
   "containerGarden": "ಮಡಿಕೆ ತೋಟ",
@@ -81,7 +76,6 @@
   "largeFarmHint": "ವಾಣಿಜ್ಯ ಅಥವಾ ದೊಡ್ಡ ಪ್ರಮಾಣದ ಬೆಳೆಯುವಿಕೆ, 5,000+ ಚ.ಅಡಿ",
   "mixedHybrid": "ಮಿಶ್ರ / ಹೈಬ್ರಿಡ್",
   "mixedHybridHint": "ವಿವಿಧ ಬೆಳೆಯುವ ವಿಧಾನಗಳ ಸಂಯೋಜನೆ",
-
   "tropical": "ಉಷ್ಣವಲಯ",
   "tropicalHint": "ವರ್ಷದಾದ್ಯಂತ ಬಿಸಿ — ಶಾಖ ಪ್ರೇಮಿ ಬೆಳೆಗಳಿಗೆ ಸೂಕ್ತ",
   "aridDesert": "ಶುಷ್ಕ (ಮರುಭೂಮಿ)",
@@ -100,7 +94,6 @@
   "subarcticHint": "ಚಿಕ್ಕ ಋತು — ಗಟ್ಟಿ ಬೆಳೆಗಳು ಮಾತ್ರ",
   "temperate": "ಸಮಶೀತೋಷ್ಣ",
   "temperateHint": "ಮಧ್ಯಮ ಹವಾಮಾನ — ಹೆಚ್ಚಿನ ಬೆಳೆಗಳಿಗೆ ಸೂಕ್ತ",
-
   "cropsCount": "ಬೆಳೆಗಳು ({{count}})",
   "noCropsYet": "ಇನ್ನೂ ಬೆಳೆಗಳನ್ನು ನೆಡಲಾಗಿಲ್ಲ",
   "farmNotFound": "ಜಮೀನು ಕಂಡುಬರಲಿಲ್ಲ",
@@ -110,10 +103,9 @@
   "planted": "ನೆಡಲಾಗಿದೆ",
   "expectedHarvest": "ನಿರೀಕ್ಷಿತ ಕೊಯ್ಲು",
   "zoneLabel": "ವಲಯ {{zone}}",
-
-  "searchVegetables": "ತರಕಾರಿಗಳನ್ನು ಹುಡುಕಿ...",
-  "noVegetablesFound": "ತರಕಾರಿಗಳು ಕಂಡುಬರಲಿಲ್ಲ",
-  "loadingVegetables": "ತರಕಾರಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+  "searchVegetables": "ಗಿಡ, ಹಣ್ಣು ಮತ್ತು ಹೂ ಹುಡುಕಿ...",
+  "noVegetablesFound": "ಯಾವ ಗಿಡವೂ ಕಾಣಿಸಲಿಲ್ಲ",
+  "loadingVegetables": "ಗಿಡಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...",
   "plantingDate": "ನೆಡುವ ದಿನಾಂಕ",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "ಸಸ್ಯಗಳ ಸಂಖ್ಯೆ",
@@ -128,7 +120,6 @@
   "difficultyEasy": "ಸುಲಭ",
   "difficultyModerate": "ಮಧ್ಯಮ",
   "difficultyAdvanced": "ಮುಂದುವರಿದ",
-
   "quickSpecs": "ತ್ವರಿತ ವಿವರಗಳು",
   "temperature": "ತಾಪಮಾನ",
   "tempRange": "{{min}}°C – {{max}}°C (ಸೂಕ್ತ {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "ಬೆಳೆ ಕಂಡುಬರಲಿಲ್ಲ",
   "daysToHarvestCountdown": "ದಿನಗಳು ಉಳಿದಿವೆ",
   "harvestTime": "ಕೊಯ್ಲಿನ ಸಮಯ!",
-
   "whatToGrow": "ಏನು ಬೆಳೆಯಬೇಕು",
   "seasonalRecommendations": "ನಿಮ್ಮ ಹವಾಮಾನಕ್ಕೆ ಋತು ಶಿಫಾರಸುಗಳು",
   "daysLabel": "{{count}} ದಿನಗಳು",
   "sunHours": "{{hours}} ಗಂಟೆ ಸೂರ್ಯ",
-
   "profile": "ಪ್ರೊಫೈಲ್",
   "profileComingSoon": "ಪ್ರೊಫೈಲ್ ವೈಶಿಷ್ಟ್ಯಗಳು ಶೀಘ್ರದಲ್ಲಿ ಬರಲಿದೆ...",
   "language": "ಭಾಷೆ",
   "changeLanguage": "ಭಾಷೆ ಬದಲಿಸಿ",
   "selectLanguage": "ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ",
-
   "community": "ಸಮುದಾಯ",
   "communityComingSoon": "ಸಮುದಾಯ ವೈಶಿಷ್ಟ್ಯಗಳು ಶೀಘ್ರದಲ್ಲಿ ಬರಲಿದೆ...",
-
   "communityMap": "ಸಮುದಾಯ ನಕ್ಷೆ",
   "mapComingSoon": "ವೆಬ್‌ಗಾಗಿ ನಕ್ಷೆ ವೀಕ್ಷಣೆ ಶೀಘ್ರದಲ್ಲಿ",
-
   "tabHome": "ನನ್ನ ಜಮೀನುಗಳು",
   "tabMap": "ನಕ್ಷೆ",
   "tabMapShort": "ನಕ್ಷೆ",
@@ -182,7 +168,6 @@
   "tabProfile": "ಪ್ರೊಫೈಲ್",
   "navPlantCrop": "ಬೆಳೆ ನೆಡಿ",
   "navCropDetail": "ಬೆಳೆ ವಿವರ",
-
   "termsTitle": "ನಿಯಮ & ಶರತ್ತುಗಳು",
   "termsSubtitle": "ಮುಂದುವರಿಯಲು ದಯವಿಟ್ಟು ಓದಿ ಮತ್ತು ಒಪ್ಪಿಕೊಳ್ಳಿ",
   "termsAgree": "ನಾನು ನಿಯಮ & ಶರತ್ತುಗಳನ್ನು ಓದಿ ಒಪ್ಪಿಕೊಂಡಿದ್ದೇನೆ",

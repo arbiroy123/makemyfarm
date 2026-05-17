@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "Crescer Juntos",
-
   "login": "Entrar",
   "register": "Cadastrar",
   "email": "E-mail",
@@ -23,7 +22,6 @@
   "pwdUpper": "Uma letra maiúscula (A–Z)",
   "pwdLower": "Uma letra minúscula (a–z)",
   "pwdNumber": "Um número (0–9)",
-
   "novice": "Iniciante",
   "beginner": "Básico",
   "intermediate": "Intermediário",
@@ -34,13 +32,11 @@
   "intermediateHint": "Confortável com a maioria dos vegetais, mais de 2 temporadas",
   "advancedHint": "Cultiva o ano todo, confortável com manejo de pragas e solo",
   "expertHint": "Produtor profissional ou décadas de experiência",
-
   "yourFarms": "Minhas Fazendas",
   "noFarmsYet": "Nenhuma fazenda ainda",
   "createFirstFarm": "Criar minha primeira fazenda",
   "noDescription": "Sem descrição",
   "sqFt": "{{value}} pés²",
-
   "createNewFarm": "Criar nova fazenda",
   "farmName": "Nome da fazenda",
   "farmNamePlaceholder": "ex: Meu Quintal",
@@ -64,7 +60,6 @@
   "climateUnavailable": "Dados climáticos indisponíveis para este local",
   "climateDetectFailed": "Não foi possível detectar a zona climática",
   "createFarmFailed": "Falha ao criar fazenda",
-
   "backyardGarden": "Horta Doméstica",
   "backyardGardenHint": "Jardim doméstico pequeno, geralmente menos de 46 m²",
   "containerGarden": "Jardim em Vasos",
@@ -81,7 +76,6 @@
   "largeFarmHint": "Cultivo comercial ou em grande escala",
   "mixedHybrid": "Misto / Híbrido",
   "mixedHybridHint": "Combinação de diferentes métodos de cultivo",
-
   "tropical": "Tropical",
   "tropicalHint": "Calor durante todo o ano — ideal para culturas que precisam de calor",
   "aridDesert": "Árido (Deserto)",
@@ -100,7 +94,6 @@
   "subarcticHint": "Temporada curta — apenas culturas resistentes",
   "temperate": "Temperado",
   "temperateHint": "Clima moderado — adequado para a maioria dos cultivos",
-
   "cropsCount": "Cultivos ({{count}})",
   "noCropsYet": "Nenhum cultivo plantado ainda",
   "farmNotFound": "Fazenda não encontrada",
@@ -110,10 +103,9 @@
   "planted": "Plantado",
   "expectedHarvest": "Colheita esperada",
   "zoneLabel": "Zona {{zone}}",
-
-  "searchVegetables": "Buscar vegetais...",
-  "noVegetablesFound": "Nenhum vegetal encontrado",
-  "loadingVegetables": "Carregando vegetais...",
+  "searchVegetables": "Buscar plantas, frutas e flores...",
+  "noVegetablesFound": "Nenhuma planta encontrada",
+  "loadingVegetables": "Carregando plantas...",
   "plantingDate": "Data de plantio",
   "plantingDatePlaceholder": "AAAA-MM-DD",
   "numberOfPlants": "Número de plantas",
@@ -128,7 +120,6 @@
   "difficultyEasy": "Fácil",
   "difficultyModerate": "Moderado",
   "difficultyAdvanced": "Avançado",
-
   "quickSpecs": "Especificações",
   "temperature": "Temperatura",
   "tempRange": "{{min}}°C – {{max}}°C (ideal {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "Cultivo não encontrado",
   "daysToHarvestCountdown": "dias para colher",
   "harvestTime": "hora de colher!",
-
   "whatToGrow": "O que Cultivar",
   "seasonalRecommendations": "Recomendações sazonais para seu clima",
   "daysLabel": "{{count}} dias",
   "sunHours": "{{hours}}h de sol",
-
   "profile": "Perfil",
   "profileComingSoon": "Funcionalidades de perfil em breve...",
   "language": "Idioma",
   "changeLanguage": "Alterar idioma",
   "selectLanguage": "Selecionar idioma",
-
   "community": "Comunidade",
   "communityComingSoon": "Funcionalidades da comunidade em breve...",
-
   "communityMap": "Mapa da Comunidade",
   "mapComingSoon": "Visualização de mapa em breve para web",
-
   "tabHome": "Minhas Fazendas",
   "tabMap": "Mapa",
   "tabMapShort": "Mapa",
@@ -183,7 +169,6 @@
   "navPlantCrop": "Plantar Cultivo",
   "navCropDetail": "Detalhes do Cultivo",
   "navRequestVegetable": "Solicitar Vegetal",
-
   "requestVegetableTitle": "Solicitar um Vegetal",
   "requestVegetableSubtitle": "Não encontrou o que procura? Nos diga e adicionamos!",
   "requestVegetableNameLabel": "Nome do Vegetal",
@@ -202,7 +187,6 @@
   "statusPending": "Pendente",
   "statusApproved": "Aprovado",
   "statusRejected": "Rejeitado",
-
   "termsTitle": "Termos e Condições",
   "termsSubtitle": "Por favor leia e aceite para continuar",
   "termsAgree": "Li e concordo com os Termos e Condições",

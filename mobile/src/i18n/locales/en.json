@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "Grow Together",
-
   "login": "Login",
   "register": "Register",
   "email": "Email",
@@ -23,7 +22,6 @@
   "pwdUpper": "One uppercase letter (A–Z)",
   "pwdLower": "One lowercase letter (a–z)",
   "pwdNumber": "One number (0–9)",
-
   "novice": "Novice",
   "beginner": "Beginner",
   "intermediate": "Intermediate",
@@ -34,13 +32,11 @@
   "intermediateHint": "Comfortable with most vegetables, managed a garden for 2+ seasons",
   "advancedHint": "Grow year-round, comfortable with pest management & soil science",
   "expertHint": "Professional grower or decades of experience",
-
   "yourFarms": "Your Farms",
   "noFarmsYet": "No farms yet",
   "createFirstFarm": "Create Your First Farm",
   "noDescription": "No description",
   "sqFt": "{{value}} sq ft",
-
   "createNewFarm": "Create New Farm",
   "farmName": "Farm Name",
   "farmNamePlaceholder": "e.g. My Backyard Garden",
@@ -64,7 +60,6 @@
   "climateUnavailable": "Climate data unavailable for this location",
   "climateDetectFailed": "Could not detect climate zone",
   "createFarmFailed": "Failed to create farm",
-
   "backyardGarden": "Backyard Garden",
   "backyardGardenHint": "Small home garden, typically under 500 sq ft",
   "containerGarden": "Container Garden",
@@ -81,7 +76,6 @@
   "largeFarmHint": "Commercial or large-scale growing, 5,000+ sq ft",
   "mixedHybrid": "Mixed / Hybrid",
   "mixedHybridHint": "Combination of different growing methods",
-
   "tropical": "Tropical",
   "tropicalHint": "Year-round warmth — ideal for heat-loving crops",
   "aridDesert": "Arid (Desert)",
@@ -100,7 +94,6 @@
   "subarcticHint": "Short season — hardy crops only",
   "temperate": "Temperate",
   "temperateHint": "Moderate climate — suitable for most crops",
-
   "cropsCount": "Crops ({{count}})",
   "noCropsYet": "No crops planted yet",
   "farmNotFound": "Farm not found",
@@ -110,10 +103,9 @@
   "planted": "Planted",
   "expectedHarvest": "Expected Harvest",
   "zoneLabel": "Zone {{zone}}",
-
-  "searchVegetables": "Search vegetables...",
-  "noVegetablesFound": "No vegetables found",
-  "loadingVegetables": "Loading vegetables...",
+  "searchVegetables": "Search plants, fruits & flowers...",
+  "noVegetablesFound": "No plants found",
+  "loadingVegetables": "Loading plants...",
   "plantingDate": "Planting Date",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "Number of Plants",
@@ -128,7 +120,6 @@
   "difficultyEasy": "Easy",
   "difficultyModerate": "Moderate",
   "difficultyAdvanced": "Advanced",
-
   "quickSpecs": "Quick Specs",
   "temperature": "Temperature",
   "tempRange": "{{min}}°C – {{max}}°C (ideal {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "Crop not found",
   "daysToHarvestCountdown": "days to harvest",
   "harvestTime": "harvest time!",
-
   "whatToGrow": "What to Grow",
   "seasonalRecommendations": "Seasonal recommendations for your climate",
   "daysLabel": "{{count}} days",
   "sunHours": "{{hours}}h sun",
-
   "profile": "Profile",
   "profileComingSoon": "Profile features coming soon...",
   "language": "Language",
   "changeLanguage": "Change Language",
   "selectLanguage": "Select Language",
-
   "community": "Community",
   "communityComingSoon": "Community features coming soon...",
-
   "communityMap": "Community Map",
   "mapComingSoon": "Map view coming soon for web",
-
   "tabHome": "My Farms",
   "tabMap": "Community Map",
   "tabMapShort": "Map",
@@ -183,7 +169,6 @@
   "navPlantCrop": "Plant a Crop",
   "navCropDetail": "Crop Detail",
   "navRequestVegetable": "Request a Vegetable",
-
   "requestVegetableTitle": "Request a Vegetable",
   "requestVegetableSubtitle": "Can't find what you're looking for? Let us know and we'll add it!",
   "requestVegetableNameLabel": "Vegetable Name",
@@ -202,7 +187,6 @@
   "statusPending": "Pending",
   "statusApproved": "Approved",
   "statusRejected": "Rejected",
-
   "termsTitle": "Terms & Conditions",
   "termsSubtitle": "Please read and accept to continue",
   "termsAgree": "I have read and agree to the Terms & Conditions",

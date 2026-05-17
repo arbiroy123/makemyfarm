@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "ଏକାଠି ଚାଷ କରିବା",
-
   "login": "ଲଗ୍ ଇନ୍",
   "register": "ପଞ୍ଜୀକରଣ",
   "email": "ଇମେଲ",
@@ -23,7 +22,6 @@
   "pwdUpper": "ଏକ ବଡ଼ ଅକ୍ଷର (A–Z)",
   "pwdLower": "ଏକ ଛୋଟ ଅକ୍ଷର (a–z)",
   "pwdNumber": "ଏକ ସଂଖ୍ୟା (0–9)",
-
   "novice": "ନୂଆ",
   "beginner": "ଆରମ୍ଭକାରୀ",
   "intermediate": "ମଧ୍ୟବର୍ତ୍ତୀ",
@@ -34,13 +32,11 @@
   "intermediateHint": "ଅଧିକାଂଶ ଶାଗ-ପନିପରିବା ସହ ଆରାମଦାୟକ, ୨+ ଋତୁ ଅଭିଜ୍ଞତା",
   "advancedHint": "ସାରା ବର୍ଷ ଚାଷ, କୀଟ ପରିଚାଳନା ଓ ମୃତ୍ତିକା ବିଜ୍ଞାନରେ ଦକ୍ଷ",
   "expertHint": "ବୃତ୍ତିଗତ ଚାଷୀ ବା ଦଶଦଶ ବର୍ଷ ଅଭିଜ୍ଞତା",
-
   "yourFarms": "ଆପଣଙ୍କ ଚାଷ ଜମି",
   "noFarmsYet": "ଏଖନ ପର୍ଯ୍ୟନ୍ତ କୌଣସି ଚାଷ ଜମି ନାହିଁ",
   "createFirstFarm": "ପ୍ରଥମ ଚାଷ ଜମି ତିଆରି କରନ୍ତୁ",
   "noDescription": "କୌଣସି ବିବରଣ ନାହିଁ",
   "sqFt": "{{value}} ବ.ଫୁଟ",
-
   "createNewFarm": "ନୂଆ ଚାଷ ଜମି ତିଆରି",
   "farmName": "ଚାଷ ଜମିର ନାମ",
   "farmNamePlaceholder": "ଯଥା: ମୋ ବଗିଚା",
@@ -64,7 +60,6 @@
   "climateUnavailable": "ଏହି ସ୍ଥାନ ପାଇଁ ଜଳବାୟୁ ତଥ୍ୟ ଉପଲବ୍ଧ ନୁହେଁ",
   "climateDetectFailed": "ଜଳବାୟୁ ଅଞ୍ଚଳ ଚିହ୍ନଟ ହୋଇ ପାରୁ ନାହିଁ",
   "createFarmFailed": "ଚାଷ ଜମି ତିଆରି ବିଫଳ",
-
   "backyardGarden": "ଘରର ବଗିଚା",
   "backyardGardenHint": "ଛୋଟ ଘରୋଇ ବଗିଚା",
   "containerGarden": "ଗାମଳା ବଗିଚା",
@@ -81,7 +76,6 @@
   "largeFarmHint": "ବ୍ୟବସାୟିକ ବା ବୃହତ ଚାଷ",
   "mixedHybrid": "ମିଶ୍ରିତ",
   "mixedHybridHint": "ବିଭିନ୍ନ ଚାଷ ପଦ୍ଧତିର ମିଶ୍ରଣ",
-
   "tropical": "ଉଷ୍ଣ ଅଞ୍ଚଳ",
   "tropicalHint": "ସାରା ବର୍ଷ ଉଷ୍ଣ — ଗ୍ରୀଷ୍ମ ଫସଲ ପାଇଁ ଆଦର୍ଶ",
   "aridDesert": "ଶୁଷ୍କ (ମରୁଭୂମି)",
@@ -100,7 +94,6 @@
   "subarcticHint": "ଛୋଟ ଋତୁ — କେବଳ ଶକ୍ତ ଫସଲ",
   "temperate": "ସମ-ତାପ",
   "temperateHint": "ମଧ୍ୟମ ଜଳବାୟୁ — ଅଧିକାଂଶ ଫସଲ ପାଇଁ ଉପଯୁକ୍ତ",
-
   "cropsCount": "ଫସଲ ({{count}})",
   "noCropsYet": "ଏଖନ ପର୍ଯ୍ୟନ୍ତ କୌଣସି ଫସଲ ଲଗା ହୋଇ ନାହିଁ",
   "farmNotFound": "ଚାଷ ଜମି ମିଳିଲା ନାହିଁ",
@@ -110,10 +103,9 @@
   "planted": "ଲଗା ହୋଇଛି",
   "expectedHarvest": "ଆଶିତ ଅମଳ",
   "zoneLabel": "ଅଞ୍ଚଳ {{zone}}",
-
-  "searchVegetables": "ପନିପରିବା ଖୋଜନ୍ତୁ...",
-  "noVegetablesFound": "କୌଣସି ପନିପରିବା ମିଳିଲା ନାହିଁ",
-  "loadingVegetables": "ପନିପରିବା ଲୋଡ ହଉଛି...",
+  "searchVegetables": "ଗଛ, ଫଳ ଓ ଫୁଲ ଖୋଜନ୍ତୁ...",
+  "noVegetablesFound": "କୌଣସି ଗଛ ମିଳିଲା ନାହିଁ",
+  "loadingVegetables": "ଗଛ ଲୋଡ ହଉଛି...",
   "plantingDate": "ଲଗାଇବା ତାରିଖ",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "ଗଛ ସଂଖ୍ୟା",
@@ -128,7 +120,6 @@
   "difficultyEasy": "ସହଜ",
   "difficultyModerate": "ମଧ୍ୟମ",
   "difficultyAdvanced": "ଉନ୍ନତ",
-
   "quickSpecs": "ଶୀଘ୍ର ବିବରଣ",
   "temperature": "ତାପମାତ୍ରା",
   "tempRange": "{{min}}°C – {{max}}°C (ଆଦର୍ଶ {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "ଫସଲ ମିଳିଲା ନାହିଁ",
   "daysToHarvestCountdown": "ଦିନ ବାକି",
   "harvestTime": "ଅମଳ ସମୟ!",
-
   "whatToGrow": "କ'ଣ ଚାଷ କରିବେ",
   "seasonalRecommendations": "ଆପଣଙ୍କ ଜଳବାୟୁ ପାଇଁ ଋତୁ ପ୍ରସ୍ତାବ",
   "daysLabel": "{{count}} ଦିନ",
   "sunHours": "{{hours}} ଘ. ଆଲୋ",
-
   "profile": "ପ୍ରୋଫାଇଲ",
   "profileComingSoon": "ପ୍ରୋଫାଇଲ ସୁବିଧା ଶୀଘ୍ର ଆସୁଛି...",
   "language": "ଭାଷା",
   "changeLanguage": "ଭାଷା ବଦଳାନ୍ତୁ",
   "selectLanguage": "ଭାଷା ବାଛନ୍ତୁ",
-
   "community": "ସଂଘ",
   "communityComingSoon": "ସଂଘ ସୁବିଧା ଶୀଘ୍ର ଆସୁଛି...",
-
   "communityMap": "ସଂଘ ମାନଚିତ୍ର",
   "mapComingSoon": "ମାନଚିତ୍ର ଦୃଶ୍ୟ ଶୀଘ୍ର ଆସୁଛି",
-
   "tabHome": "ମୋ ଚାଷ",
   "tabMap": "ମାନଚିତ୍ର",
   "tabMapShort": "ମାନଚିତ୍ର",
@@ -182,7 +168,6 @@
   "tabProfile": "ପ୍ରୋଫାଇଲ",
   "navPlantCrop": "ଫସଲ ଲଗାନ୍ତୁ",
   "navCropDetail": "ଫସଲ ବିବରଣ",
-
   "termsTitle": "ନିୟମ ଓ ସର୍ତ୍ତ",
   "termsSubtitle": "ଜାରି ରଖିବା ପୂର୍ବରୁ ପଢ଼ନ୍ତୁ ଓ ଗ୍ରହଣ କରନ୍ତୁ",
   "termsAgree": "ମୁଁ ନିୟମ ଓ ସର୍ତ୍ତ ପଢ଼ିଛି ଓ ସହମତ",

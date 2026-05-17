@@ -245,7 +245,7 @@ export default function PlantCropScreen({ route, navigation }) {
         <Ionicons name="search" size={18} color="#999" style={{ marginRight: 8 }} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search vegetables..."
+          placeholder="Search plants, fruits & flowers..."
           value={search}
           onChangeText={setSearch}
           autoCorrect={false}

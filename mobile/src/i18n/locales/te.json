@@ -1,7 +1,6 @@
 {
   "appName": "FarmSync",
   "tagline": "కలిసి పెంచుదాం",
-
   "login": "లాగిన్",
   "register": "నమోదు చేయండి",
   "email": "ఇమెయిల్",
@@ -23,7 +22,6 @@
   "pwdUpper": "ఒక పెద్ద అక్షరం (A–Z)",
   "pwdLower": "ఒక చిన్న అక్షరం (a–z)",
   "pwdNumber": "ఒక సంఖ్య (0–9)",
-
   "novice": "నవశిక్షార్థి",
   "beginner": "ప్రారంభకుడు",
   "intermediate": "మధ్యస్థుడు",
@@ -34,13 +32,11 @@
   "intermediateHint": "చాలా కూరగాయలతో అనుభవం, 2+ సీజన్ల అనుభవం",
   "advancedHint": "ఏడాది పొడవునా పెంచుతారు, కీటక నిర్వహణ & మట్టి శాస్త్రంలో నిపుణులు",
   "expertHint": "వృత్తిపరమైన రైతు లేదా దశాబ్దాల అనుభవం",
-
   "yourFarms": "మీ పొలాలు",
   "noFarmsYet": "ఇంకా పొలాలు లేవు",
   "createFirstFarm": "మొదటి పొలం తయారు చేయండి",
   "noDescription": "వివరణ లేదు",
   "sqFt": "{{value}} చదరపు అడుగులు",
-
   "createNewFarm": "కొత్త పొలం తయారు చేయండి",
   "farmName": "పొలం పేరు",
   "farmNamePlaceholder": "ఉదా. నా తోట",
@@ -64,7 +60,6 @@
   "climateUnavailable": "ఈ స్థానానికి వాతావరణ డేటా అందుబాటులో లేదు",
   "climateDetectFailed": "వాతావరణ మండలాన్ని గుర్తించలేకపోయాం",
   "createFarmFailed": "పొలం తయారు చేయడం విఫలమైంది",
-
   "backyardGarden": "వెనుక తోట",
   "backyardGardenHint": "చిన్న ఇంటి తోట, సాధారణంగా 500 చదరపు అడుగుల కంటే తక్కువ",
   "containerGarden": "కుండల తోట",
@@ -81,7 +76,6 @@
   "largeFarmHint": "వాణిజ్య లేదా పెద్ద మొత్తంలో పెంపకం, 5,000+ చదరపు అడుగులు",
   "mixedHybrid": "మిశ్రమ / హైబ్రిడ్",
   "mixedHybridHint": "వివిధ పెంపకం పద్ధతుల కలయిక",
-
   "tropical": "ఉష్ణమండల",
   "tropicalHint": "ఏడాది పొడవునా వేడి — వేడి-ప్రేమికుల పంటలకు అనువైనది",
   "aridDesert": "శుష్క (ఎడారి)",
@@ -100,7 +94,6 @@
   "subarcticHint": "చిన్న సీజన్ — కఠినమైన పంటలు మాత్రమే",
   "temperate": "సమశీతోష్ణ",
   "temperateHint": "మితమైన వాతావరణం — చాలా పంటలకు అనుకూలం",
-
   "cropsCount": "పంటలు ({{count}})",
   "noCropsYet": "ఇంకా పంటలు నాటలేదు",
   "farmNotFound": "పొలం కనుగొనలేదు",
@@ -110,10 +103,9 @@
   "planted": "నాటబడింది",
   "expectedHarvest": "ఆశించిన పంట",
   "zoneLabel": "మండలం {{zone}}",
-
-  "searchVegetables": "కూరగాయలు వెతకండి...",
-  "noVegetablesFound": "కూరగాయలు కనుగొనలేదు",
-  "loadingVegetables": "కూరగాయలు లోడ్ అవుతున్నాయి...",
+  "searchVegetables": "మొక్కలు, పండ్లు & పువ్వులు వెతకండి...",
+  "noVegetablesFound": "మొక్కలు కనుగొనబడలేదు",
+  "loadingVegetables": "మొక్కలు లోడ్ అవుతున్నాయి...",
   "plantingDate": "నాటే తేదీ",
   "plantingDatePlaceholder": "YYYY-MM-DD",
   "numberOfPlants": "మొక్కల సంఖ్య",
@@ -128,7 +120,6 @@
   "difficultyEasy": "సులభం",
   "difficultyModerate": "మధ్యస్థం",
   "difficultyAdvanced": "అభివృద్ధి",
-
   "quickSpecs": "త్వరిత వివరాలు",
   "temperature": "ఉష్ణోగ్రత",
   "tempRange": "{{min}}°C – {{max}}°C (అనువైన {{optimal}}°C)",
@@ -156,24 +147,19 @@
   "cropNotFound": "పంట కనుగొనలేదు",
   "daysToHarvestCountdown": "రోజులు మిగిలాయి",
   "harvestTime": "పంట సమయం!",
-
   "whatToGrow": "ఏమి పెంచాలి",
   "seasonalRecommendations": "మీ వాతావరణానికి సీజన్ సిఫారసులు",
   "daysLabel": "{{count}} రోజులు",
   "sunHours": "{{hours}} గంటలు సూర్యకాంతి",
-
   "profile": "ప్రొఫైల్",
   "profileComingSoon": "ప్రొఫైల్ ఫీచర్లు త్వరలో వస్తాయి...",
   "language": "భాష",
   "changeLanguage": "భాష మార్చండి",
   "selectLanguage": "భాష ఎంచుకోండి",
-
   "community": "సమాజం",
   "communityComingSoon": "సమాజం ఫీచర్లు త్వరలో వస్తాయి...",
-
   "communityMap": "సమాజ మ్యాప్",
   "mapComingSoon": "వెబ్ కోసం మ్యాప్ వ్యూ త్వరలో వస్తుంది",
-
   "tabHome": "నా పొలాలు",
   "tabMap": "మ్యాప్",
   "tabMapShort": "మ్యాప్",
@@ -182,7 +168,6 @@
   "tabProfile": "ప్రొఫైల్",
   "navPlantCrop": "పంట నాటండి",
   "navCropDetail": "పంట వివరాలు",
-
   "termsTitle": "నిబంధనలు & షరతులు",
   "termsSubtitle": "కొనసాగించడానికి దయచేసి చదవండి మరియు అంగీకరించండి",
   "termsAgree": "నేను నిబంధనలు & షరతులు చదివాను మరియు అంగీకరిస్తున్నాను",

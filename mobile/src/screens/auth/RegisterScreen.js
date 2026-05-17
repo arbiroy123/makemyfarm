@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { authAPI } from '../../api/client';
 import LanguagePicker from '../../components/LanguagePicker';
 import { detectCountry } from '../../utils/country';
+import { C, R, Sh } from '../../theme';
 
 function ExperienceDropdown({ value, onChange, disabled, levels, modalTitle, placeholder }) {
   const [open, setOpen] = useState(false);
@@ -246,111 +247,69 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    padding: 20,
-    paddingTop: 60,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-  },
+  container: { flex: 1, backgroundColor: C.page },
+  content:   { padding: 22, paddingTop: 56, paddingBottom: 40 },
+
+  title: { fontSize: 28, fontWeight: '800', marginBottom: 20, color: C.ink },
+
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    borderColor: '#ddd',
-    borderWidth: 1,
+    backgroundColor: C.input, borderRadius: R.sm,
+    padding: 15, marginBottom: 14,
+    borderColor: C.border, borderWidth: 1.5,
+    fontSize: 15, color: C.ink,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
-  rulesBox: { marginTop: -8, marginBottom: 12, paddingHorizontal: 4 },
-  ruleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 6 },
-  ruleText: { fontSize: 12, color: '#bbb' },
-  ruleTextPass: { color: '#4CAF50' },
+  label: { fontSize: 13, fontWeight: '700', marginBottom: 8, color: C.sub, textTransform: 'uppercase', letterSpacing: 0.4 },
+
+  rulesBox: { marginTop: -6, marginBottom: 12, paddingHorizontal: 2 },
+  ruleRow:  { flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 6 },
+  ruleText: { fontSize: 12, color: C.muted },
+  ruleTextPass: { color: C.primary },
+
   dropdownTrigger: {
-    backgroundColor: '#fff', borderRadius: 8, borderColor: '#ddd', borderWidth: 1,
+    backgroundColor: C.input, borderRadius: R.sm, borderColor: C.border, borderWidth: 1.5,
     padding: 15, flexDirection: 'row', alignItems: 'center',
   },
-  dropdownValue: { fontSize: 15, color: '#333', fontWeight: '500' },
-  dropdownHint: { fontSize: 12, color: '#888', marginTop: 2 },
-  backdrop: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center', alignItems: 'center', padding: 24,
-  },
-  modalCard: {
-    backgroundColor: '#fff', borderRadius: 12, width: '100%',
-    maxHeight: '80%', paddingTop: 16, paddingBottom: 8,
-  },
-  modalTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', paddingHorizontal: 16, marginBottom: 8 },
-  option: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 14, paddingHorizontal: 16,
-    borderBottomColor: '#f0f0f0', borderBottomWidth: 1,
-  },
-  optionActive: { backgroundColor: '#f1f8f6' },
-  optionLabel: { fontSize: 14, fontWeight: '600', color: '#333' },
-  optionLabelActive: { color: '#2e7d32' },
-  optionHint: { fontSize: 12, color: '#888', marginTop: 2 },
-  badge: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center',
-  },
-  badgeActive: { backgroundColor: '#c8e6c9' },
-  badgeText: { fontSize: 15, fontWeight: 'bold', color: '#666' },
-  badgeTextActive: { color: '#2e7d32' },
-  button: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  link: {
-    textAlign: 'center',
-    color: '#4CAF50',
-    marginTop: 20,
-    fontSize: 14,
-  },
+  dropdownValue: { fontSize: 15, color: C.ink, fontWeight: '500' },
+  dropdownHint:  { fontSize: 12, color: C.muted, marginTop: 2 },
+
+  backdrop:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modalCard:  { backgroundColor: C.card, borderRadius: R.lg, width: '100%', maxHeight: '80%', paddingTop: 16, paddingBottom: 8 },
+  modalTitle: { fontSize: 16, fontWeight: '700', color: C.ink, paddingHorizontal: 16, marginBottom: 8 },
+
+  option:       { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, borderBottomColor: C.border, borderBottomWidth: 1 },
+  optionActive: { backgroundColor: C.pale },
+  optionLabel:  { fontSize: 14, fontWeight: '600', color: C.ink },
+  optionLabelActive: { color: C.primary },
+  optionHint:   { fontSize: 12, color: C.muted, marginTop: 2 },
+
+  badge:         { width: 36, height: 36, borderRadius: 18, backgroundColor: C.input, justifyContent: 'center', alignItems: 'center' },
+  badgeActive:   { backgroundColor: C.pale },
+  badgeText:     { fontSize: 15, fontWeight: '700', color: C.muted },
+  badgeTextActive: { color: C.primary },
+
+  button:         { backgroundColor: C.primary, borderRadius: R.pill, padding: 15, alignItems: 'center', marginTop: 10, ...Sh.sm },
+  buttonDisabled: { opacity: 0.55 },
+  buttonText:     { color: '#fff', fontSize: 16, fontWeight: '700' },
+
+  link: { textAlign: 'center', color: C.primary, marginTop: 18, fontSize: 14, fontWeight: '600' },
+
   errorBox: {
-    backgroundColor: '#ffebee',
-    borderColor: '#ef5350',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: '#ffebee', borderRadius: R.sm,
+    borderLeftWidth: 3, borderLeftColor: '#e53935',
+    padding: 12, marginBottom: 14,
   },
-  errorText: {
-    color: '#c62828',
-    fontSize: 14,
-  },
+  errorText: { color: '#c62828', fontSize: 13, flex: 1 },
+
   countryRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   countryBtn: {
-    flex: 1, alignItems: 'center', padding: 12, borderRadius: 10,
-    borderWidth: 1.5, borderColor: '#ddd', backgroundColor: '#fff',
+    flex: 1, alignItems: 'center', padding: 12, borderRadius: R.md,
+    borderWidth: 1.5, borderColor: C.border, backgroundColor: C.card,
   },
-  countryBtnActive: { borderColor: '#4CAF50', backgroundColor: '#f1f8f1' },
-  countryFlag: { fontSize: 28 },
-  countryLabel: { fontSize: 13, fontWeight: '700', color: '#555', marginTop: 4 },
-  countryLabelActive: { color: '#2e7d32' },
-  countryPrice: { fontSize: 11, color: '#aaa', marginTop: 2 },
-  countryPriceActive: { color: '#4CAF50' },
+  countryBtnActive:   { borderColor: C.primary, backgroundColor: C.pale },
+  countryFlag:        { fontSize: 28 },
+  countryLabel:       { fontSize: 13, fontWeight: '700', color: C.sub, marginTop: 4 },
+  countryLabelActive: { color: C.primary },
+  countryPrice:       { fontSize: 11, color: C.muted, marginTop: 2 },
+  countryPriceActive: { color: C.primary },
 });
